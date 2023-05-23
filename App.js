@@ -17,9 +17,9 @@ export default function App() {
         screenOptions={{
           headerShown: false
         }}>
-        <Stack.Screen options={{ headerShown:false}} name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegistrationScreen} />
-        <Stack.Screen name="Activity" component={ActivityScreen} />
+        <Stack.Screen options={{ contentStyle:{backgroundColor:"#F8F6F4"} }} name="Login" component={LoginScreen} />
+        <Stack.Screen options={{ contentStyle:{backgroundColor:"#F8F6F4"} }} name="Register" component={RegistrationScreen} />
+        <Stack.Screen options={{ contentStyle:{backgroundColor:"#FFE0E4"} }} name="Activity" component={ActivityScreen} />
         
       </Stack.Navigator>
     </NavigationContainer>
