@@ -47,27 +47,15 @@ const LoginScreen = () => {
   return (
     <SafeAreaView style={{flex:1}}>
     {/* LoginPage Logo */}
-      <View 
-        style={{
-          alignItems:'center',
-          marginTop:40,
-          marginBottom:30,
-          }}>
+      <View>
         <Image
-          style={styles.LogoImage}
-          source={require('../src/assets/images/misc/Registration.jpeg')} />
+          style={styles.Logo}
+          source={require('../src/assets/images/misc/Logo.png')} />
       </View>
 
     {/* Login Text */}
     <View>
-      <Text style={{
-        fontFamily:'Roboto-Medium',
-        fontSize: 35,
-        fontWeight: '500',
-        color: '#333',
-        marginLeft:15,
-        marginBottom:30,
-      }}>
+      <Text style={styles.LoginText}>
         Login
       </Text>
     </View>
@@ -85,51 +73,41 @@ const LoginScreen = () => {
             style={styles.input}
           />
         </View> */}
-        <View 
-          style={{
-            flexDirection:'row',
-            borderBottomColor:'#ccc',
-            borderBottomWidth:1,
-            paddingBottom:8,
-            marginLeft:20,
-            marginRight:20,
-            marginBottom:25,
-          }}>
+        <View style={styles.inputContainer}>
           <MaterialIcons 
             name='alternate-email' 
             size={20} 
-            color='#666'
+            color='#8C8383'
             style={{marginRight:5}}
           />
           <TextInput 
             placeholder='Email ID'
-            style={{flex:1, paddingVertical:0}}
+            placeholderTextColor="#B7B7B7" 
+            style={styles.input}
+            value={email}
+            onChangeText={text => setEmail(text)}
             keyboardType='email-address'
           />
         </View> 
 
         <View 
-          style={{
-            flexDirection:'row',
-            borderBottomColor:'#ccc',
-            borderBottomWidth:1,
-            paddingBottom:8,
-            marginLeft:20,
-            marginRight:20,
-          }}>
+          style={styles.inputContainer}>
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
-            color='#666'
+            color='#8C8383'
             style={{marginRight:5}}
           />
           <TextInput 
             placeholder='Password'
-            style={{flex:1, paddingVertical:0}}
+            placeholderTextColor="#B7B7B7" 
+            style={styles.input}
+            value={password}
+            onChangeText={text => setPassword(text)}
             secureTextEntry={true}
           />
           <TouchableOpacity onPress={() => {}}>
-            <Text style={{color:"#AD40AF", fontWeight:'600', fontSize:14}}>Forgot Password?</Text>
+            <Text style={{color:"#B04759", fontWeight:'600', fontSize:14}}>Forgot Password?</Text>
             </TouchableOpacity>
         </View>
 
@@ -142,16 +120,14 @@ const LoginScreen = () => {
             <Text style={styles.buttonText}>Login</Text>
           </TouchableOpacity>
         </View>
-        <View>
-          <Text 
-            style={{
+        <View style={{marginBottom:30}}>
+          <Text style={{
             fontSize:14,
             textAlign:'center', 
             color:'#666',
-            marginTop:20,
-            marginBottom:40
+            marginBottom:20,
             }}>
-          Or, login with
+          OR
           </Text>
         </View>
       </SafeAreaView>
@@ -212,10 +188,10 @@ const LoginScreen = () => {
         justifyContent:'center', 
         marginTop:20,
         marginBottom:30}}>
-        <Text>New to the app?</Text>
+        <Text>Don't have an account?</Text>
         <TouchableOpacity onPress={() => {navigation.navigate('Register')}}>
         <Text 
-          style={{color:'#AD40AF', fontWeight:'600'}}> Register now!
+          style={{color:'#B04759', fontWeight:'600'}}> Sign up now!
         </Text>
         </TouchableOpacity>
       </View>
@@ -231,24 +207,41 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems:'center',
   },
+  Logo:{
+    width:400,
+    height:350,
+    resizeMode:'contain'
+  },
+  LoginText: {
+    fontFamily:'Roboto-Medium',
+    fontSize: 35,
+    fontWeight: '500',
+    color: '#333',
+    marginLeft:20,
+    marginBottom:20,
+  },
   inputContainer:{
-    width:'80%'
+    flexDirection:'row',
+    borderBottomColor:'#ccc',
+    borderBottomWidth:1,
+    paddingBottom:8,
+    marginLeft:20,
+    marginRight:20,
+    marginTop:30,
   },
   input:{
-    backgroundColor:'white',
-    paddingHorizontal:15,
-    paddingVertical:10,
-    borderRadius:10,
-    marginTop:5,
+    flex:1, 
+    paddingVertical:0,
   },
   buttonContainer:{
     width:'60%',
     justifyContent:'center',
     alignItems:'center',
     marginTop:20,
+    marginBottom:25,
   },
   button:{
-    backgroundColor:'#AD40AF',
+    backgroundColor:'#B04759',
     width:350,
     padding:18,
     borderRadius:10,
@@ -269,11 +262,6 @@ const styles = StyleSheet.create({
     color:'#AD40AF',
     fontWeight:'700',
     fontSize:16,
-  },
-  LogoImage:{
-    width:300,
-    height:300,
-    resizeMode:'contain'
   },
   GoogleImage:{
     flexDirection:'row',

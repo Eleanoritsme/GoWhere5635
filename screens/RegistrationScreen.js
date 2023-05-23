@@ -48,15 +48,13 @@ const RegistrationScreen = () => {
   return (
     <SafeAreaView style={{flex:1}}>
     {/* LoginPage Logo */}
-      <View 
-        style={{
-          alignItems:'center',
-          marginTop:40,
-          marginBottom:30,
-          }}>
+      <View style={{alignItems:'center'}}>
         <Image
-          style={styles.LogoImage}
-          source={require('../src/assets/images/misc/Registration.jpeg')} />
+          style={{
+          resizeMode:'contain',
+          width:300,
+          height:250}}
+          source={require('../src/assets/images/misc/Logo.png')} />
       </View>
 
     {/* Register Text */}
@@ -128,12 +126,12 @@ const RegistrationScreen = () => {
       <View>
           <Text 
             style={{
-            fontSize:14,
+            fontSize:16,
             textAlign:'center', 
             color:'#666',
-            marginBottom:40
+            marginBottom:30
             }}>
-          Or
+          OR
           </Text>
         </View>
 
@@ -155,11 +153,12 @@ const RegistrationScreen = () => {
           <AntDesign 
             name='user' 
             size={20} 
-            color='#666'
+            color='#8C8383'
             style={{marginRight:5}}
           />
           <TextInput 
             placeholder='User Name'
+            placeholderTextColor={"#B7B7B7"}
             style={{flex:1, paddingVertical:0}}
             keyboardType='default'
           />
@@ -179,11 +178,12 @@ const RegistrationScreen = () => {
           <Fontisto 
             name='date' 
             size={20} 
-            color='#666'
+            color='#8C8383'
             style={{marginRight:5}}
           />
           <TextInput 
             placeholder='Date of Birth'
+            placeholderTextColor={"#B7B7B7"}
             style={{flex:1, paddingVertical:0}}
             keyboardType='numbers-and-punctuation'
           />
@@ -202,11 +202,12 @@ const RegistrationScreen = () => {
           <Fontisto 
             name='email' 
             size={20} 
-            color='#666'
+            color='#8C8383'
             style={{marginRight:5}}
           />
           <TextInput 
             placeholder='Email ID'
+            placeholderTextColor={"#B7B7B7"}
             style={{flex:1, paddingVertical:0}}
             keyboardType='email-address'
           />
@@ -225,11 +226,12 @@ const RegistrationScreen = () => {
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
-            color='#666'
+            color='#8C8383'
             style={{marginRight:5}}
           />
           <TextInput 
             placeholder='Password'
+            placeholderTextColor={"#B7B7B7"}
             style={{flex:1, paddingVertical:0}}
             secureTextEntry={true}
           />
@@ -247,11 +249,12 @@ const RegistrationScreen = () => {
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
-            color='#666'
+            color='#8C8383'
             style={{marginRight:5}}
           />
           <TextInput 
             placeholder='Confirm Password'
+            placeholderTextColor={"#B7B7B7"}
             style={{flex:1, paddingVertical:0}}
             secureTextEntry={true}
           />
@@ -287,6 +290,7 @@ const RegistrationScreen = () => {
 export default RegistrationScreen
 
 const styles = StyleSheet.create({
+  
   container:{
     flex:1,
     justifyContent:'center',
@@ -309,7 +313,7 @@ const styles = StyleSheet.create({
     marginTop:20,
   },
   button:{
-    backgroundColor:'#AD40AF',
+    backgroundColor:'#B04759',
     width:350,
     padding:18,
     borderRadius:10,
@@ -331,11 +335,6 @@ const styles = StyleSheet.create({
     color:'#AD40AF',
     fontWeight:'700',
     fontSize:16,
-  },
-  LogoImage:{
-    width:200,
-    height:200,
-    resizeMode:'contain'
   },
   GoogleImage:{
     flexDirection:'row',
