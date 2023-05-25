@@ -2,7 +2,7 @@
 
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
-import { getFirestore } from 'firebase/firestore';
+import 'firebase/compat/firestore'
 
 // Web app's Firebase Configuration
 const firebaseConfig = {
@@ -23,6 +23,6 @@ if (firebase.apps.length === 0) {
 }
 
 const auth = firebase.auth()
-const db = getFirestore(app);
 
-export { auth, db};
+
+export { firebase };

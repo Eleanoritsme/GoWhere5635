@@ -3,9 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { auth } from '../config'
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
+import { firebase } from '../config'
 
 import { useFonts } from 'expo-font'
 import AppLoading from 'expo-app-loading'
@@ -19,74 +17,49 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [showError, setShowError] = useState(false)
+  const [error, setError] = useState({})
+
+  const getError = (email, password) => {
+    const error = {}
+    if (!email) {
+      error.email = "Plase enter your email"
+    } else if (!email.includes('@')) {
+      error.email = "Please enter a valid email address"
+    }
+    if (!password) {
+      error.password = "Please enter the password"
+    } else if (password.length < 8) {
+      error.password = "Incorrect password"
+    }
+    return error
+  }
+
   const navigation = useNavigation()
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) {
-        navigation.navigate("Activity")
+  loginUser = async (email, password) => {
+    const error = getError(email, password)
+    if (Object.keys(error).length) {
+      setShowError(true)
+      setError(showError && error)
+      console.log(error)
+    } else {
+      setError(false)
+      setShowError(false)
+      try {
+        await firebase.auth().signInWithEmailAndPassword(email, password)
+      } catch (error) {
+        alert(error.message)
       }
-    })
-    return unsubscribe
-  }, [])
-
-  const handleLogin = () => {
-    auth
-    .signInWithEmailAndPassword(email, password)
-    .then(userCredentials => {
-      const user = userCredentials.user;
-      console.log('Logged in with:', user.email);
-    })
-    .catch(error => alert(error.message))
-  }
-
-  WebBrowser.maybeCompleteAuthSession();
-
-  const [token, setToken] = React.useState("");
-  const [userInfo, setUserInfo] = React.useState(null);
-
-  //web :318312618232-kjg9pflugtqen314c8jmando90ka38kv.apps.googleusercontent.com
-// ios: 318312618232-nfqv3mavlqhdev1i0o3ispudsh2a7b67.apps.googleusercontent.com
-// android: 318312618232-v4aoeutff071ilt22i6isse950doucbu.apps.googleusercontent.com
-
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    clientId: "318312618232-kjg9pflugtqen314c8jmando90ka38kv.apps.googleusercontent.com",
-    iosClientId: '318312618232-nfqv3mavlqhdev1i0o3ispudsh2a7b67.apps.googleusercontent.com',
-    androidClientId: "318312618232-v4aoeutff071ilt22i6isse950doucbu.apps.googleusercontent.com"
-  });
-
-  React.useEffect(() => {
-    if (response?.type === "success") {
-      setToken(response.authentication.token);
-      token && getUserInfo();
     }
-  }, [response, token]);
-
-
-  async function getUserInfo() {
-    let response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
-      headers: {
-        Authorization: `Bearer ${token}`}
-      });
-      const user = await response.json();
-      setUserInfo(user);
-    /*try {
-      const response = await fetch(
-        "https://www.googleapis.com/userinfo/v2/me",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      const user = await response.json();
-      setUserInfo(user);
-    } catch (error) {
-      alert(error.message)
-      */
   }
+  }
+
+
+
 
   let [fontsLoaded] = useFonts({
-    "Roboto-Medium": require('../src/assets/fonts/Roboto-Medium.ttf'),
+    "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
   });
   
   if (!fontsLoaded) {
@@ -99,7 +72,7 @@ const LoginScreen = () => {
       <View>
         <Image
           style={styles.Logo}
-          source={require('../src/assets/images/misc/Logo.png')} />
+          source={require('../assets/images/misc/Logo.png')} />
       </View>
 
     {/* Login Text */}
@@ -112,15 +85,8 @@ const LoginScreen = () => {
     {/* Login Keyboard */}
       <SafeAreaView
         style={styles.container}
-        behavior='padding'>
-        {/* <View style={styles.inputContainer}>
-          <TextInput
-            placeholder='Email'
-            value={email}
-            onChangeText={text => setEmail(text)}
-            style={styles.input}
-          />
-        </View> */}
+        behavior='padding'
+      >
         <View style={styles.inputContainer}>
           <MaterialIcons 
             name='alternate-email' 
@@ -132,10 +98,21 @@ const LoginScreen = () => {
             placeholder='Email ID'
             placeholderTextColor="#B7B7B7" 
             style={styles.input}
-            value={email}
-            onChangeText={text => setEmail(text)}
+            autoCapitalize='none'
+            autoCorrect={false}
+            // value={email}
+            onChangeText={(email) => setEmail(email)}
             keyboardType='email-address'
           />
+          {error.email && 
+          <Text 
+          style={{
+            fontSize: 14,
+            color:'red',
+            marginTop:4,
+          }}>
+          {error.email}
+          </Text>}
         </View> 
 
         <View 
@@ -150,20 +127,31 @@ const LoginScreen = () => {
             placeholder='Password'
             placeholderTextColor="#B7B7B7" 
             style={styles.input}
-            value={password}
-            onChangeText={text => setPassword(text)}
+            autoCapitalize='none'
+            autoCorrect={false}
+            // value={password}
+            onChangeText={(password) => setPassword(password)}
             secureTextEntry={true}
             
           />
           <TouchableOpacity onPress={() => {}}>
             <Text style={{color:"#B04759", fontWeight:'600', fontSize:14}}>Forgot Password?</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
+          {error.password && 
+          <Text 
+          style={{
+            fontSize: 14,
+            color:'red',
+            marginTop:4,
+          }}>
+          {error.password}
+          </Text>}
         </View>
 
         {/* Conduct Login */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={handleLogin}
+            onPress={() => loginUser(email, password)}
             style={styles.button}
           >
             <Text style={styles.buttonText}>Login</Text>
@@ -174,7 +162,7 @@ const LoginScreen = () => {
             fontSize:14,
             textAlign:'center', 
             color:'#666',
-            marginBottom:20,
+            marginBottom:30,
             }}>
           OR
           </Text>
@@ -198,7 +186,7 @@ const LoginScreen = () => {
           }}>
           <Image 
           style={styles.GoogleImage}
-          source={require('../src/assets/images/misc/GoogleLogo.png')} />
+          source={require('../assets/images/misc/GoogleLogo.png')} />
         </TouchableOpacity> 
 
         <TouchableOpacity
@@ -212,7 +200,7 @@ const LoginScreen = () => {
           }}>
           <Image 
           style={styles.FacebookImage}
-          source={require('../src/assets/images/misc/FacebookLogo.png')} />
+          source={require('../assets/images/misc/FacebookLogo.png')} />
         </TouchableOpacity> 
 
         <TouchableOpacity
@@ -226,24 +214,9 @@ const LoginScreen = () => {
           }}>
           <Image 
           style={styles.TwitterImage}
-          source={require('../src/assets/images/misc/TwitterLogo.png')} />
+          source={require('../assets/images/misc/TwitterLogo.png')} />
         </TouchableOpacity> 
       </View>
-
-      {/* Conduct google log in */}
-      <View style={styles.buttonContainer}>
-      {userInfo === null ? (
-        <TouchableOpacity
-          title="Sign in with Google"
-          disabled={!request}
-          onPress={() => {
-            promptAsync();
-          }}
-        />
-        ) : (
-        <Text style={styles.text}>{userInfo.name}</Text>
-        )}
-        </View>
 
       {/* Register */}
       <View 
@@ -261,7 +234,7 @@ const LoginScreen = () => {
       </View>
     </SafeAreaView>
   )
-}
+        
 
 export default LoginScreen
 
