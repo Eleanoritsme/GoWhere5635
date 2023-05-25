@@ -4,8 +4,6 @@ import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { auth } from '../config'
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
 
 import { useFonts } from 'expo-font'
 import AppLoading from 'expo-app-loading'
@@ -38,18 +36,8 @@ const LoginScreen = () => {
     .catch(error => alert(error.message))
   }
 
-  WebBrowser.maybeCompleteAuthSession();
-
-  const [token, setToken] = useState("");
-  const [userInfo, setUserInfo] = useState(null);
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: '318312618232-v4aoeutff071ilt22i6isse950doucbu.apps.googleusercontent.com',
-    iosClientId: '318312618232-nfqv3mavlqhdev1i0o3ispudsh2a7b67.apps.googleusercontent.com',
-  });
-
   let [fontsLoaded] = useFonts({
-    "Roboto-Medium": require('../src/assets/fonts/Roboto-Medium.ttf'),
+    "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
   });
   
   if (!fontsLoaded) {
@@ -62,7 +50,7 @@ const LoginScreen = () => {
       <View>
         <Image
           style={styles.Logo}
-          source={require('../src/assets/images/misc/Logo.png')} />
+          source={require('../assets/images/misc/Logo.png')} />
       </View>
 
     {/* Login Text */}
@@ -161,7 +149,7 @@ const LoginScreen = () => {
           }}>
           <Image 
           style={styles.GoogleImage}
-          source={require('../src/assets/images/misc/GoogleLogo.png')} />
+          source={require('../assets/images/misc/GoogleLogo.png')} />
         </TouchableOpacity> 
 
         <TouchableOpacity
@@ -175,7 +163,7 @@ const LoginScreen = () => {
           }}>
           <Image 
           style={styles.FacebookImage}
-          source={require('../src/assets/images/misc/FacebookLogo.png')} />
+          source={require('../assets/images/misc/FacebookLogo.png')} />
         </TouchableOpacity> 
 
         <TouchableOpacity
@@ -189,7 +177,7 @@ const LoginScreen = () => {
           }}>
           <Image 
           style={styles.TwitterImage}
-          source={require('../src/assets/images/misc/TwitterLogo.png')} />
+          source={require('../assets/images/misc/TwitterLogo.png')} />
         </TouchableOpacity> 
       </View>
 
