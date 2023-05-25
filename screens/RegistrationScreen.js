@@ -11,10 +11,13 @@ import AppLoading from 'expo-app-loading'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import { doc, setDoc } from "firebase/firestore"; 
+import {db} from '../config';
 
 const RegistrationScreen = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [username, setUsername] = useState("")
 
   const navigation = useNavigation()
 
@@ -44,6 +47,21 @@ const RegistrationScreen = () => {
   if (!fontsLoaded) {
     return <AppLoading />
   }
+
+  /*Submit data to firebase
+  function create() {
+    // submit data
+    setDoc(doc(db, "users"), {
+      email: email,
+      password: password,
+    }).then( ()=> {
+      console.log('data submitted');
+    
+    }).catch((error) => {
+      console.log(error);
+    });
+  } 
+  */
 
   return (
     <SafeAreaView style={{flex:1}}>
@@ -182,7 +200,7 @@ const RegistrationScreen = () => {
             style={{marginRight:5}}
           />
           <TextInput 
-            placeholder='Date of Birth'
+            placeholder='Date of Birth eg:04112000'
             placeholderTextColor={"#B7B7B7"}
             style={{flex:1, paddingVertical:0}}
             keyboardType='numbers-and-punctuation'

@@ -13,6 +13,8 @@ import AppLoading from 'expo-app-loading'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+
+
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -40,13 +42,48 @@ const LoginScreen = () => {
 
   WebBrowser.maybeCompleteAuthSession();
 
-  const [token, setToken] = useState("");
-  const [userInfo, setUserInfo] = useState(null);
+  const [token, setToken] = React.useState("");
+  const [userInfo, setUserInfo] = React.useState(null);
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: '318312618232-v4aoeutff071ilt22i6isse950doucbu.apps.googleusercontent.com',
+  //web :318312618232-kjg9pflugtqen314c8jmando90ka38kv.apps.googleusercontent.com
+// ios: 318312618232-nfqv3mavlqhdev1i0o3ispudsh2a7b67.apps.googleusercontent.com
+// android: 318312618232-v4aoeutff071ilt22i6isse950doucbu.apps.googleusercontent.com
+
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: "318312618232-kjg9pflugtqen314c8jmando90ka38kv.apps.googleusercontent.com",
     iosClientId: '318312618232-nfqv3mavlqhdev1i0o3ispudsh2a7b67.apps.googleusercontent.com',
+    androidClientId: "318312618232-v4aoeutff071ilt22i6isse950doucbu.apps.googleusercontent.com"
   });
+
+  React.useEffect(() => {
+    if (response?.type === "success") {
+      setToken(response.authentication.token);
+      token && getUserInfo();
+    }
+  }, [response, token]);
+
+
+  async function getUserInfo() {
+    let response = await fetch("https://www.googleapis.com/userinfo/v2/me", {
+      headers: {
+        Authorization: `Bearer ${token}`}
+      });
+      const user = await response.json();
+      setUserInfo(user);
+    /*try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const user = await response.json();
+      setUserInfo(user);
+    } catch (error) {
+      alert(error.message)
+      */
+  }
 
   let [fontsLoaded] = useFonts({
     "Roboto-Medium": require('../src/assets/fonts/Roboto-Medium.ttf'),
@@ -75,8 +112,7 @@ const LoginScreen = () => {
     {/* Login Keyboard */}
       <SafeAreaView
         style={styles.container}
-        behavior='padding'
-      >
+        behavior='padding'>
         {/* <View style={styles.inputContainer}>
           <TextInput
             placeholder='Email'
@@ -117,6 +153,7 @@ const LoginScreen = () => {
             value={password}
             onChangeText={text => setPassword(text)}
             secureTextEntry={true}
+            
           />
           <TouchableOpacity onPress={() => {}}>
             <Text style={{color:"#B04759", fontWeight:'600', fontSize:14}}>Forgot Password?</Text>
@@ -192,6 +229,21 @@ const LoginScreen = () => {
           source={require('../src/assets/images/misc/TwitterLogo.png')} />
         </TouchableOpacity> 
       </View>
+
+      {/* Conduct google log in */}
+      <View style={styles.buttonContainer}>
+      {userInfo === null ? (
+        <TouchableOpacity
+          title="Sign in with Google"
+          disabled={!request}
+          onPress={() => {
+            promptAsync();
+          }}
+        />
+        ) : (
+        <Text style={styles.text}>{userInfo.name}</Text>
+        )}
+        </View>
 
       {/* Register */}
       <View 
