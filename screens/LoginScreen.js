@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { auth } from '../config'
+import { firebase } from '../config'
 
 import { useFonts } from 'expo-font'
 import AppLoading from 'expo-app-loading'
@@ -15,26 +15,43 @@ const LoginScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [showError, setShowError] = useState(false)
+  const [error, setError] = useState({})
+
+  const getError = (email, password) => {
+    const error = {}
+    if (!email) {
+      error.email = "Plase enter your email"
+    } else if (!email.includes('@')) {
+      error.email = "Please enter a valid email address"
+    }
+    if (!password) {
+      error.password = "Please enter the password"
+    } else if (password.length < 8) {
+      error.password = "Incorrect password"
+    }
+    return error
+  }
+
   const navigation = useNavigation()
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(user => {
-      if (user) {
-        navigation.navigate("Activity")
+  loginUser = async (email, password) => {
+    const error = getError(email, password)
+    if (Object.keys(error).length) {
+      setShowError(true)
+      setError(showError && error)
+      console.log(error)
+    } else {
+      setError(false)
+      setShowError(false)
+      try {
+        await firebase.auth().signInWithEmailAndPassword(email, password)
+      } catch (error) {
+        alert(error.message)
       }
-    })
-    return unsubscribe
-  }, [])
-
-  const handleLogin = () => {
-    auth
-    .signInWithEmailAndPassword(email, password)
-    .then(userCredentials => {
-      const user = userCredentials.user;
-      console.log('Logged in with:', user.email);
-    })
-    .catch(error => alert(error.message))
+    }
   }
+
 
   let [fontsLoaded] = useFonts({
     "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
@@ -65,14 +82,6 @@ const LoginScreen = () => {
         style={styles.container}
         behavior='padding'
       >
-        {/* <View style={styles.inputContainer}>
-          <TextInput
-            placeholder='Email'
-            value={email}
-            onChangeText={text => setEmail(text)}
-            style={styles.input}
-          />
-        </View> */}
         <View style={styles.inputContainer}>
           <MaterialIcons 
             name='alternate-email' 
@@ -84,10 +93,21 @@ const LoginScreen = () => {
             placeholder='Email ID'
             placeholderTextColor="#B7B7B7" 
             style={styles.input}
-            value={email}
-            onChangeText={text => setEmail(text)}
+            autoCapitalize='none'
+            autoCorrect={false}
+            // value={email}
+            onChangeText={(email) => setEmail(email)}
             keyboardType='email-address'
           />
+          {error.email && 
+          <Text 
+          style={{
+            fontSize: 14,
+            color:'red',
+            marginTop:4,
+          }}>
+          {error.email}
+          </Text>}
         </View> 
 
         <View 
@@ -102,19 +122,30 @@ const LoginScreen = () => {
             placeholder='Password'
             placeholderTextColor="#B7B7B7" 
             style={styles.input}
-            value={password}
-            onChangeText={text => setPassword(text)}
+            autoCapitalize='none'
+            autoCorrect={false}
+            // value={password}
+            onChangeText={(password) => setPassword(password)}
             secureTextEntry={true}
           />
           <TouchableOpacity onPress={() => {}}>
             <Text style={{color:"#B04759", fontWeight:'600', fontSize:14}}>Forgot Password?</Text>
-            </TouchableOpacity>
+          </TouchableOpacity>
+          {error.password && 
+          <Text 
+          style={{
+            fontSize: 14,
+            color:'red',
+            marginTop:4,
+          }}>
+          {error.password}
+          </Text>}
         </View>
 
         {/* Conduct Login */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            onPress={handleLogin}
+            onPress={() => loginUser(email, password)}
             style={styles.button}
           >
             <Text style={styles.buttonText}>Login</Text>
@@ -125,7 +156,7 @@ const LoginScreen = () => {
             fontSize:14,
             textAlign:'center', 
             color:'#666',
-            marginBottom:20,
+            marginBottom:30,
             }}>
           OR
           </Text>

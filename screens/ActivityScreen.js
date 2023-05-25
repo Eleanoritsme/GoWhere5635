@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { auth } from '../config'
+import { firebase } from '../config'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
@@ -22,7 +22,7 @@ const ActivityScreen = () => {
   // }
 
   let [fontsLoaded] = useFonts({
-    "Inter-ExtraBold": require('../src/assets/fonts/Inter-ExtraBold.ttf'),
+    "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
   });
   
   if (!fontsLoaded) {
@@ -69,7 +69,7 @@ const ActivityScreen = () => {
             height:150,
             resizeMode:'contain',
           }}
-          source={require('../src/assets/images/misc/Study.png')}/>
+          source={require('../assets/images/misc/Study.png')}/>
           </View>
         </TouchableOpacity> 
         </View>
@@ -99,7 +99,7 @@ const ActivityScreen = () => {
             height:150,
             resizeMode:'contain',
           }}
-          source={require('../src/assets/images/misc/Work.png')}/>
+          source={require('../assets/images/misc/Work.png')}/>
           <Text style={{
             fontFamily:'Inter-ExtraBold',
             fontSize:36,
@@ -138,7 +138,7 @@ const ActivityScreen = () => {
             height:150,
             resizeMode:'contain',
           }}
-          source={require('../src/assets/images/misc/Eat.png')}/>
+          source={require('../assets/images/misc/Eat.png')}/>
           </View>
         </TouchableOpacity> 
         </View>
