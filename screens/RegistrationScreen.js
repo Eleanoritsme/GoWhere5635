@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -83,17 +83,6 @@ const RegistrationScreen = () => {
 
   const navigation = useNavigation()
 
-  // useEffect(() => {
-  //   const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-  //     if (user) {
-  //       navigation.navigate("Login")
-  //     }
-  //   })
-  //   return unsubscribe
-  // }, [])
-
-
-
   let [fontsLoaded] = useFonts({
     "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
   });
@@ -110,7 +99,8 @@ const RegistrationScreen = () => {
           style={{
           resizeMode:'contain',
           width:200,
-          height:80}}
+          height:120,
+          }}
           source={require('../assets/images/misc/CornerLogo.png')} />
       </View>
 
@@ -128,68 +118,7 @@ const RegistrationScreen = () => {
       </Text>
     </View>
     
-    {/* Other Login Method Options */}
-    <View
-        style={{
-          justifyContent:'space-around',
-          flexDirection:'row',
-          marginBottom:30,
-        }}>
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.GoogleImage}
-          source={require('../assets/images/misc/GoogleLogo.png')} />
-        </TouchableOpacity> 
-
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.FacebookImage}
-          source={require('../assets/images/misc/FacebookLogo.png')} />
-        </TouchableOpacity> 
-
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.TwitterImage}
-          source={require('../assets/images/misc/TwitterLogo.png')} />
-        </TouchableOpacity> 
-      </View>
-
-      <View>
-          <Text 
-            style={{
-            fontSize:16,
-            textAlign:'center', 
-            color:'#666',
-            marginBottom:30
-            }}>
-          OR
-          </Text>
-        </View>
-
+    
     {/* Register Keyboard */}
       <SafeAreaView
         style={styles.container}
