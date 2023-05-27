@@ -5,7 +5,6 @@ import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
 
-
 import { useFonts } from 'expo-font'
 import AppLoading from 'expo-app-loading'
 
@@ -53,6 +52,17 @@ const LoginScreen = () => {
     }
   }
 
+  const changePassword = () => {
+    if (email != null) {
+      firebase.auth().sendPasswordResetEmail(email)
+      .then(() => {
+        alert("Password rest email has been sent")
+      }).catch((error) => {
+        alert(error.message)
+      })
+    }
+  }
+
   let [fontsLoaded] = useFonts({
     "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
   });
@@ -64,52 +74,31 @@ const LoginScreen = () => {
   return (
     <SafeAreaView style={{flex:1}}>
     {/* LoginPage Logo */}
-      <View style={{
-        alignItems:'center'
-      }}>
+      <View style={styles.logo}>
         <Image
-          style={{
-            width:400,
-            height:350,
-            resizeMode:'contain'
-          }}
+          style={styles.logoImage}
           source={require('../assets/images/misc/Logo.png')} />
       </View>
 
     {/* Login Text */}
-      <View style={{
-        marginLeft:20,
-        marginBottom:30
-      }}>
-        <Text style={{
-          fontFamily:'Roboto-Medium',
-          fontSize: 35,
-          fontWeight: '500',
-          color: '#333',
-        }}>
+      <View style={styles.logInText}>
+        <Text style={styles.text}>
           Login
         </Text>
       </View>
 
     {/* Login Keyboard */}
       <View 
-      style={{
-        flexDirection:'row',
-        borderBottomColor:'#ccc',
-        borderBottomWidth:1,
-        paddingBottom:8,
-        marginLeft:20,
-        marginRight:20,
-        marginTop:40,
-      }}
+      style={styles.inputContainer}
       behavior='padding'>
         <MaterialIcons 
           name='alternate-email' 
           size={20} 
           color='#8C8383'
-          style={{marginRight:5}}
+          style={styles.icon}
         />
         <TextInput 
+          style={styles.input} 
           placeholder='Email ID'
           placeholderTextColor="#B7B7B7" 
           autoCapitalize='none'
@@ -121,42 +110,26 @@ const LoginScreen = () => {
       </View>
 
         
-      <View style={{
-        marginTop:8,
-        marginLeft:20,
-      }}>
+      <View style={styles.errorContainer}>
         <Text 
-          style={{
-            fontSize: 14,
-            color:'red',
-          }}>
+          style={styles.error}>
           {error.email}
         </Text>
       </View>
       
       <View 
-        style={{
-          flexDirection:'row',
-          borderBottomColor:'#ccc',
-          borderBottomWidth:1,
-          paddingBottom:8,
-          marginLeft:20,
-          marginRight:20,
-          marginTop:40,
-        }}
+        style={styles.inputContainer}
         behavior='padding'>
         <Ionicons
           name='ios-lock-closed-outline' 
           size={20} 
           color='#8C8383'
-          style={{marginRight:5}}
+          style={styles.icon}
         />
-        <TextInput 
+        <TextInput
+          style={styles.input}  
           placeholder='Password'
           placeholderTextColor="#B7B7B7" 
-          style={{
-            flex:1, 
-          }}
           autoCapitalize='none'
           autoCorrect={false}
           value={password}
@@ -164,52 +137,28 @@ const LoginScreen = () => {
           secureTextEntry={true}
         />
         <View>
-          <TouchableOpacity onPress={() => {}}>
-            <Text style={{
-              color:"#B04759", 
-              fontWeight:'600', 
-              fontSize:14,
-            }}>
+          <TouchableOpacity onPress={() => changePassword()}>
+            <Text style={styles.resetPswButton}>
             Forgot Password?
             </Text>
           </TouchableOpacity>
         </View>
       </View>
       
-      <View style={{
-        marginTop:8,
-        marginLeft:20,
-      }}>
+      <View style={styles.errorContainer}>
         <Text 
-          style={{
-            fontSize: 14,
-            color:'red', 
-          }}>
+          style={styles.error}>
           {error.password}
         </Text>
       </View>
 
       {/* Conduct Login */}
-      <View style={{
-        marginLeft:20,
-        marginRight:20,
-        marginTop:20,
-      }}>
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
           onPress={() => loginUser(email, password)}
-          style={{
-            backgroundColor:'#B04759',
-            width:350,
-            padding:18,
-            borderRadius:10,
-            alignItems:'center',
-          }}
+          style={styles.button}
         >
-          <Text style={{
-            color:'white',
-            fontWeight:'700',
-            fontSize:16,
-          }}>
+          <Text style={styles.buttonInput}>
           Login
           </Text>
         </TouchableOpacity>
@@ -217,18 +166,11 @@ const LoginScreen = () => {
 
       {/* Register */}
       <View 
-        style={{
-        flexDirection:'row', 
-        justifyContent:'center', 
-        marginTop:20,
-        marginBottom:30
-        }}>
+        style={styles.register}>
         <Text>Don't have an account?</Text>
         <TouchableOpacity onPress={() => {navigation.navigate('Register')}}>
         <Text 
-          style={{
-            color:'#B04759',
-            fontWeight:'600'}}> Register now!
+          style={styles.resgisterText}> Register now!
         </Text>
         </TouchableOpacity>
       </View>
@@ -240,9 +182,78 @@ const LoginScreen = () => {
 export default LoginScreen
 
 const styles = StyleSheet.create({
-  container:{
+  logo:{
+    alignItems:'center'
+  },
+  logoImage:{
+    width:400,
+    height:350,
+    resizeMode:'contain'
+  },
+  logInText:{
+    marginLeft:20,
+    marginBottom:30
+  },
+  text:{
+    fontFamily:'Roboto-Medium',
+    fontSize: 35,
+    fontWeight: '500',
+    color: '#333',
+  },
+  inputContainer:{
+    flexDirection:'row',
+    borderBottomColor:'#ccc',
+    borderBottomWidth:1,
+    paddingBottom:8,
+    marginLeft:20,
+    marginRight:20,
+    marginTop:40,
+  },
+  input:{
     flex:1,
-    justifyContent:'center',
+    paddingVertical:0
+  },
+  resetPswButton:{
+    color:"#B04759", 
+    fontWeight:'600', 
+    fontSize:14,
+  },
+  buttonContainer:{
+    marginLeft:20,
+    marginRight:20,
+    marginTop:20,
+  },
+  button:{
+    backgroundColor:'#B04759',
+    width:350,
+    padding:18,
+    borderRadius:10,
     alignItems:'center',
+  },
+  register:{
+    flexDirection:'row', 
+    justifyContent:'center', 
+    marginTop:20,
+    marginBottom:30
+  },
+  resgisterText:{
+    color:'#B04759',
+    fontWeight:'600'
+  },
+  errorContainer:{
+    marginTop:8,
+    marginLeft:20,
+  },
+  error:{
+    fontSize: 14,
+    color:'red', 
+  },
+  icon:{
+    marginRight:5
+  },
+  buttonInput:{
+    color:'white',
+    fontWeight:'700',
+    fontSize:16,
   },
 })
