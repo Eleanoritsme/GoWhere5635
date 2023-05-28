@@ -1,5 +1,5 @@
-import { KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import React, { useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -52,6 +52,16 @@ const LoginScreen = () => {
     }
   }
 
+  const changePassword = () => {
+    if (email != null) {
+      firebase.auth().sendPasswordResetEmail(email)
+      .then(() => {
+        alert("Password rest email has been sent")
+      }).catch((error) => {
+        alert(error.message)
+      })
+    }
+  }
 
   let [fontsLoaded] = useFonts({
     "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
@@ -64,192 +74,131 @@ const LoginScreen = () => {
   return (
     <SafeAreaView style={{flex:1}}>
     {/* LoginPage Logo */}
-      <View>
+      <View style={styles.logo}>
         <Image
-          style={styles.Logo}
+          style={styles.logoImage}
           source={require('../assets/images/misc/Logo.png')} />
       </View>
 
     {/* Login Text */}
-    <View>
-      <Text style={styles.LoginText}>
-        Login
-      </Text>
-    </View>
+      <View style={styles.logInText}>
+        <Text style={styles.text}>
+          Login
+        </Text>
+      </View>
 
     {/* Login Keyboard */}
-      <SafeAreaView
-        style={styles.container}
-        behavior='padding'
-      >
-        <View style={styles.inputContainer}>
-          <MaterialIcons 
-            name='alternate-email' 
-            size={20} 
-            color='#8C8383'
-            style={{marginRight:5}}
-          />
-          <TextInput 
-            placeholder='Email ID'
-            placeholderTextColor="#B7B7B7" 
-            style={styles.input}
-            autoCapitalize='none'
-            autoCorrect={false}
-            // value={email}
-            onChangeText={(email) => setEmail(email)}
-            keyboardType='email-address'
-          />
-          {error.email && 
-          <Text 
-          style={{
-            fontSize: 14,
-            color:'red',
-            marginTop:4,
-          }}>
+      <View 
+      style={styles.inputContainer}
+      behavior='padding'>
+        <MaterialIcons 
+          name='alternate-email' 
+          size={20} 
+          color='#8C8383'
+          style={styles.icon}
+        />
+        <TextInput 
+          style={styles.input} 
+          placeholder='Email ID'
+          placeholderTextColor="#B7B7B7" 
+          autoCapitalize='none'
+          autoCorrect={false}
+          value={email}
+          onChangeText={text => setEmail(text)}
+          keyboardType='email-address'
+        />
+      </View>
+
+        
+      <View style={styles.errorContainer}>
+        <Text 
+          style={styles.error}>
           {error.email}
-          </Text>}
-        </View> 
-
-        <View 
-          style={styles.inputContainer}>
-          <Ionicons
-            name='ios-lock-closed-outline' 
-            size={20} 
-            color='#8C8383'
-            style={{marginRight:5}}
-          />
-          <TextInput 
-            placeholder='Password'
-            placeholderTextColor="#B7B7B7" 
-            style={styles.input}
-            autoCapitalize='none'
-            autoCorrect={false}
-            // value={password}
-            onChangeText={(password) => setPassword(password)}
-            secureTextEntry={true}
-          />
-          <TouchableOpacity onPress={() => {}}>
-            <Text style={{color:"#B04759", fontWeight:'600', fontSize:14}}>Forgot Password?</Text>
+        </Text>
+      </View>
+      
+      <View 
+        style={styles.inputContainer}
+        behavior='padding'>
+        <Ionicons
+          name='ios-lock-closed-outline' 
+          size={20} 
+          color='#8C8383'
+          style={styles.icon}
+        />
+        <TextInput
+          style={styles.input}  
+          placeholder='Password'
+          placeholderTextColor="#B7B7B7" 
+          autoCapitalize='none'
+          autoCorrect={false}
+          value={password}
+          onChangeText={text => setPassword(text)}
+          secureTextEntry={true}
+        />
+        <View>
+          <TouchableOpacity onPress={() => changePassword()}>
+            <Text style={styles.resetPswButton}>
+            Forgot Password?
+            </Text>
           </TouchableOpacity>
-          {error.password && 
-          <Text 
-          style={{
-            fontSize: 14,
-            color:'red',
-            marginTop:4,
-          }}>
+        </View>
+      </View>
+      
+      <View style={styles.errorContainer}>
+        <Text 
+          style={styles.error}>
           {error.password}
-          </Text>}
-        </View>
+        </Text>
+      </View>
 
-        {/* Conduct Login */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            onPress={() => loginUser(email, password)}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{marginBottom:30}}>
-          <Text style={{
-            fontSize:14,
-            textAlign:'center', 
-            color:'#666',
-            marginBottom:30,
-            }}>
-          OR
+      {/* Conduct Login */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={() => loginUser(email, password)}
+          style={styles.button}
+        >
+          <Text style={styles.buttonInput}>
+          Login
           </Text>
-        </View>
-      </SafeAreaView>
-
-      {/* Other Login Options */}
-      <View
-        style={{
-          justifyContent:'space-around',
-          flexDirection:'row'
-        }}>
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.GoogleImage}
-          source={require('../assets/images/misc/GoogleLogo.png')} />
-        </TouchableOpacity> 
-
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.FacebookImage}
-          source={require('../assets/images/misc/FacebookLogo.png')} />
-        </TouchableOpacity> 
-
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.TwitterImage}
-          source={require('../assets/images/misc/TwitterLogo.png')} />
-        </TouchableOpacity> 
+        </TouchableOpacity>
       </View>
 
       {/* Register */}
       <View 
-        style={{
-        flexDirection:'row', 
-        justifyContent:'center', 
-        marginTop:20,
-        marginBottom:30}}>
+        style={styles.register}>
         <Text>Don't have an account?</Text>
         <TouchableOpacity onPress={() => {navigation.navigate('Register')}}>
         <Text 
-          style={{color:'#B04759', fontWeight:'600'}}> Sign up now!
+          style={styles.resgisterText}> Register now!
         </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    
   )
 }
 
 export default LoginScreen
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center',
+  logo:{
+    alignItems:'center'
   },
-  Logo:{
+  logoImage:{
     width:400,
     height:350,
     resizeMode:'contain'
   },
-  LoginText: {
+  logInText:{
+    marginLeft:20,
+    marginBottom:30
+  },
+  text:{
     fontFamily:'Roboto-Medium',
     fontSize: 35,
     fontWeight: '500',
     color: '#333',
-    marginLeft:20,
-    marginBottom:20,
   },
   inputContainer:{
     flexDirection:'row',
@@ -258,18 +207,21 @@ const styles = StyleSheet.create({
     paddingBottom:8,
     marginLeft:20,
     marginRight:20,
-    marginTop:30,
+    marginTop:40,
   },
   input:{
-    flex:1, 
-    paddingVertical:0,
+    flex:1,
+    paddingVertical:0
+  },
+  resetPswButton:{
+    color:"#B04759", 
+    fontWeight:'600', 
+    fontSize:14,
   },
   buttonContainer:{
-    width:'60%',
-    justifyContent:'center',
-    alignItems:'center',
+    marginLeft:20,
+    marginRight:20,
     marginTop:20,
-    marginBottom:25,
   },
   button:{
     backgroundColor:'#B04759',
@@ -278,38 +230,30 @@ const styles = StyleSheet.create({
     borderRadius:10,
     alignItems:'center',
   },
-  buttonOutline:{
-    backgroundColor:'white',
-    marginTop:5,
-    borderColor: '#AD40AF',
-    borderWidth:2,
+  register:{
+    flexDirection:'row', 
+    justifyContent:'center', 
+    marginTop:20,
+    marginBottom:30
   },
-  buttonText:{
+  resgisterText:{
+    color:'#B04759',
+    fontWeight:'600'
+  },
+  errorContainer:{
+    marginTop:8,
+    marginLeft:20,
+  },
+  error:{
+    fontSize: 14,
+    color:'red', 
+  },
+  icon:{
+    marginRight:5
+  },
+  buttonInput:{
     color:'white',
     fontWeight:'700',
     fontSize:16,
-  },
-  buttonOutlineText:{
-    color:'#AD40AF',
-    fontWeight:'700',
-    fontSize:16,
-  },
-  GoogleImage:{
-    flexDirection:'row',
-    justifyContent:'space-around',
-    width:40,
-    height:40,
-  },
-  FacebookImage:{
-    flexDirection:'row',
-    justifyContent:'space-around',
-    width:40,
-    height:40,
-  },
-  TwitterImage:{
-    flexDirection:'row',
-    justifyContent:'space-around',
-    width:40,
-    height:40,
   },
 })

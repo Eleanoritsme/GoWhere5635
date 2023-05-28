@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -23,9 +23,16 @@ const RegistrationScreen = () => {
   const [showError, setShowError] = useState(false)
   const [error, setError] = useState({})
 
-  const getError = (email, password, confirmPassword) => {
-    const errorcode = error.code
+  const getError = (userName, dateOfBirth, email, password, confirmPassword) => {
     const error = {}
+    if (!userName) {
+      error.userName = "Please enter the user name"
+    } else if (userName.length < 6) {
+      error.userName = "The length should not be less than 6 chatacters"
+    }
+    if (!dateOfBirth) {
+      error.dateOfBirth = "Please enter the date of birth"
+    }
     if (!email) {
       error.email = "Plase enter your email"
     } else if (!email.includes('@')) {
@@ -34,27 +41,24 @@ const RegistrationScreen = () => {
     if (!password) {
       error.password = "Please enter the password"
     } else if (password.length < 8) {
-      error.password = "The length of password should not less than 8 characters"
+      error.password = "The length should not be less than 8 characters"
     }
     if (!confirmPassword) {
       error.confirmPassword = "Please confirm the password"
     } else if (password.length < 8 || password !== confirmPassword) {
-      error.password = "Please enter the same password as above"
+      error.confirmPassword = "Please enter the same password as above"
     }
     return error
   }
 
   registerUser = async (userName, dateOfBirth, email, password, confirmPassword) => {
-    const error = getError(email, password, confirmPassword)
+    const error = getError(userName, dateOfBirth, email, password, confirmPassword)
     if (Object.keys(error).length) {
       setShowError(true)
       setError(showError && error)
       console.log(error)
     } else {
-    console.log('Registered');
-    }
-
-    await firebase.auth().createUserWithEmailAndPassword(email, password)
+      await firebase.auth().createUserWithEmailAndPassword(email, password)
     .then(() => {
       firebase.auth().currentUser.sendEmailVerification({
         handleCodeInApp: true,
@@ -74,26 +78,16 @@ const RegistrationScreen = () => {
         })
       })
       .catch((error) => {
-        alert(error.message)
+        console.log(error.message)
       })
     })
     .catch((error => {
       console.log(error.message)
     }))
   }
+}
 
   const navigation = useNavigation()
-
-  // useEffect(() => {
-  //   const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-  //     if (user) {
-  //       navigation.navigate("Login")
-  //     }
-  //   })
-  //   return unsubscribe
-  // }, [])
-
-
 
   let [fontsLoaded] = useFonts({
     "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
@@ -106,279 +100,170 @@ const RegistrationScreen = () => {
   return (
     <SafeAreaView style={{flex:1}}>
     {/* LoginPage Logo */}
-      <View style={{marginLeft:12, marginBottom:20}}>
+      <View style={styles.logo}>
         <Image
-          style={{
-          resizeMode:'contain',
-          width:200,
-          height:80}}
-          source={require('../assets/images/misc/Logo.png')} />
+          style={styles.logoImage}
+          source={require('../assets/images/misc/CornerLogo.png')} />
       </View>
 
     {/* Register Text */}
-    <View>
-      <Text style={{
-        fontFamily:'Roboto-Medium',
-        fontSize: 35,
-        fontWeight: '500',
-        color: '#333',
-        marginLeft:12,
-        marginBottom:20,
-      }}>
+    <View style={styles.registerText}>
+      <Text style={styles.text}>
         Register
       </Text>
     </View>
     
-    {/* Other Login Method Options */}
-    <View
-        style={{
-          justifyContent:'space-around',
-          flexDirection:'row',
-          marginBottom:30,
-        }}>
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.GoogleImage}
-          source={require('../assets/images/misc/GoogleLogo.png')} />
-        </TouchableOpacity> 
+    {/* Register Keyboard */}
+      <View 
+        style={styles.inputContainer}
+        behavior='padding'>
+        <AntDesign 
+          name='user' 
+          size={20} 
+          color='#8C8383'
+          style={styles.icon}
+        />
+        <TextInput
+          style={styles.input} 
+          placeholder='User Name'
+          placeholderTextColor={"#B7B7B7"}
+          onChangeText={(userName) => setUserName(userName)}
+          autoCorrect={false}
+          keyboardType='default'
+        />    
+      </View> 
 
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.FacebookImage}
-          source={require('../assets/images/misc/FacebookLogo.png')} />
-        </TouchableOpacity> 
-
-        <TouchableOpacity
-          onPress={() => {}}
-          style={{
-            borderColor:'#ddd',
-            borderWidth:2,
-            borderRadius:10,
-            paddingHorizontal:30,
-            paddingVertical:5,
-          }}>
-          <Image 
-          style={styles.TwitterImage}
-          source={require('../assets/images/misc/TwitterLogo.png')} />
-        </TouchableOpacity> 
-      </View>
-
-      <View>
+      <View style={styles.errorContainer}>
           <Text 
-            style={{
-            fontSize:16,
-            textAlign:'center', 
-            color:'#666',
-            marginBottom:30
-            }}>
-          OR
+          style={styles.error}>
+          {error.userName}
           </Text>
         </View>
 
-    {/* Register Keyboard */}
-      <SafeAreaView
-        style={styles.container}
-        behavior='padding'
-      >
-        <View 
-          style={{
-            flexDirection:'row',
-            borderBottomColor:'#ccc',
-            borderBottomWidth:1,
-            paddingBottom:8,
-            marginLeft:20,
-            marginRight:20,
-            marginBottom:40,
-          }}>
-          <AntDesign 
-            name='user' 
-            size={20} 
-            color='#8C8383'
-            style={{marginRight:5}}
-          />
-          <TextInput 
-            style={{flex:1, paddingVertical:0}}
-            placeholder='User Name'
-            placeholderTextColor={"#B7B7B7"}
-            onChangeText={(userName) => setUserName(userName)}
-            autoCorrect={false}
-            keyboardType='default'
-          />
-          
-        </View> 
+      <View 
+        style={styles.inputContainer}
+        behavior='padding'>
+        <Fontisto 
+          name='date' 
+          size={20} 
+          color='#8C8383'
+          style={styles.icon}
+        />
+        <TextInput 
+          style={styles.input}
+          placeholder='Date of Birth (MM/DD/YYYY)'
+          placeholderTextColor={"#B7B7B7"}
+          onChangeText={(dateOfBirth) => setDateOfBirth(dateOfBirth)}
+          autoCorrect={false}
+          keyboardType='numbers-and-punctuation'
+        />
+      </View> 
 
-
-        <View 
-          style={{
-            flexDirection:'row',
-            borderBottomColor:'#ccc',
-            borderBottomWidth:1,
-            paddingBottom:8,
-            marginLeft:20,
-            marginRight:20,
-            marginBottom:40,
-          }}>
-          <Fontisto 
-            name='date' 
-            size={20} 
-            color='#8C8383'
-            style={{marginRight:5}}
-          />
-          <TextInput 
-            placeholder='Date of Birth'
-            placeholderTextColor={"#B7B7B7"}
-            style={{flex:1, paddingVertical:0}}
-            onChangeText={(dateOfBirth) => setDateOfBirth(dateOfBirth)}
-            autoCorrect={false}
-            keyboardType='numbers-and-punctuation'
-          />
-        </View> 
-
-        <View 
-          style={{
-            flexDirection:'row',
-            borderBottomColor:'#ccc',
-            borderBottomWidth:1,
-            paddingBottom:8,
-            marginLeft:20,
-            marginRight:20,
-            marginBottom:40,
-          }}>
-          <Fontisto 
-            name='email' 
-            size={20} 
-            color='#8C8383'
-            style={{marginRight:5}}
-          />
-          <TextInput 
-            placeholder='Email ID'
-            placeholderTextColor={"#B7B7B7"}
-            style={{flex:1, paddingVertical:0}}
-            onChangeText={(email) => setEmail(email)}
-            autoCapitalize='none'
-            autoCorrect={false}
-            keyboardType='email-address'
-          />
-          {error.email && 
+      <View style={styles.errorContainer}>
           <Text 
-          style={{
-            fontSize: 14,
-            color:'red',
-            marginTop:4,
-          }}>
-          {error.email}
-          </Text>}
+          style={styles.error}>
+          {error.dateOfBirth}
+          </Text>
+        </View>
+
+      <View 
+        style={styles.inputContainer}
+        behavior='padding'>
+        <Fontisto 
+          name='email' 
+          size={20} 
+          color='#8C8383'
+          style={styles.icon}
+        />
+        <TextInput 
+          style={styles.input}
+          placeholder='Email ID'
+          placeholderTextColor={"#B7B7B7"}
+          onChangeText={(email) => setEmail(email)}
+          autoCapitalize='none'
+          autoCorrect={false}
+          keyboardType='email-address'
+        />
         </View> 
 
+        <View style={styles.errorContainer}>
+          <Text 
+          style={styles.error}>
+          {error.email}
+          </Text>
+        </View>
+
         <View 
-          style={{
-            flexDirection:'row',
-            borderBottomColor:'#ccc',
-            borderBottomWidth:1,
-            paddingBottom:8,
-            marginLeft:20,
-            marginRight:20,
-            marginBottom:40,
-          }}>
+          style={styles.inputContainer}
+          behavior='padding'>
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
             color='#8C8383'
-            style={{marginRight:5}}
+            style={styles.icon}
           />
-          <TextInput 
+          <TextInput
+            style={styles.input} 
             placeholder='Password'
             placeholderTextColor={"#B7B7B7"}
-            style={{flex:1, paddingVertical:0}}
             onChangeText={(password) => setPassword(password)}
             autoCapitalize='none'
             autoCorrect={false}
             secureTextEntry={true}
           />
-          {error.password && 
+        </View>
+
+        <View style={styles.errorContainer}> 
           <Text 
-          style={{
-            fontSize: 14,
-            color:'red',
-            marginTop:4,
-          }}>
+          style={styles.error}>
           {error.password}
-          </Text>}
+          </Text>
         </View>
 
         <View 
-          style={{
-            flexDirection:'row',
-            borderBottomColor:'#ccc',
-            borderBottomWidth:1,
-            paddingBottom:8,
-            marginLeft:20,
-            marginRight:20,
-            marginBottom:10,
-          }}>
+          style={styles.inputContainer}
+          behavior='padding'>
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
             color='#8C8383'
-            style={{marginRight:5}}
+            style={styles.icon}
           />
-          <TextInput 
+          <TextInput
+            style={styles.input} 
             placeholder='Confirm Password'
             placeholderTextColor={"#B7B7B7"}
-            style={{flex:1, paddingVertical:0}}
-            onChangeText={(password) => setPassword(password)}
+            onChangeText={(password) => setConfirmPassword(password)}
             autoCapitalize='none'
             autoCorrect={false}
             secureTextEntry={true}
           />
-          {error.confirmPassword && 
+          </View>
+
+        <View style={styles.errorContainer}>
           <Text 
-          style={{
-            fontSize: 14,
-            color:'red',
-            marginTop:4,
-          }}>
+          style={styles.error}>
           {error.confirmPassword}
-          </Text>}
+          </Text>
         </View>
+
         {/* Conduct Register */}
         <View style={styles.buttonContainer}>
         <TouchableOpacity
           onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword)}
           style={styles.button}
         >
-          <Text style={styles.buttonText}>Register</Text>
+          <Text style={styles.buttonInput}>Register</Text>
         </TouchableOpacity>
       </View> 
-      </SafeAreaView>
 
-      {/* Register */}
+      {/* LogIn */}
       <View 
-        style={{
-        flexDirection:'row', 
-        justifyContent:'center', 
-        marginTop:20,
-        marginBottom:30}}>
+        style={styles.login}>
         <Text>Already have an account?</Text>
         <TouchableOpacity onPress={() => {navigation.navigate('Login')}}>
         <Text 
-          style={{color:'#B04759', fontWeight:'600'}}> Login
+          style={styles.loginText}> Login
         </Text>
         </TouchableOpacity>
       </View>
@@ -389,26 +274,57 @@ const RegistrationScreen = () => {
 export default RegistrationScreen
 
 const styles = StyleSheet.create({
-  
   container:{
     flex:1,
     justifyContent:'center',
     alignItems:'center',
   },
+  logo:{
+    marginLeft:12,
+    marginBottom:20
+  },
+  logoImage:{
+    resizeMode:'contain',
+    width:200,
+    height:120,
+  },
+  registerText:{
+    marginLeft:20,
+    marginBottom:30,
+  },
+  text:{
+    fontFamily:'Roboto-Medium',
+    fontSize: 35,
+    fontWeight: '500',
+    color: '#333',
+  },
   inputContainer:{
-    width:'80%'
+    flexDirection:'row',
+    borderBottomColor:'#ccc',
+    borderBottomWidth:1,
+    paddingBottom:8,
+    marginLeft:20,
+    marginRight:20,
+    marginTop:30,
+  },
+  icon:{
+    marginRight:5
   },
   input:{
-    backgroundColor:'white',
-    paddingHorizontal:15,
-    paddingVertical:10,
-    borderRadius:10,
-    marginTop:5,
+    flex:1,
+    paddingVertical:0
+  },
+  errorContainer:{
+    marginTop:8,
+    marginLeft:20,
+  },
+  error:{
+    fontSize: 14,
+    color:'red',
   },
   buttonContainer:{
-    width:'60%',
-    justifyContent:'center',
-    alignItems:'center',
+    marginLeft:20,
+    marginRight:20,
     marginTop:20,
   },
   button:{
@@ -417,40 +333,19 @@ const styles = StyleSheet.create({
     padding:18,
     borderRadius:10,
     alignItems:'center',
-    marginBottom:30,
   },
-  buttonOutline:{
-    backgroundColor:'white',
-    marginTop:5,
-    borderColor: '#AD40AF',
-    borderWidth:2,
-  },
-  buttonText:{
+  buttonInput:{
     color:'white',
     fontWeight:'700',
     fontSize:16,
   },
-  buttonOutlineText:{
-    color:'#AD40AF',
-    fontWeight:'700',
-    fontSize:16,
+  login:{
+    flexDirection:'row', 
+    justifyContent:'center', 
+    marginTop:20,
   },
-  GoogleImage:{
-    flexDirection:'row',
-    justifyContent:'space-around',
-    width:40,
-    height:40,
-  },
-  FacebookImage:{
-    flexDirection:'row',
-    justifyContent:'space-around',
-    width:40,
-    height:40,
-  },
-  TwitterImage:{
-    flexDirection:'row',
-    justifyContent:'space-around',
-    width:40,
-    height:40,
-  },
+  loginText:{
+    color:'#B04759',
+    fontWeight:'600'
+  }
 })

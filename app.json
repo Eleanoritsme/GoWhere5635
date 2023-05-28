@@ -3,6 +3,16 @@
     "name": "GoWhere",
     "owner": "gowhere5635",
     "slug": "GoWhere",
+    "plugins": [
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "1465624523842264",
+          "clientToken": "5039c8ab2b3e445500a02a86df2c1805",
+          "displayName": "GoWhere"
+        }
+      ]
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
