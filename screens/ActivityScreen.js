@@ -22,7 +22,7 @@ const ActivityScreen = () => {
   // }
 
   let [fontsLoaded] = useFonts({
-    "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
+    "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf')
   });
   
   if (!fontsLoaded) {

@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 
+
 const RegistrationScreen = () => {
   const [userName, setUserName] = useState('')
   const [dateOfBirth, setDateOfBirth] = useState('')
@@ -23,12 +24,13 @@ const RegistrationScreen = () => {
   const [error, setError] = useState({})
 
   const getError = (email, password, confirmPassword) => {
+    const errorcode = error.code
     const error = {}
     if (!email) {
       error.email = "Plase enter your email"
     } else if (!email.includes('@')) {
       error.email = "Please enter a valid email address"
-    }
+    } 
     if (!password) {
       error.password = "Please enter the password"
     } else if (password.length < 8) {
@@ -61,7 +63,7 @@ const RegistrationScreen = () => {
       .then(() => {
         alert('Verification email sent!')
       }).catch((error) => {
-        alert(error.message)
+          alert(error.message)
       })
       .then(() => {
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid)
@@ -110,7 +112,7 @@ const RegistrationScreen = () => {
           resizeMode:'contain',
           width:200,
           height:80}}
-          source={require('../assets/images/misc/CornerLogo.png')} />
+          source={require('../assets/images/misc/Logo.png')} />
       </View>
 
     {/* Register Text */}
@@ -239,7 +241,7 @@ const RegistrationScreen = () => {
             style={{marginRight:5}}
           />
           <TextInput 
-            placeholder='Date of Birth eg:04112000'
+            placeholder='Date of Birth'
             placeholderTextColor={"#B7B7B7"}
             style={{flex:1, paddingVertical:0}}
             onChangeText={(dateOfBirth) => setDateOfBirth(dateOfBirth)}

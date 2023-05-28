@@ -11,8 +11,6 @@ import AppLoading from 'expo-app-loading'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-
-
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -53,9 +51,6 @@ const LoginScreen = () => {
       }
     }
   }
-  }
-
-
 
 
   let [fontsLoaded] = useFonts({
@@ -132,7 +127,6 @@ const LoginScreen = () => {
             // value={password}
             onChangeText={(password) => setPassword(password)}
             secureTextEntry={true}
-            
           />
           <TouchableOpacity onPress={() => {}}>
             <Text style={{color:"#B04759", fontWeight:'600', fontSize:14}}>Forgot Password?</Text>
@@ -234,7 +228,7 @@ const LoginScreen = () => {
       </View>
     </SafeAreaView>
   )
-        
+}
 
 export default LoginScreen
 
