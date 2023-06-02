@@ -38,7 +38,7 @@ const ActivityScreen = () => {
           <Image style={styles.inputImage}
           source={require('../assets/images/misc/Study.png')}/>
           </View>
-        </TouchableOpacity> 
+        </TouchableOpacity>
         </View>
 
         <View
