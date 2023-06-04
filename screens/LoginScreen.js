@@ -1,15 +1,17 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
 
 import { useFonts } from 'expo-font'
-import AppLoading from 'expo-app-loading'
+import * as SplashScreen from 'expo-splash-screen'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+SplashScreen.preventAutoHideAsync();
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('')
@@ -63,12 +65,19 @@ const LoginScreen = () => {
     }
   }
 
-  let [fontsLoaded] = useFonts({
+  
+  const [fontsLoaded] = useFonts({
     "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
   });
   
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return <AppLoading />
+    return null;
   }
 
   return (
@@ -81,7 +90,7 @@ const LoginScreen = () => {
       </View>
 
     {/* Login Text */}
-      <View style={styles.logInText}>
+      <View style={styles.logInText} onLayout={onLayoutRootView}>
         <Text style={styles.text}>
           Login
         </Text>
