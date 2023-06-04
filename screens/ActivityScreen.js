@@ -31,7 +31,7 @@ const ActivityScreen = () => {
       <View
         style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Filter')}}
           style={styles.buttonInput}>
           <View style={styles.inputContainer}>
           <Text style={styles.inputText}>Study  </Text>

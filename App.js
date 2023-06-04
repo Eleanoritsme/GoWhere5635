@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import RegistrationScreen from './screens/RegistrationScreen';
 import ActivityScreen from './screens/ActivityScreen';
+import FilterScreen from './screens/FilterScreen';
 import * as WebBrowser from "expo-web-browser";
 import { firebase } from './config';
 import 'expo-dev-client';
@@ -42,7 +43,7 @@ function App() {
         <Stack.Screen options={{ contentStyle:{backgroundColor:"#F8F6F4"} }} name="Register" component={RegistrationScreen} />
       </Stack.Navigator>
     );
-    }
+      }
 
     return (
       <Stack.Navigator
@@ -50,9 +51,10 @@ function App() {
           headerShown: false
         }}>
         <Stack.Screen options={{ contentStyle:{backgroundColor:"#FFE0E4"} }} name="Activity" component={ActivityScreen} />
+        <Stack.Screen options={{ contentStyle:{backgroundColor:"#F0E8D9"} }} name="Filter" component={FilterScreen} />
       </Stack.Navigator>
     );
-  }
+      }
 
   export default () => {
     return (
