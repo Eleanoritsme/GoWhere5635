@@ -1,23 +1,31 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { firebase } from '../config'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 import { useFonts } from 'expo-font'
-import AppLoading from 'expo-app-loading'
+import * as SplashScreen from 'expo-splash-screen'
+
+SplashScreen.preventAutoHideAsync();
 
 const ActivityScreen = () => {
 
   const navigation = useNavigation()
 
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
   });
   
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return <AppLoading />
+    return null;
   }
 
   return (
@@ -29,9 +37,10 @@ const ActivityScreen = () => {
       </View>
 
       <View
-        style={styles.buttonContainer}>
+        style={styles.buttonContainer} onLayout={onLayoutRootView}>
         <TouchableOpacity
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Filter')}}
+          //存储选择 要添加一下 下面三个同理
           style={styles.buttonInput}>
           <View style={styles.inputContainer}>
           <Text style={styles.inputText}>Study  </Text>
@@ -42,9 +51,9 @@ const ActivityScreen = () => {
         </View>
 
         <View
-        style={styles.buttonContainer}>
+        style={styles.buttonContainer} onLayout={onLayoutRootView}>
         <TouchableOpacity
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Filter')}}
           style={styles.buttonInput}>
           <View style={styles.inputContainer}>
           <Image style={styles.inputImage}
@@ -55,9 +64,9 @@ const ActivityScreen = () => {
         </View>
 
         <View
-        style={styles.buttonContainer}>
+        style={styles.buttonContainer} onLayout={onLayoutRootView}>
         <TouchableOpacity
-          onPress={() => {}}
+          onPress={() => {navigation.navigate('Filter')}}
           style={styles.buttonInput}>
           <View style={styles.inputContainer}>
           <Text style={styles.inputText}>Eat        </Text>
@@ -80,7 +89,7 @@ const styles = StyleSheet.create({
   },
   titleText:{
     fontFamily:'Inter-ExtraBold',
-    fontSize: 50,
+    fontSize: 35,
   },
   buttonContainer:{
     justifyContent:'space-around',

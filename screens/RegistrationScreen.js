@@ -1,17 +1,18 @@
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
 
 import { useFonts } from 'expo-font'
-import AppLoading from 'expo-app-loading'
+import * as SplashScreen from 'expo-splash-screen'
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 
+SplashScreen.preventAutoHideAsync();
 
 const RegistrationScreen = () => {
   const [userName, setUserName] = useState('')
@@ -89,12 +90,18 @@ const RegistrationScreen = () => {
 
   const navigation = useNavigation()
 
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
   });
   
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return <AppLoading />
+    return null;
   }
 
   return (
@@ -107,7 +114,7 @@ const RegistrationScreen = () => {
       </View>
 
     {/* Register Text */}
-    <View style={styles.registerText}>
+    <View style={styles.registerText} onLayout={onLayoutRootView}>
       <Text style={styles.text}>
         Register
       </Text>
