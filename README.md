@@ -21,14 +21,16 @@ See our previewing vedio:
 
 * For IOS:
     * Scan the QR Code:
-            * ![Screenshot 2023-06-09 at 4 35 56 PM](https://github.com/Eleanoritsme/GoWhere5635/assets/122248712/44cb6f3b-6a10-4291-9969-6f6d18c41c44)
-    * Or open this [link](exp://u.expo.dev/update/45aea5ad-c510-4aaa-81ef-3acd54e1cfaf) on your phone
+    * ![Screenshot 2023-06-09 at 4 35 56 PM](https://github.com/Eleanoritsme/GoWhere5635/assets/122248712/44cb6f3b-6a10-4291-9969-6f6d18c41c44)
+    * Or open this [link](exp://u.expo.dev/update/45aea5ad-c510-4aaa-81ef-3acd54e1cfaf) on your phone:
+    * exp://u.expo.dev/update/45aea5ad-c510-4aaa-81ef-3acd54e1cfaf
 
 
 * For Android:
     * Scan the QR Code:
-     * ![Screenshot 2023-06-09 at 4 36 40 PM](https://github.com/Eleanoritsme/GoWhere5635/assets/122248712/8c0b59bc-feb7-4320-bf78-4cea298b3ddc)
-    * Or open this [link](exp://u.expo.dev/update/c791a50a-8a98-4710-b8de-f973248052b7) on your phone
+    * ![Screenshot 2023-06-09 at 4 36 40 PM](https://github.com/Eleanoritsme/GoWhere5635/assets/122248712/8c0b59bc-feb7-4320-bf78-4cea298b3ddc)
+    * Or open this [link](exp://u.expo.dev/update/c791a50a-8a98-4710-b8de-f973248052b7) on your phone:
+    * exp://u.expo.dev/update/c791a50a-8a98-4710-b8de-f973248052b7
 
 # Authors
 
