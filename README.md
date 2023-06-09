@@ -1,6 +1,6 @@
 # GoWhere
 
-This is a software that helps users shrink the time of making desicions about choosing the place before going out for an activity such as eating out, studying and working.
+This is a software that helps users shrink the time of making decisions about choosing the place before going out for an activity such as eating out, studying and working.
 
 ## Description
 
