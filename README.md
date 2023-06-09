@@ -31,8 +31,8 @@ See our previewing vedio:
 
 # Authors
 
-Zheng Tong [@Eleanor Zheng](https://www.linkedin.com/in/tong-zheng-eleanor/)
-Chen Xiaowei []()
+* Zheng Tong [@Eleanor Zheng](https://www.linkedin.com/in/tong-zheng-eleanor/)
+* Chen Xiaowei []()
 
 # Version History
 
