@@ -38,7 +38,7 @@ const RegistrationScreen = () => {
       error.email = "Plase enter your email"
     } else if (!email.includes('@')) {
       error.email = "Please enter a valid email address"
-    }
+    } 
     if (!password) {
       error.password = "Please enter the password"
     } else if (password.length < 8) {
@@ -68,7 +68,7 @@ const RegistrationScreen = () => {
       .then(() => {
         alert('Verification email sent!')
       }).catch((error) => {
-        alert(error.message)
+          alert(error.message)
       })
       .then(() => {
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid)

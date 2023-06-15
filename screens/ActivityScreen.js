@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
-import React, { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { firebase } from '../config'
 import { useNavigation } from '@react-navigation/native'
@@ -11,6 +11,7 @@ import * as SplashScreen from 'expo-splash-screen'
 SplashScreen.preventAutoHideAsync();
 
 const ActivityScreen = () => {
+  const [selectedCategory, setSelectedCategory] = useState('')
 
   const navigation = useNavigation()
 
@@ -28,6 +29,8 @@ const ActivityScreen = () => {
     return null;
   }
 
+  
+
   return (
     <SafeAreaView>
       <View style={styles.title}>
@@ -39,7 +42,10 @@ const ActivityScreen = () => {
       <View
         style={styles.buttonContainer} onLayout={onLayoutRootView}>
         <TouchableOpacity
-          onPress={() => {navigation.navigate('Filter')}}
+          onPress={() => 
+          {setSelectedCategory("cafe+free+wifi");
+            navigation.navigate('Filter', {selectedCategory});
+            }}
           //存储选择 要添加一下 下面三个同理
           style={styles.buttonInput}>
           <View style={styles.inputContainer}>
@@ -47,13 +53,15 @@ const ActivityScreen = () => {
           <Image style={styles.inputImage}
           source={require('../assets/images/misc/Study.png')}/>
           </View>
-        </TouchableOpacity> 
+        </TouchableOpacity>
         </View>
 
         <View
         style={styles.buttonContainer} onLayout={onLayoutRootView}>
         <TouchableOpacity
-          onPress={() => {navigation.navigate('Filter')}}
+          onPress={() => 
+          { setSelectedCategory("cafe+free+wifi");
+            navigation.navigate('Filter', {selectedCategory})}}
           style={styles.buttonInput}>
           <View style={styles.inputContainer}>
           <Image style={styles.inputImage}
@@ -66,7 +74,9 @@ const ActivityScreen = () => {
         <View
         style={styles.buttonContainer} onLayout={onLayoutRootView}>
         <TouchableOpacity
-          onPress={() => {navigation.navigate('Filter')}}
+          onPress={() => 
+          { setSelectedCategory('restaurants+cafe')
+            navigation.navigate('Filter', {selectedCategory})}}
           style={styles.buttonInput}>
           <View style={styles.inputContainer}>
           <Text style={styles.inputText}>Eat        </Text>
