@@ -6,6 +6,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 const RecommandationScreen = ({route}) => {
   const {recommendations} = route.params;
 
+
+
   return (
     <SafeAreaView>
       <ScrollView>
