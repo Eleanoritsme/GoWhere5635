@@ -9,29 +9,32 @@ import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
+import moment from 'moment';
+import CheckBox from '../CheckBoxComponent'
 
 const FilterScreen = ({route}) => {
   const {selectedCategory} = route.params;
-  const [category, setCategory] = useState(selectedCategory);
-
   console.log(selectedCategory);
-  //const [selectedLocation, setSelectedLocation] = useState('');
-  //const [selectedPriceRange, setSelectedPriceRange] = useState('');
 
   //For time picker
   const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState('date');
+  const [mode, setMode] = useState('time');
   const [show, setShow] = useState(false);
-  const [dateText, setDateText] = useState('Date')
-  const [timeText, setTimeText] = useState('Time')
+  //const [dateText, setDateText] = useState('Date')
+  const [timeText, setTimeText] = useState('Choose Time')
 
+  //https://www.youtube.com/watch?v=Imkw-xFFLeE&t=298s
   const OnChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     //setShow(Platform.OS === 'ios');
-    setDate(currentDate);
+    //setDate(currentDate);
 
     let tempDate = new Date(currentDate);
-    let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' 
+    let fTime = tempDate.getHours() + ' : ' + tempDate.getMinutes().toString().padStart(2, '0');
+    setTimeText(fTime);
+  }
+  
+    /*let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' 
     + tempDate.getFullYear().toString().slice(-2);
     let fTime = tempDate.getHours() + ' : ' + tempDate.getMinutes().toString().padStart(2, '0');
     if (mode === 'date') {
@@ -41,35 +44,40 @@ const FilterScreen = ({route}) => {
       setTimeText(fTime);
     }
   }
+  */
 
   const OnChangeNow = () => {
     const currentDate = new Date
-    setDate(currentDate);
+    //setDate(currentDate);
 
-    let nDate = currentDate.getDate() + '/' + (currentDate.getMonth() + 1) + '/' 
-    + currentDate.getFullYear().toString().slice(-2);
+    //let nDate = currentDate.getDate() + '/' + (currentDate.getMonth() + 1) + '/' 
+    //+ currentDate.getFullYear().toString().slice(-2);
     let nTime = currentDate.getHours() + ' : ' + currentDate.getMinutes().toString().padStart(2, '0');
-    setDateText(nDate);
+    //setDateText(nDate);
     setTimeText(nTime);
 
-    console.log(nDate + '(' + nTime + ')')
+    //console.log(nDate + '(' + nTime + ')')
+    console.log(nTime)
   }
 
   const showMode = (currentMode) => {
     setShow(true);
-    setMode(currentMode);
+    //setMode(currentMode);
   }
+
 
   //Display current location
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [placeName, setPlaceName] = useState('');
+  const [userChosenLocation, setUserChosenLocation] = useState('');
 
+  //Reused from https://docs.expo.dev/versions/latest/sdk/location/
   useEffect(() => {
     (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+      let { permission } = await Location.requestForegroundPermissionsAsync();
+      if (permission !== 'granted') {
+        setErrorMsg('Access location denied');
         return;
       }
 
@@ -83,81 +91,129 @@ const FilterScreen = ({route}) => {
         });
 
         if (geocode && geocode.length > 0) {
-          const { street, city } = geocode[0]; // Destructure the street and city properties from the geocode object
-          const address = street ? `${street}, ${city}` : city; // Concatenate street and city if available
+          const { street, city } = geocode[0]; 
+          const address = street ? street : city; // add street and city if have
 
-          setPlaceName(address); // Set the place name to the street address or city
+          setPlaceName(address); 
         }
       }
     })();
   }, []);
 
-  let locationText = 'Waiting..';
+
+  let searchingText = 'Waiting..';
   if (errorMsg) {
-    locationText = errorMsg;
-  } else if (location) {
-    locationText = placeName
+    searchingText = errorMsg;
   }
 
 
-
-  
-
   //Display selected buttons
-  const [isNowButtonPressed, setIsNowButtonPressed] = useState(false);
-  const [isOtherButtonPressed, setOtherButtonPressed] = useState(false);
-  const [isCurrentButtonPressed, setCurrentButtonPressed] = useState(false);
-  const [isElseWhereButtonPressed, setElseWhereButtonPressed] = useState(false);
-  const [priceButton, setPriceButton] = useState(['']);
+  //https://reactgo.com/react-change-button-color-onclick/
+  const [isNowClicked, setIsNowClicked] = useState(false);
+  const [isOtherClicked, setOtherClicked] = useState(false);
+  const [isCurrentClicked, setCurrentClicked] = useState(false);
+  const [isElseWhereButtonPressed, setElseWhereClicked] = useState(false);
+  const [priceButton, setPriceButton] = useState([]);
+  const [now, setNow] = useState(false);
+  const [otherTimePeriod, setOtherTimePeriod] = useState(false);
+  const [nearMe, setNearMe] = useState(false);
+  const [typeTheLocation, setTypeTheLocation] = useState(false);
+  const [price1, setPrice1] = useState(false);
+  const [price2, setPrice2] = useState(false);
+  const [price3, setPrice3] = useState(false);
+  const [price4, setPrice4] = useState(false);
 
-  const handleNowButtonPress = () => {
-    setIsNowButtonPressed(true);
-    setOtherButtonPressed(false);
+  const handleNowClicked = () => {
+    setNow(true);
+    setOtherTimePeriod(false);
   };
 
-  const handleOtherButtonPress = () => {
-    setIsNowButtonPressed(false);
-    setOtherButtonPressed(true);
+  const handleOtherClicked = () => {
+    setNow(false);
+    setOtherTimePeriod(true);
   };
   
-  const handleCurrentButtonPress = () => {
-    setCurrentButtonPressed(true);
-    setElseWhereButtonPressed(false);
+  const handleCurrentClicked = () => {
+    setNearMe(true);
+    setTypeTheLocation(false);
   };
 
-  const handleElseWhereButtonPress = () => {
-    setCurrentButtonPressed(false);
-    setElseWhereButtonPressed(true);
+  const handleElseWhereClicked = () => {
+    setNearMe(false);
+    setTypeTheLocation(true);
+    getCoordinates(userChosenLocation)
   }
 
   const handleButtonPress = (buttonNo) => {
     if (priceButton.includes(buttonNo)) {
-      setPriceButton(priceButton.filter((button) => button !== buttonNo));
+      const buttonList = priceButton.filter((button) => button !== buttonNo)
+      setPriceButton(buttonList.filter(value => typeof value === 'string'));
     } else {
       setPriceButton([...priceButton,buttonNo]);
     }
   }
-  console.log(priceButton)
+  //console.log(priceButton)
 
-  const isButtonSelected = (buttonNo) => {
-    return priceButton.includes(buttonNo);
+  const priceMapping = {
+    "0-10": '1',
+    "10-30": '2',
+    "30-50": '3',
+    "50++": '4',
   };
 
-  const navigation = useNavigation()
+  const priceSelected = priceButton.map((buttonNo) => priceMapping[buttonNo])
+  console.log(priceSelected);
+
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+  useEffect(() => {
+    getCoordinates(userChosenLocation);
+  }, [userChosenLocation]);
+  
+  const getCoordinates = async (place) => {
+    try {
+      const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
+        params: {
+          address: place,
+          components: 'country:SG',
+          key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
+
+        }
+      });
+      const { results } = response.data;
+      if (results && results.length > 0) {
+        const { lat, lng } = results[0].geometry.location;
+        setLatitude(lat);
+        setLongitude(lng);
+        console.log('Latitude:', lat);
+        console.log('Longitude:', lng);
+        //console.log(results)
+      } else {
+        console.log('No results found.');
+      }
+    } catch (error) {
+      console.error('Error retrieving coordinates:', error);
+    }
+  };
 
   const[data, setData] = useState('');
   const [totalResults, setTotalResults] = useState(0);
 
-
   const getData = async () => {
     try {
+      //Get the unix time for timeText
+      const[hours, minutes] = timeText.split(":");
+      const time = moment().hours(hours).minutes(minutes).unix();
       const response = await axios.get(
         'https://api.yelp.com/v3/businesses/search',
         {
           params: {
-            term: {selectedCategory},
-            latitude: 1.290270,
-            longitude: 103.851959
+            term: selectedCategory,
+            latitude: latitude,
+            longitude: longitude,
+            open_at: time,
+            price: priceSelected.join(","),
           },
           headers: {
             Authorization: `Bearer ${'l2WdiWyvXyQZCQcc2XAGz6gn6LcrkK8Peix0d4sjZxpFOGu4E3by9096JwD0Wtp3RkWQ9-6emuXm1cKaivxwxozQZ-iHo0xR_DOL4eAvTQ02pVNINNMqknxBUgJ_ZHYx'}`
@@ -167,99 +223,23 @@ const FilterScreen = ({route}) => {
       const jsonData = await response.data;
       setData(jsonData);
       setTotalResults(jsonData.total);
+      console.log(time)
       navigation.navigate('Main', { recommendations: jsonData });
     } catch (error) {
       console.error('Error fetching Yelp data:', error);
     }
   };
-  console.log(data);
+  //console.log(data);
   console.log(totalResults)
-
-    
+  //console.log(userChosenLocation)
   
 
-
- /* /Filter data
-  const XLSX = require('xlsx');
-  const [group, setGroup] = useState('');
-  const [activityLocation, setActivityLocation] = useState('');
-
-  const filterDataFromExcel = (group, activityLocation) => {
-    // Load the Excel workbook
-    const workbook = XLSX.readFile('../testinglists.xlsx');
-  
-    // Assume the data is in the first sheet (index 0)
-    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-  
-    // Convert worksheet to JSON
-    const jsonData = XLSX.utils.sheet_to_json(worksheet);
-    console.log(jsonData);
-
-    /*const location = (place, address) => {
-      if (place.toLowerCase() === activityLocation.toLowerCase()) {
-        return true
-      } else if (address.toLowerCase().includes(activityLocation)) {
-        return true
-      }
-      return false;
-    }
-
-
-    const opened = (dataTime, userSelectedTime) => {
-      if (dataTime !== 'Closed' && dataTime !== 'Open 24 Hours') {
-        const [openingTime, closingTime] = dataTime.split(' - '); // Split the opening hours into opening and closing time
-        const [openingHourString, openingMinuteString] = openingTime.split(':');
-        const [closingHourString, closingMinuteString] = closingTime.split(':');
-
-        const openingHour = parseInt(openingHourString); // Extract the opening hour from the opening time
-        const closingHour = parseInt(closingHourString); // Extract the closing hour from the closing time
-        const openingMinutes = parseInt(openingMinuteString); // Extract the opening hour from the opening time
-        const closingMinutes = parseInt(closingMinuteString);
-        const time12HourFormat = new Date("2000-01-01T" + userSelectedTime + "Z") .toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-        const currentTime = new Date("2000-01-01T" + time12HourFormat + "Z");
-        console.log(time12HourFormat);
-
-        const currentHour = currentTime.getHours();
-        const currentMinute = currentTime.getMinutes();
-
-        if (
-          (currentHour > openingHour || (currentHour === openingHour && currentMinute >= openingMinutes)) &&
-          (currentHour < closingHour || (currentHour === closingHour && currentMinute <= closingMinutes))
-        ) {
-          return true
-          // The restaurant is currently open
-        } else {
-          return false
-          // The restaurant is currently closed
-        }
-      } else if (dataTime === 'Closed') {
-        return false;
-      } else if (dataTime === "Open 24 hours") {
-        return true
-      }
-    }
-
-    // Filter the data based on the provided parameters
-    const filteredData = jsonData.filter((item) => {
-      //const currentDateStr = dateText; // Replace with your current date string
-      //const currentDate = new Date(Date.parse(currentDateStr));
-      //const openingDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-      //const currentDay = openingDays[currentDate.getDay()];
-      return (
-        item.category === group 
-        //item.place === activityLocation
-        //item.currentDay === opened(item.currentDay, timeText)
-      )
-    });
-    return filteredData;
-  }
-  */
-  
-
+  const navigation = useNavigation()
   
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
-    "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf')
+    "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf'),
+    "Inder-Regular": require('../assets/fonts/Inder-Regular.ttf')
   });
   
   const onLayoutRootView = useCallback(async () => {
@@ -289,39 +269,24 @@ const FilterScreen = ({route}) => {
         </View>
 
         <View
-          style={styles.buttonContainer} onLayout={onLayoutRootView}>
-          <TouchableOpacity
-            onPressIn={handleNowButtonPress}
-            //activeOpacity={0.7}
-            onPress={() => OnChangeNow()}
-            //存储选择 要添加一下 下面同理
-            style={[styles.buttonInput, isNowButtonPressed && styles.buttonPressed]}>
-            <View style={styles.inputContainer1}>
-              <Text style={styles.inputText1}>Now</Text>
-            </View>
-          </TouchableOpacity>
+          style={styles.buttonContainerNow} onLayout={onLayoutRootView}>
+          <View style={styles.group}>
+          <CheckBox
+            onPress={() => [handleNowClicked(), OnChangeNow()]}
+            isChecked={now}/>            
+          <Text style={styles.inputText}>Now</Text>
+          </View>
         </View>
 
         <View
-          style={styles.buttonContainer} onLayout={onLayoutRootView}>
-          <TouchableOpacity
-            onPress={() => showMode('date')}
-            onPressIn={handleOtherButtonPress}
-            //存储选择 要添加一下 下面同理
-            style={styles.buttonInput}>
-            <View style={styles.inputContainer2}>
-              <Text style={styles.inputText3}>{dateText}</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => showMode('time')}
-            onPressIn={handleOtherButtonPress}
-            //存储选择 要添加一下 下面同理
-            style={styles.buttonInput}>
-            <View style={styles.inputContainer2}>
-              <Text style={styles.inputText3}>{timeText}</Text>
-            </View>
-          </TouchableOpacity>
+          style={styles.buttonContainerOtherTime} onLayout={onLayoutRootView}>
+          <View style={styles.group}>
+          <CheckBox
+            onPress={() => [handleOtherClicked(),showMode('time')]}
+            isChecked={otherTimePeriod}
+          />
+            <Text style={styles.inputText}>{timeText}</Text>
+          </View>
 
           <Modal
             visible={show}
@@ -331,16 +296,13 @@ const FilterScreen = ({route}) => {
             <View style={styles.dateTimeContainer}>
               <DateTimePicker
                 value={date}
-                mode={mode}
+                mode='time'
                 is24Hour={false}
                 display="spinner"
                 onChange={OnChange}
-              />
-              <TouchableOpacity onPress={() => setShow('false')}>
-                <View>
-                  <Text style={styles.closeButton}>OK</Text>
-                </View>
-              </TouchableOpacity>
+                
+            />
+              <CheckBox onPress={() => {setShow('false')}}/>
             </View>
           </Modal>
         </View>
@@ -352,112 +314,122 @@ const FilterScreen = ({route}) => {
         </View>
 
         <View
-          style={styles.buttonContainer} onLayout={onLayoutRootView}>
-          <TouchableOpacity
-            onPress={() => {}}
-            onPressIn={handleCurrentButtonPress}
-            //存储选择 要添加一下 下面同理
-            style={[styles.buttonInput, isCurrentButtonPressed && styles.buttonPressed]}>
-            <View style={styles.inputContainer1}>
-              <Text style={styles.inputText1}>Near me : {placeName}</Text>
-            </View>
-          </TouchableOpacity>
+          style={styles.buttonContainerLocation} onLayout={onLayoutRootView}>
+          <View style={styles.group}>
+          <CheckBox
+            onPress={() => [handleCurrentClicked(),setUserChosenLocation(placeName)]}
+            isChecked={nearMe}
+          />
+          <Text style={styles.inputText}>Near me: {searchingText}</Text>
+          </View>
         </View>
 
         <View
-          style={styles.buttonContainer} onLayout={onLayoutRootView}>
-          <TouchableOpacity style={styles.buttonInput}
-            onPressIn={handleElseWhereButtonPress}>
-            <View style={styles.inputContainer1}>
-              <TextInput 
-              style={styles.inputText1} 
-              placeholder='Other Location'
-              placeholderTextColor="#A45D40" 
-              autoCapitalize='none'
-              autoCorrect={false}
-              value={location}
-              onChangeText={text => setLocation(text)}
-              onPressIn={handleElseWhereButtonPress}
-              />
-            </View>
-          </TouchableOpacity>
+          style={styles.buttonContainerLocation} onLayout={onLayoutRootView}>
+          <View style={styles.group}>
+            <TextInput 
+            style={
+              {marginLeft:33,
+              alignItems:'center',
+              fontFamily:'Inder-Regular',
+              fontSize:20,
+              color:'#4F200D',
+            }}
+            placeholder='Type the Location'
+            placeholderTextColor="#4F200D" 
+            autoCapitalize='none'
+            autoCorrect={false}
+            value={userChosenLocation}
+            onChangeText={text => setUserChosenLocation(text)}
+            onPressIn={handleElseWhereClicked}
+            />
+          </View>
         </View>
+
         <View style={styles.subTitle}>
           <Text style={styles.subtitleText}>
             Price Range
           </Text>
         </View>
+
+        <View style={{flexDirection:'row'}}>
         <View
-          style={styles.buttonContainer} onLayout={onLayoutRootView}>
-          <TouchableOpacity
-            onPress={() => handleButtonPress('0-10')}
-            //存储选择 要添加一下 下面同理
-            style={[styles.buttonInput, isButtonSelected('0-10') && styles.buttonPressed]}>
-            <View style={styles.inputContainer3}>
-              <Text style={styles.inputText2}>$0 - $10</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleButtonPress('10-20')}
-            //存储选择 要添加一下 下面同理
-            style={[styles.buttonInput, isButtonSelected('10-20') && styles.buttonPressed]}>
-            <View style={styles.inputContainer3}>
-              <Text style={styles.inputText2}>$10 - $20</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleButtonPress('20-30')}
-            //存储选择 要添加一下 下面同理
-            style={[styles.buttonInput, isButtonSelected('20-30') && styles.buttonPressed]}>
-            <View style={styles.inputContainer3}>
-              <Text style={styles.inputText2}>$20 - $30</Text>
-            </View>
-          </TouchableOpacity>
-        </View><View
-          style={styles.buttonContainer} onLayout={onLayoutRootView}>
-          <TouchableOpacity
-            onPress={() => handleButtonPress('30-40')}
-            //存储选择 要添加一下 下面同理
-            style={[styles.buttonInput, isButtonSelected('30-40') && styles.buttonPressed]}>
-            <View style={styles.inputContainer3}>
-              <Text style={styles.inputText2}>$30 - $40</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleButtonPress('40-50')}
-            //存储选择 要添加一下 下面同理
-            style={[styles.buttonInput, isButtonSelected('40-50') && styles.buttonPressed]}>
-            <View style={styles.inputContainer3}>
-              <Text style={styles.inputText2}>$40 - $50</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleButtonPress('50++')}
-            //存储选择 要添加一下 下面同理
-            style={[styles.buttonInput, isButtonSelected('50++') && styles.buttonPressed]}>
-            <View style={styles.inputContainer3}>
-              <Text style={styles.inputText2}>$50 ---</Text>
-            </View>
-          </TouchableOpacity>
-        </View><View
-          style={styles.buttonContainer1} onLayout={onLayoutRootView}>
+          style={styles.buttonContainerPrice} onLayout={onLayoutRootView}>
+          <View style={styles.group}>
+          <CheckBox
+            onPress={() => [setPrice1(!price1),handleButtonPress('0-10')]}
+            isChecked={price1}
+          />
+          <Text style={styles.inputText}>$0 - $10</Text>
+          </View>
+        </View>
+          
+
+        <View
+        style={styles.buttonContainerPrice2} onLayout={onLayoutRootView}>
+          <View style={styles.group}>
+          <CheckBox
+            onPress={() => [setPrice2(!price2),handleButtonPress('10-30')]}
+            isChecked={price2}
+          />
+          <Text style={styles.inputText}>$10 - $30</Text>
+          </View>
+        </View>
+      </View>
+
+        
+       <View
+        style={{flexDirection:'row'}}>
+        <View
+        style={styles.buttonContainerPrice} onLayout={onLayoutRootView}>
+          <View style={styles.group}>
+          <CheckBox
+            onPress={() => [setPrice3(!price3),handleButtonPress('30-50')]}
+            isChecked={price3}
+          />
+          <Text style={styles.inputText}>$30 - $50</Text>
+          </View>
+        </View>
+
+        <View
+        style={styles.buttonContainerPrice2} onLayout={onLayoutRootView}>
+          <View style={styles.group}>
+          <CheckBox
+            onPress={() => [setPrice4(!price4),handleButtonPress('50++')]}
+            isChecked={price4}
+          />
+          <Text style={styles.inputText}>$50+++</Text>
+          </View>
+        </View>
+      </View>
+      
+      
+
+        <View
+          style={styles.buttonContainerApply} onLayout={onLayoutRootView}>
           <TouchableOpacity
             onPress={() => 
-              {getData();
+              {getCoordinates(userChosenLocation);getData();
                  }}
             //存储选择 要添加一下 下面同理
-            style={styles.buttonInput}>
-            <View style={styles.inputContainer1}>
-              <Text style={styles.inputText1}>Continue</Text>
-            </View>
+            style={
+              {backgroundColor:'#FFCE84',
+              width:256,
+              height:48,
+              alignItems:'center',
+              justifyContent:'center',
+              borderRadius:10,
+            }}>
+            <Text style={styles.inputText}>See Recommendations!</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   )
-                }                
+          }
                 
-
+                              
+              
   export default FilterScreen
 
 const styles = StyleSheet.create({
@@ -467,89 +439,75 @@ const styles = StyleSheet.create({
   },
   titleText:{
     fontFamily:'Inter-ExtraBold',
-    fontSize: 35,
+    letterSpacing:1,
+    fontSize: 32,
   },
   subTitle:{
     marginTop:20,
     marginLeft:20,
     marginBottom:10,
+
   },
   subtitleText:{
     fontFamily:'Inter-Bold',
-    fontSize:20
+    fontSize:26,
+    letterSpacing:0.5,
+    color:'#4f200D'
   },
-  buttonContainer:{
-    justifyContent:'space-around',
+  group:{
     flexDirection:'row',
-    marginBottom:15,
-    marginLeft:15,
-    marginRight:15,
+    marginTop:10,
+    marginBottom:10,
   },
-  buttonContainer1:{
-    justifyContent:'space-around',
-    flexDirection:'row',
-    marginTop:15,
-    marginBottom:15,
-    marginLeft:15,
-    marginRight:15,
-  },
-  buttonInput:{
-    borderColor:'#4F200D',
-    borderWidth:2.5,
+  buttonContainerNow:{
+    width:140,
+    backgroundColor:'#FFCE84',
     borderRadius:10,
-    paddingVertical:10,
-    paddingHorizontal:50,
-    shadowColor: '#B3B3B3', 
-    shadowOffset: { height: 2, width: 2 }, 
-    shadowOpacity: 1, 
-    shadowRadius: 1, 
-    backgroundColor:'#FDDBB1',
+    marginBottom:10,
+    marginLeft:40,
   },
-  buttonPressed: {
-    backgroundColor: '#FBB956', // Darker color when pressed
+  buttonContainerOtherTime:{
+    width:230,
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:40,
   },
-  inputContainer1:{
-    flexDirection:'row',
-    justifyContent:'center',
-    width:275,
+  buttonContainerLocation:{
+    width:250,
+    flexDirection:'column',
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:40,
   },
-  inputContainer2:{
-    flexDirection:'row',
-    justifyContent:'center',
-    width:80,
-    height:25
+  buttonContainerPrice:{
+    width:160,
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:40,
   },
-  inputContainer3:{
-    flexDirection:'row',
-    justifyContent:'center',
+  buttonContainerPrice2:{
+    width:160,
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:20,
+  },
+  buttonContainerApply:{
     alignItems:'center',
-    width:5,
-    height:20,
+    marginTop:20,
   },
-  inputText1:{
-    fontFamily:'Inter-Bold',
-    fontSize:25,
-    color:'#7A3E3E',
-  },
-  inputText2:{
-    fontFamily:'Inter-Bold',
-    fontSize:15,
-    color:'#7A3E3E',
-    width:83,
-    justifyContent:'center'
-  },
-  inputText3:{
-    fontFamily:'Inter-Bold',
-    fontSize:16,
-    color:'#7A3E3E',
-    //width:80,
-    justifyContent:'center'
+  inputText:{
+    alignItems:'center',
+    fontFamily:'Inder-Regular',
+    fontSize:20,
+    color:'#4F200D',
   },
   dateTimeContainer: {
     flex:1,
     marginTop:'110%',
-    //marginLeft: "10%",
-    //marginRight: "10%",
     justifyContent:'center',
     alignItems: 'center',
     backgroundColor: '#F5F5F5',

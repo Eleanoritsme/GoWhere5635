@@ -26,8 +26,12 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.eleanorzheng.GoWhere"
+      "supportsTalet": true,
+      "bundleIdentifier": "com.eleanorzheng.GoWhere",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Your app needs access to your location while it's in use.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Your app needs access to your location always, even when it's not in use."
+      }
     },
     "android": {
       "adaptiveIcon": {

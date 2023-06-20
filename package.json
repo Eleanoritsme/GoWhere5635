@@ -38,6 +38,7 @@
     "firebase": "^9.22.0",
     "font": "^0.0.4",
     "material-icons": "^1.13.6",
+    "moment": "^2.29.4",
     "react": "18.2.0",
     "react-datepicker": "^4.12.0",
     "react-dom": "18.2.0",
