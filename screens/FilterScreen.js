@@ -428,10 +428,8 @@ const FilterScreen = ({route}) => {
       </ScrollView>
     </SafeAreaView>
   )
-          }
-                
-                              
-              
+}
+                                            
   export default FilterScreen
 
 const styles = StyleSheet.create({
