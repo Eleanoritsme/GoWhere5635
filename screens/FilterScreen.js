@@ -197,6 +197,8 @@ const FilterScreen = ({route}) => {
     }
   };
 
+  const navigation = useNavigation()
+
   const[data, setData] = useState('');
   const [totalResults, setTotalResults] = useState(0);
 
@@ -228,13 +230,12 @@ const FilterScreen = ({route}) => {
     } catch (error) {
       console.error('Error fetching Yelp data:', error);
     }
-  };
-  //console.log(data);
+  }
   console.log(totalResults)
   //console.log(userChosenLocation)
   
 
-  const navigation = useNavigation()
+  
   
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
@@ -303,6 +304,7 @@ const FilterScreen = ({route}) => {
                 
             />
               <CheckBox onPress={() => {setShow('false')}}/>
+              <Text style={styles.inputText}>Confirm</Text>
             </View>
           </Modal>
         </View>
