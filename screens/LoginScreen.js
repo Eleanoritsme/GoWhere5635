@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, ScrollView } from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -64,10 +64,11 @@ const LoginScreen = () => {
       })
     }
   }
-
   
   const [fontsLoaded] = useFonts({
-    "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
+    "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
+    "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
+    "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf'),
   });
   
   const onLayoutRootView = useCallback(async () => {
@@ -82,107 +83,109 @@ const LoginScreen = () => {
 
   return (
     <SafeAreaView style={{flex:1}}>
-    {/* LoginPage Logo */}
-      <View style={styles.logo}>
-        <Image
-          style={styles.logoImage}
-          source={require('../assets/images/misc/Logo.png')} />
-      </View>
+    <ScrollView>
+      {/* LoginPage Logo */}
+        <View style={styles.logo}>
+          <Image
+            style={styles.logoImage}
+            source={require('../assets/images/misc/Logo.png')} />
+        </View>
 
-    {/* Login Text */}
-      <View style={styles.logInText} onLayout={onLayoutRootView}>
-        <Text style={styles.text}>
-          Login
-        </Text>
-      </View>
+      {/* Login Text */}
+        <View style={styles.logInText} onLayout={onLayoutRootView}>
+          <Text style={styles.text}>
+            Login
+          </Text>
+        </View>
 
-    {/* Login Keyboard */}
-      <View 
-      style={styles.inputContainer}
-      behavior='padding'>
-        <MaterialIcons 
-          name='alternate-email' 
-          size={20} 
-          color='#8C8383'
-          style={styles.icon}
-        />
-        <TextInput 
-          style={styles.input} 
-          placeholder='Email ID'
-          placeholderTextColor="#B7B7B7" 
-          autoCapitalize='none'
-          autoCorrect={false}
-          value={email}
-          onChangeText={text => setEmail(text)}
-          keyboardType='email-address'
-        />
-      </View>
-
-        
-      <View style={styles.errorContainer}>
-        <Text 
-          style={styles.error}>
-          {error.email}
-        </Text>
-      </View>
-      
-      <View 
+      {/* Login Keyboard */}
+        <View 
         style={styles.inputContainer}
         behavior='padding'>
-        <Ionicons
-          name='ios-lock-closed-outline' 
-          size={20} 
-          color='#8C8383'
-          style={styles.icon}
-        />
-        <TextInput
-          style={styles.input}  
-          placeholder='Password'
-          placeholderTextColor="#B7B7B7" 
-          autoCapitalize='none'
-          autoCorrect={false}
-          value={password}
-          onChangeText={text => setPassword(text)}
-          secureTextEntry={true}
-        />
-        <View>
-          <TouchableOpacity onPress={() => changePassword()}>
-            <Text style={styles.resetPswButton}>
-            Forgot Password?
+          <MaterialIcons 
+            name='alternate-email' 
+            size={20} 
+            color='#8C8383'
+            style={styles.icon}
+          />
+          <TextInput 
+            style={styles.input} 
+            placeholder='Email ID'
+            placeholderTextColor="#B7B7B7" 
+            autoCapitalize='none'
+            autoCorrect={false}
+            value={email}
+            onChangeText={text => setEmail(text)}
+            keyboardType='email-address'
+          />
+        </View>
+
+          
+        <View style={styles.errorContainer}>
+          <Text 
+            style={styles.error}>
+            {error.email}
+          </Text>
+        </View>
+        
+        <View 
+          style={styles.inputContainer}
+          behavior='padding'>
+          <Ionicons
+            name='ios-lock-closed-outline' 
+            size={20} 
+            color='#8C8383'
+            style={styles.icon}
+          />
+          <TextInput
+            style={styles.input}  
+            placeholder='Password'
+            placeholderTextColor="#B7B7B7" 
+            autoCapitalize='none'
+            autoCorrect={false}
+            value={password}
+            onChangeText={text => setPassword(text)}
+            secureTextEntry={true}
+          />
+          <View>
+            <TouchableOpacity onPress={() => navigation.navigate('Reset Password')}>
+              <Text style={styles.resetPswButton}>
+              Forgot Password?
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <View style={styles.errorContainer}>
+          <Text 
+            style={styles.error}>
+            {error.password}
+          </Text>
+        </View>
+
+        {/* Conduct Login */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={() => loginUser(email, password)}
+            style={styles.button}
+          >
+            <Text style={styles.buttonInput}>
+            Login
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
-      
-      <View style={styles.errorContainer}>
-        <Text 
-          style={styles.error}>
-          {error.password}
-        </Text>
-      </View>
 
-      {/* Conduct Login */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          onPress={() => loginUser(email, password)}
-          style={styles.button}
-        >
-          <Text style={styles.buttonInput}>
-          Login
+        {/* Register */}
+        <View 
+          style={styles.register}>
+          <Text>Don't have an account?</Text>
+          <TouchableOpacity onPress={() => {navigation.navigate('Register')}}>
+          <Text 
+            style={styles.resgisterText}> Register now!
           </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Register */}
-      <View 
-        style={styles.register}>
-        <Text>Don't have an account?</Text>
-        <TouchableOpacity onPress={() => {navigation.navigate('Register')}}>
-        <Text 
-          style={styles.resgisterText}> Register now!
-        </Text>
-        </TouchableOpacity>
-      </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
     
   )
@@ -204,8 +207,8 @@ const styles = StyleSheet.create({
     marginBottom:30
   },
   text:{
-    fontFamily:'Roboto-Medium',
-    fontSize: 35,
+    fontFamily:'Inter-SemiBold',
+    fontSize: 33,
     fontWeight: '500',
     color: '#333',
   },
@@ -223,7 +226,8 @@ const styles = StyleSheet.create({
     paddingVertical:0
   },
   resetPswButton:{
-    color:"#B04759", 
+    fontFamily:"Inter-Bold",
+    color:"#FFBC11", 
     fontWeight:'600', 
     fontSize:14,
   },
@@ -233,20 +237,24 @@ const styles = StyleSheet.create({
     marginTop:20,
   },
   button:{
-    backgroundColor:'#B04759',
+    backgroundColor:'#FFBC11',
     width:350,
     padding:18,
     borderRadius:10,
     alignItems:'center',
   },
   register:{
+    fontFamily:"Inter-SemiBold",
+    fontSize:15,
     flexDirection:'row', 
     justifyContent:'center', 
     marginTop:20,
     marginBottom:30
   },
   resgisterText:{
-    color:'#B04759',
+    fontFamily:"Inter-ExtraBold",
+    fontSize:15,
+    color:'#FFBC11',
     fontWeight:'600'
   },
   errorContainer:{
@@ -261,8 +269,9 @@ const styles = StyleSheet.create({
     marginRight:5
   },
   buttonInput:{
+    fontFamily:'Inter-ExtraBold',
     color:'white',
     fontWeight:'700',
-    fontSize:16,
+    fontSize:18,
   },
 })

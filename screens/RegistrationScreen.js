@@ -1,9 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, Modal} from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
@@ -16,11 +17,40 @@ SplashScreen.preventAutoHideAsync();
 
 const RegistrationScreen = () => {
   const [userName, setUserName] = useState('')
-  const [dateOfBirth, setDateOfBirth] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
+  const [date, setDate] = useState(new Date());
+  const [dateSelected, setDateSelected] = useState(false);
+  const [show, setShow] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState('Date of Birth (MM/DD/YYYY)');
+  
+  const OnChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
+
+    let tempDate = new Date(currentDate);
+    let fDate =
+      tempDate.getDate() +
+      '/' +
+      (tempDate.getMonth() + 1).toString().padStart(2, '0') +
+      '/' +
+      tempDate.getFullYear();
+    setDateOfBirth(fDate);
+    setDateSelected(true);
+  };
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    //setMode(currentMode);
+  };
+
+  const handleDOBpressed = () => {
+    showMode('date');
+  };
+
+ 
   const [showError, setShowError] = useState(false)
   const [error, setError] = useState({})
 
@@ -38,7 +68,7 @@ const RegistrationScreen = () => {
       error.email = "Plase enter your email"
     } else if (!email.includes('@')) {
       error.email = "Please enter a valid email address"
-    } 
+    }
     if (!password) {
       error.password = "Please enter the password"
     } else if (password.length < 8) {
@@ -68,7 +98,7 @@ const RegistrationScreen = () => {
       .then(() => {
         alert('Verification email sent!')
       }).catch((error) => {
-          alert(error.message)
+        alert(error.message)
       })
       .then(() => {
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid)
@@ -91,7 +121,9 @@ const RegistrationScreen = () => {
   const navigation = useNavigation()
 
   const [fontsLoaded] = useFonts({
-    "Roboto-Medium": require('../assets/fonts/Roboto-Medium.ttf'),
+    "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
+    "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
+    "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf'),
   });
   
   const onLayoutRootView = useCallback(async () => {
@@ -104,13 +136,15 @@ const RegistrationScreen = () => {
     return null;
   }
 
+
+  
   return (
     <SafeAreaView style={{flex:1}}>
     {/* LoginPage Logo */}
       <View style={styles.logo}>
         <Image
           style={styles.logoImage}
-          source={require('../assets/images/misc/CornerLogo.png')} />
+          source={require('../assets/images/misc/LogoC.png')} />
       </View>
 
     {/* Register Text */}
@@ -145,11 +179,9 @@ const RegistrationScreen = () => {
           style={styles.error}>
           {error.userName}
           </Text>
-        </View>
+      </View>
 
-      <View 
-        style={styles.inputContainer}
-        behavior='padding'>
+      <View style={styles.inputContainer}>
         <Fontisto 
           name='date' 
           size={20} 
@@ -157,21 +189,38 @@ const RegistrationScreen = () => {
           style={styles.icon}
         />
         <TextInput 
-          style={styles.input}
-          placeholder='Date of Birth (MM/DD/YYYY)'
-          placeholderTextColor={"#B7B7B7"}
-          onChangeText={(dateOfBirth) => setDateOfBirth(dateOfBirth)}
-          autoCorrect={false}
-          keyboardType='numbers-and-punctuation'
+          style={dateSelected ? styles.input : styles.inputDate}
+          onPressIn={handleDOBpressed}
+          value={dateOfBirth}
+          editable={false} 
         />
-      </View> 
+
+        <Modal
+          visible={show}
+          transparent={true}
+          animationType='slide'
+        >
+          <View style={styles.dateTimeContainer}>
+            <DateTimePicker
+              value={date}
+              mode='date'
+              is24Hour={false}
+              display="spinner"
+              onChange={OnChange}
+            />
+            <TouchableOpacity onPress={() => setShow(false)}>
+              <Text style={styles.inputText}>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      </View>
 
       <View style={styles.errorContainer}>
           <Text 
           style={styles.error}>
           {error.dateOfBirth}
           </Text>
-        </View>
+      </View>
 
       <View 
         style={styles.inputContainer}
@@ -292,18 +341,18 @@ const styles = StyleSheet.create({
   },
   logoImage:{
     resizeMode:'contain',
-    width:200,
-    height:120,
+    width:305,
+    height:60,
   },
   registerText:{
     marginLeft:20,
     marginBottom:30,
   },
   text:{
-    fontFamily:'Roboto-Medium',
-    fontSize: 35,
+    fontFamily:'Inter-SemiBold',
+    fontSize: 33,
     fontWeight: '500',
-    color: '#333',
+    color: '#000000',
   },
   inputContainer:{
     flexDirection:'row',
@@ -321,6 +370,11 @@ const styles = StyleSheet.create({
     flex:1,
     paddingVertical:0
   },
+  inputDate:{
+    flex:1,
+    paddingVertical:0,
+    color:'#B7B7B7'
+  },
   errorContainer:{
     marginTop:8,
     marginLeft:20,
@@ -335,24 +389,36 @@ const styles = StyleSheet.create({
     marginTop:20,
   },
   button:{
-    backgroundColor:'#B04759',
+    backgroundColor:'#FFBC11',
     width:350,
     padding:18,
     borderRadius:10,
     alignItems:'center',
   },
   buttonInput:{
+    fontFamily:'Inter-ExtraBold',
     color:'white',
     fontWeight:'700',
-    fontSize:16,
+    fontSize:18,
   },
   login:{
+    fontFamily:'Inter-SemiBold',
+    fontSize:15,
     flexDirection:'row', 
     justifyContent:'center', 
     marginTop:20,
   },
   loginText:{
-    color:'#B04759',
+    fontFamily:'Inter-ExtraBold',
+    fontSize:15,
+    color:'#FFBC11',
     fontWeight:'600'
-  }
+  },
+  dateTimeContainer: {
+    flex:1,
+    marginTop:'110%',
+    justifyContent:'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+  },
 })
