@@ -429,8 +429,7 @@ const FilterScreen = ({route}) => {
     </SafeAreaView>
   )
 }
-                                
-            
+                                            
   export default FilterScreen
 
 const styles = StyleSheet.create({
