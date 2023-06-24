@@ -24,7 +24,7 @@ const LoginScreen = () => {
     const error = {}
     if (!email) {
       error.email = "Plase enter your email"
-    } else if (!email.includes('@')) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       error.email = "Please enter a valid email address"
     }
     if (!password) {
