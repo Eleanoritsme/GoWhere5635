@@ -216,6 +216,7 @@ const FilterScreen = ({route}) => {
             longitude: longitude,
             open_at: time,
             price: priceSelected.join(","),
+            limit:50
           },
           headers: {
             Authorization: `Bearer ${'l2WdiWyvXyQZCQcc2XAGz6gn6LcrkK8Peix0d4sjZxpFOGu4E3by9096JwD0Wtp3RkWQ9-6emuXm1cKaivxwxozQZ-iHo0xR_DOL4eAvTQ02pVNINNMqknxBUgJ_ZHYx'}`
