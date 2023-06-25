@@ -61,12 +61,12 @@ const RegistrationScreen = () => {
     } else if (userName.length < 6) {
       error.userName = "The length should not be less than 6 chatacters"
     }
-    if (!dateOfBirth) {
+    if (!dateOfBirth || dateOfBirth.includes('Date of Birth (MM/DD/YYYY)')) {
       error.dateOfBirth = "Please enter the date of birth"
     }
     if (!email) {
       error.email = "Plase enter your email"
-    } else if (!email.includes('@')) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       error.email = "Please enter a valid email address"
     }
     if (!password) {
