@@ -113,6 +113,9 @@ const RegistrationScreen = () => {
       })
     })
     .catch((error => {
+      if (error.code == 'auth/email-already-in-use') {
+        alert('The email address is already in use by another account.')
+      } 
       console.log(error.message)
     }))
   }
