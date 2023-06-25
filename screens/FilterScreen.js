@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,ScrollView, Modal} from 'react-native'
+import { StyleSheet, Text, View,ScrollView, Modal, Image} from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -262,7 +262,20 @@ const FilterScreen = ({route}) => {
           <Text style={styles.titleText}>
             Select Your Preferences
           </Text>
+          <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
+          <Image
+          source={require('../assets/images/users/Default_pfp.jpg')} 
+          style={{
+            marginLeft:270,
+            marginTop:-85,
+            width:90,
+            height:90,
+            borderRadius:400 / 2
+          }}
+          />
+          </TouchableOpacity>
         </View>
+        
 
         <View style={styles.subTitle}>
           <Text style={styles.subtitleText}>
