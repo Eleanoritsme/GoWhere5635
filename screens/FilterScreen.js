@@ -266,11 +266,10 @@ const FilterScreen = ({route}) => {
           <Image
           source={require('../assets/images/users/Default_pfp.jpg')} 
           style={{
-            marginLeft:270,
-            marginTop:-85,
-            width:90,
-            height:90,
-            borderRadius:400 / 2
+            marginLeft:20,
+              width:90,
+              height:90,
+              borderRadius:400 / 2
           }}
           />
           </TouchableOpacity>
@@ -448,8 +447,9 @@ const FilterScreen = ({route}) => {
 
 const styles = StyleSheet.create({
   title:{
-    marginLeft:20,
+    flexDirection:'row',
     marginTop:20,
+    marginLeft:25,
   },
   titleText:{
     fontFamily:'Inter-ExtraBold',
