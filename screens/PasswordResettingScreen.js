@@ -60,11 +60,12 @@ const PasswordResettingScreen = () => {
       <TextInput
       placeholder='example@gmail.com'
       placeholderTextColor={'#ACACAC'}
+      onChangeText={(text => setEmail(text))}
       fontSize={14}
         style={{
           left:20,
           borderWidth:1,
-          height:44,
+          height:50,
           width:342,
           borderColor:'#4F200D',
           borderRadius:6,

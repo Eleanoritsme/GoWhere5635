@@ -10,7 +10,7 @@ import * as SplashScreen from 'expo-splash-screen'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Line from '../Line'
 
-
+SplashScreen.preventAutoHideAsync();
 
 const UserProfileScreen = () => {
   const navigation = useNavigation()
@@ -362,4 +362,5 @@ const UserProfileScreen = () => {
 }
 
 export default UserProfileScreen
+
 

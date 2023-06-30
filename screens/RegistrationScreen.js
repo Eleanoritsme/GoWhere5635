@@ -1,10 +1,11 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, Modal} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Modal from "react-native-modal";
 
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
@@ -43,12 +44,11 @@ const RegistrationScreen = () => {
 
   const showMode = (currentMode) => {
     setShow(true);
-    //setMode(currentMode);
   };
 
-  const handleDOBpressed = () => {
-    showMode('date');
-  };
+  function handleDOBpressed() {
+    showMode('date')
+  }
 
  
   const [showError, setShowError] = useState(false)
