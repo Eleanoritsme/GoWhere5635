@@ -47,7 +47,7 @@ const RecommandationScreen = ({route}) => {
           </TouchableOpacity>
         </View>
         <View>
-          {recommendations && recommendations.businesses && recommendations.businesses.map((item, index) => (
+        {recommendations && recommendations.businesses && recommendations.businesses.map((item, index) => (
             <View key={index} style={styles.listContainer} onLayout={onLayoutRootView}>
               <TouchableOpacity>
                 <Image source={{ uri: item.image_url }} style={styles.image}/>
