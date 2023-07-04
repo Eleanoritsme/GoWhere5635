@@ -150,6 +150,13 @@ const FilterScreen = ({route}) => {
   };
 
   const handleOtherClicked = () => {
+    Alert.alert(
+      'Notice',
+      'Enter the time in 24hr format Eg: 17:00',
+      [
+        { text: 'OK', onPress: () => {TextInputRefer.focus()} },
+      ],
+    );
     setNow(false);
     setOtherTimePeriod(true);
   };
@@ -250,7 +257,7 @@ const FilterScreen = ({route}) => {
             //latitude: latitude,
             //longitude: longitude,
             location: userChosenLocation,
-            radius:4000,
+            radius:2000,
             price: priceSelected.join(","),
             open_at: time,
             limit:50,
@@ -347,6 +354,7 @@ const FilterScreen = ({route}) => {
               color:'#4F200D',
               width:150
             }}
+            ref={ref => { TextInputRefer = ref; }}
             placeholder='Choose Time'
             placeholderTextColor="#4F200D" 
             autoCapitalize='none'
