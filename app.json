@@ -6,13 +6,20 @@
     "plugins": [
       [
         "react-native-fbsdk-next",
+        
         {
           "appID": "1465624523842264",
           "clientToken": "5039c8ab2b3e445500a02a86df2c1805",
           "displayName": "GoWhere"
         }
+      ],
+      ["expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(GoWhere) to use your location."
+        }
       ]
     ],
+
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

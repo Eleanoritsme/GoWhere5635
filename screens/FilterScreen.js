@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,ScrollView, Modal, Image} from 'react-native'
+import { StyleSheet, Text, View,ScrollView, Alert, Image} from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -21,12 +21,12 @@ const FilterScreen = ({route}) => {
   const [mode, setMode] = useState('time');
   const [show, setShow] = useState(false);
   //const [dateText, setDateText] = useState('Date')
-  const [timeText, setTimeText] = useState('Choose Time')
+  const [timeText, setTimeText] = useState('')
 
   //https://www.youtube.com/watch?v=Imkw-xFFLeE&t=298s
-  const OnChange = (event, selectedDate) => {
+  /*const OnChange = () => {
     const currentDate = selectedDate || date;
-    //setShow(Platform.OS === 'ios');
+    setShow(Platform.OS === 'ios');
     //setDate(currentDate);
 
     let tempDate = new Date(currentDate);
@@ -71,41 +71,62 @@ const FilterScreen = ({route}) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [placeName, setPlaceName] = useState('');
   const [userChosenLocation, setUserChosenLocation] = useState('');
-
-  //Reused from https://docs.expo.dev/versions/latest/sdk/location/
+  
   useEffect(() => {
     (async () => {
-      let { permission } = await Location.requestForegroundPermissionsAsync();
-      if (permission !== 'granted') {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
         setErrorMsg('Access location denied');
         return;
       }
+      
 
-      let location = await Location.getCurrentPositionAsync({});
+      let location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.High});
       setLocation(location);
+      console.log("Location:");
+      console.log(location);
 
-      if (location) {
-        let geocode = await Location.reverseGeocodeAsync({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
+      
+      const reverseGeocodeLocation = await axios.get('https://maps.googleapis.com/maps/api/geocode/json?', {
+        params:{
+          latlng: `${location.coords.latitude},${location.coords.longitude}`,
+          key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
+          }
         });
-
-        if (geocode && geocode.length > 0) {
-          const { street, city } = geocode[0]; 
-          const address = street ? street : city; // add street and city if have
-
-          setPlaceName(address); 
-        }
-      }
+        const { results } = reverseGeocodeLocation.data;
+        if (results && results.length > 0) {
+          const addressComponents = results[0].address_components;
+          const route = addressComponents.find(component => component.types.includes('route'));
+          const neighborhood = addressComponents.find(component => component.types.includes('neighborhood'));
+          const sublocale = addressComponents.find(component => component.types.includes('sublocality'));
+          const locale = addressComponents.find(component => component.types.includes('locality'));
+          let streetname = '';
+          if (route) {
+            streetname = route.short_name + " " + locale.long_name
+          } else if (!route && neighborhood) {
+            streetname = neighborhood.short_name + " " + locale.long_name
+          } else if (!route && !neighborhood && sublocale) {
+            streetname = sublocale.long_name + " " + locale.long_name
+          } else if (!route && !neighborhood && !sublocale && locale) {
+            streetname = locale.long_name
+          }
+          console.log('Address:', addressComponents);
+          setPlaceName(streetname); 
+        } else {
+        console.error('Error retrieving address:', error);
+        };
     })();
   }, []);
-
-
+  
   let searchingText = 'Waiting..';
   if (errorMsg) {
     searchingText = errorMsg;
+  } else {
+    searchingText = placeName;
   }
 
+  console.log("Searching:")
+  console.log(placeName)
 
   //Display selected buttons
   //https://reactgo.com/react-change-button-color-onclick/
@@ -141,7 +162,7 @@ const FilterScreen = ({route}) => {
   const handleElseWhereClicked = () => {
     setNearMe(false);
     setTypeTheLocation(true);
-    getCoordinates(userChosenLocation)
+    //getCoordinates(userChosenLocation)
   }
 
   const handleButtonPress = (buttonNo) => {
@@ -161,24 +182,19 @@ const FilterScreen = ({route}) => {
     "50++": '4',
   };
 
-  const priceSelected = priceButton.map((buttonNo) => priceMapping[buttonNo])
+  const priceSelected = priceButton.map((buttonNo) => priceMapping[buttonNo]).sort((button1, button2) => button1 - button2);
   console.log(priceSelected);
 
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-
-  useEffect(() => {
-    getCoordinates(userChosenLocation);
-  }, [userChosenLocation]);
   
-  const getCoordinates = async (place) => {
+ /*const getCoordinates = async (place) => {
     try {
       const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
         params: {
           address: place,
-          components: 'country:SG',
-          key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
 
+          key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
         }
       });
       const { results } = response.data;
@@ -188,7 +204,8 @@ const FilterScreen = ({route}) => {
         setLongitude(lng);
         console.log('Latitude:', lat);
         console.log('Longitude:', lng);
-        //console.log(results)
+        //console.log("Time" + timeText)
+        console.log(results)
       } else {
         console.log('No results found.');
       }
@@ -196,6 +213,11 @@ const FilterScreen = ({route}) => {
       console.error('Error retrieving coordinates:', error);
     }
   };
+
+  useEffect(() => {
+    getCoordinates(userChosenLocation);
+  }, [userChosenLocation]);
+  */
 
   const navigation = useNavigation()
 
@@ -207,36 +229,57 @@ const FilterScreen = ({route}) => {
       //Get the unix time for timeText
       const[hours, minutes] = timeText.split(":");
       const time = moment().hours(hours).minutes(minutes).unix();
-      const response = await axios.get(
-        'https://api.yelp.com/v3/businesses/search',
+      console.log(userChosenLocation)
+      /*const geocodingResponse = await axios.get(
+        'https://maps.googleapis.com/maps/api/geocode/json',
         {
           params: {
+            address: userChosenLocation,
+            key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
+          }
+        }
+      );
+      const { results } = geocodingResponse.data;
+      const { lat, lng } = results[0].geometry.location;
+      */
+      const response = await axios.get(
+        'https://api.yelp.com/v3/businesses/search'
+        , { 
+          params: {
             term: selectedCategory,
-            latitude: latitude,
-            longitude: longitude,
-            open_at: time,
+            //latitude: latitude,
+            //longitude: longitude,
+            location: userChosenLocation,
+            radius:4000,
             price: priceSelected.join(","),
-            limit:50
+            open_at: time,
+            limit:50,
+            //minprice: priceSelected.length > 0 ? priceSelected[0] : undefined,
+            //maxprice: priceSelected.length > 0 ? priceSelected[priceSelected.length - 1] : undefined,
+            //key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk'
           },
-          headers: {
+            headers: {
             Authorization: `Bearer ${'l2WdiWyvXyQZCQcc2XAGz6gn6LcrkK8Peix0d4sjZxpFOGu4E3by9096JwD0Wtp3RkWQ9-6emuXm1cKaivxwxozQZ-iHo0xR_DOL4eAvTQ02pVNINNMqknxBUgJ_ZHYx'}`
           },
         }
       );
       const jsonData = await response.data;
       setData(jsonData);
-      setTotalResults(jsonData.total);
-      console.log(time)
+      //setData(jsonData);
+      //setTotalResults(data.length);
+      console.log('Time'+ time)
+      //console.log('lat' + lat)
+      //console.log('long' + lng)
       navigation.navigate('Main', { recommendations: jsonData });
     } catch (error) {
       console.error('Error fetching Yelp data:', error);
     }
   }
   console.log(totalResults)
+  console.log(data)
   //console.log(userChosenLocation)
   
-
-  
+    
   
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
@@ -295,31 +338,24 @@ const FilterScreen = ({route}) => {
         <View
           style={styles.buttonContainerOtherTime} onLayout={onLayoutRootView}>
           <View style={styles.group}>
-          <CheckBox
-            onPress={() => [handleOtherClicked(),showMode('time')]}
-            isChecked={otherTimePeriod}
-          />
-            <Text style={styles.inputText}>{timeText}</Text>
-          </View>
-
-          <Modal
-            visible={show}
-            transparent={true}
-            animationType='slide'
-          >
-            <View style={styles.dateTimeContainer}>
-              <DateTimePicker
-                value={date}
-                mode='time'
-                is24Hour={false}
-                display="spinner"
-                onChange={OnChange}
-                
+          <TextInput
+            style={
+              {marginLeft:33,
+              alignItems:'center',
+              fontFamily:'Inder-Regular',
+              fontSize:20,
+              color:'#4F200D',
+              width:150
+            }}
+            placeholder='Choose Time'
+            placeholderTextColor="#4F200D" 
+            autoCapitalize='none'
+            autoCorrect={false}
+            value={timeText}
+            onChangeText={text => setTimeText(text)}
+            onPressIn={handleOtherClicked}
             />
-              <CheckBox onPress={() => {setShow('false')}}/>
-              <Text style={styles.inputText}>Confirm</Text>
-            </View>
-          </Modal>
+          </View>
         </View>
 
         <View style={styles.subTitle}>
@@ -424,7 +460,8 @@ const FilterScreen = ({route}) => {
           style={styles.buttonContainerApply} onLayout={onLayoutRootView}>
           <TouchableOpacity
             onPress={() => 
-              {getCoordinates(userChosenLocation);getData();
+              {//getCoordinates(userChosenLocation);
+              getData();
                  }}
             //存储选择 要添加一下 下面同理
             style={
@@ -518,12 +555,13 @@ const styles = StyleSheet.create({
     fontFamily:'Inder-Regular',
     fontSize:20,
     color:'#4F200D',
+    width:200
   },
   dateTimeContainer: {
     flex:1,
     marginTop:'110%',
     justifyContent:'center',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#D3D0D0',
   },
 })
