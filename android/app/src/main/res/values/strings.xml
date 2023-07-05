@@ -1,0 +1,9 @@
+<resources>
+  <string name="app_name">GoWhere</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="expo_system_ui_user_interface_style" translatable="false">automatic</string>
+  <string name="facebook_app_id">1465624523842264</string>
+  <string name="facebook_client_token">5039c8ab2b3e445500a02a86df2c1805</string>
+  <string name="fb_login_protocol_scheme">fb1465624523842264</string>
+</resources>
