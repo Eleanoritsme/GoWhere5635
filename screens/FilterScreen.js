@@ -11,11 +11,13 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import moment from 'moment';
 import CheckBox from '../CheckBoxComponent'
+import AppLoading from 'expo-app-loading'
 
 const FilterScreen = ({route}) => {
   const {selectedCategory} = route.params;
   console.log(selectedCategory);
 
+  
   //For time picker
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('time');
@@ -102,11 +104,11 @@ const FilterScreen = ({route}) => {
           const locale = addressComponents.find(component => component.types.includes('locality'));
           let streetname = '';
           if (route) {
-            streetname = route.short_name + " " + locale.long_name
+            streetname = route.short_name + " , " + locale.long_name
           } else if (!route && neighborhood) {
-            streetname = neighborhood.short_name + " " + locale.long_name
+            streetname = neighborhood.short_name + " , " + locale.long_name
           } else if (!route && !neighborhood && sublocale) {
-            streetname = sublocale.long_name + " " + locale.long_name
+            streetname = sublocale.long_name + " , " + locale.long_name
           } else if (!route && !neighborhood && !sublocale && locale) {
             streetname = locale.long_name
           }
@@ -169,7 +171,7 @@ const FilterScreen = ({route}) => {
   const handleElseWhereClicked = () => {
     setNearMe(false);
     setTypeTheLocation(true);
-    //getCoordinates(userChosenLocation)
+   //getCoordinates(userChosenLocation)
   }
 
   const handleButtonPress = (buttonNo) => {
@@ -192,15 +194,14 @@ const FilterScreen = ({route}) => {
   const priceSelected = priceButton.map((buttonNo) => priceMapping[buttonNo]).sort((button1, button2) => button1 - button2);
   console.log(priceSelected);
 
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
+  //const [latitude, setLatitude] = useState(null);
+  //const [longitude, setLongitude] = useState(null);
   
  /*const getCoordinates = async (place) => {
     try {
       const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
         params: {
           address: place,
-
           key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
         }
       });
@@ -225,6 +226,7 @@ const FilterScreen = ({route}) => {
     getCoordinates(userChosenLocation);
   }, [userChosenLocation]);
   */
+  
 
   const navigation = useNavigation()
 
@@ -236,34 +238,33 @@ const FilterScreen = ({route}) => {
       //Get the unix time for timeText
       const[hours, minutes] = timeText.split(":");
       const time = moment().hours(hours).minutes(minutes).unix();
-      console.log(userChosenLocation)
-      /*const geocodingResponse = await axios.get(
+      const geocodingResponse = await axios.get(
         'https://maps.googleapis.com/maps/api/geocode/json',
         {
           params: {
             address: userChosenLocation,
+            components: 'country:SG',
             key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
           }
         }
       );
       const { results } = geocodingResponse.data;
       const { lat, lng } = results[0].geometry.location;
-      */
+      console.log('Location' + userChosenLocation)
+      console.log('lat' + lat)
+      console.log('lng' + lng)
       const response = await axios.get(
         'https://api.yelp.com/v3/businesses/search'
         , { 
           params: {
             term: selectedCategory,
-            //latitude: latitude,
-            //longitude: longitude,
-            location: userChosenLocation,
+            latitude: lat,
+            longitude: lng,
+            //location: userChosenLocation,
             radius:2000,
             price: priceSelected.join(","),
             open_at: time,
             limit:50,
-            //minprice: priceSelected.length > 0 ? priceSelected[0] : undefined,
-            //maxprice: priceSelected.length > 0 ? priceSelected[priceSelected.length - 1] : undefined,
-            //key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk'
           },
             headers: {
             Authorization: `Bearer ${'l2WdiWyvXyQZCQcc2XAGz6gn6LcrkK8Peix0d4sjZxpFOGu4E3by9096JwD0Wtp3RkWQ9-6emuXm1cKaivxwxozQZ-iHo0xR_DOL4eAvTQ02pVNINNMqknxBUgJ_ZHYx'}`
@@ -275,15 +276,15 @@ const FilterScreen = ({route}) => {
       //setData(jsonData);
       //setTotalResults(data.length);
       console.log('Time'+ time)
-      //console.log('lat' + lat)
-      //console.log('long' + lng)
-      navigation.navigate('Main', { recommendations: jsonData });
+      console.log('lat' + lat)
+      console.log('long' + lng)
+      navigation.navigate('Main', { recommendations: data, price: priceSelected, time: timeText, location: userChosenLocation});
     } catch (error) {
       console.error('Error fetching Yelp data:', error);
     }
   }
   console.log(totalResults)
-  console.log(data)
+  //console.log(data)
   //console.log(userChosenLocation)
   
     
@@ -296,7 +297,8 @@ const FilterScreen = ({route}) => {
   
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+      await SplashScreen.preventAutoHideAsync();
+      SplashScreen.hideAsync();
     }
   }, [fontsLoaded]); 
   
@@ -474,7 +476,7 @@ const FilterScreen = ({route}) => {
             //存储选择 要添加一下 下面同理
             style={
               {backgroundColor:'#FFCE84',
-              width:256,
+              width:280,
               height:48,
               alignItems:'center',
               justifyContent:'center',
@@ -563,7 +565,7 @@ const styles = StyleSheet.create({
     fontFamily:'Inder-Regular',
     fontSize:20,
     color:'#4F200D',
-    width:200
+    width:235
   },
   dateTimeContainer: {
     flex:1,
