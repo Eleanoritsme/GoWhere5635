@@ -1,0 +1,8 @@
+platform :ios, '9.0'
+target 'GoWhere' do
+  # Uncomment the next line if you're using Swift or Swift-based libraries
+  # use_frameworks!
+
+  # Add your dependencies here
+
+end

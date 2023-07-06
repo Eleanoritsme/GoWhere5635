@@ -6,13 +6,20 @@
     "plugins": [
       [
         "react-native-fbsdk-next",
+        
         {
           "appID": "1465624523842264",
           "clientToken": "5039c8ab2b3e445500a02a86df2c1805",
           "displayName": "GoWhere"
         }
+      ],
+      ["expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(GoWhere) to use your location."
+        }
       ]
     ],
+
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,15 +33,30 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.eleanorzheng.GoWhere"
+      "supportsTalet": true,
+      "bundleIdentifier": "com.eleanorzheng.GoWhere",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Your app needs access to your location while it's in use.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Your app needs access to your location always, even when it's not in use.",
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.eleanorzheng.GoWhere"
+      "package": "com.eleanorzheng.GoWhere",
+      "permissions": [
+        "android.permission.INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -44,8 +66,14 @@
         "projectId": "ff394263-4c27-4d9e-8fbf-fe976497ac9a"
       }
     },
-    "scheme": ["GoWhere", "gowhere1465624523842264"]
+    "scheme": [
+      "goWhere", "gowhere1465624523842264"
+    ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/ff394263-4c27-4d9e-8fbf-fe976497ac9a"
+    }
   }
 }
-
-

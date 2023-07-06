@@ -11,12 +11,12 @@ import { useFocusEffect } from '@react-navigation/native'
 SplashScreen.preventAutoHideAsync();
 
 const ActivityScreen = () => {
+
   useFocusEffect(
     React.useCallback(() => {
       getUser();
     }, [navigation])
   )
-
   const [selectedCategory, setSelectedCategory] = useState('')
 
   const navigation = useNavigation()
@@ -44,6 +44,7 @@ const ActivityScreen = () => {
     getUser();
   }, []);
 
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -70,6 +71,7 @@ const ActivityScreen = () => {
               height:90,
               borderRadius:400 / 2,
               bottom:8
+
             }}
             />
           </TouchableOpacity>
@@ -82,7 +84,6 @@ const ActivityScreen = () => {
             {setSelectedCategory("cafe+free+wifi");
               navigation.navigate('Filter', {selectedCategory});
               }}
-            //存储选择 要添加一下 下面三个同理
             style={styles.buttonInput}>
             <View style={styles.inputContainer}>
             <Text style={styles.inputText}>Study</Text>

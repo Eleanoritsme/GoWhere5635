@@ -53,7 +53,6 @@ const LoginScreen = () => {
       }
     }
   }
-  
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
