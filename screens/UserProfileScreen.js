@@ -1,5 +1,5 @@
-import { Text, TouchableOpacity, View, Image } from 'react-native'
-import React, { useState, useCallback } from 'react'
+import { Text, TouchableOpacity, View, Image, TextInput, Alert } from 'react-native'
+import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { firebase } from '../config'
@@ -9,11 +9,37 @@ import * as SplashScreen from 'expo-splash-screen'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Line from '../Line'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native'
+import Entypo from 'react-native-vector-icons/Entypo';
 
-
+SplashScreen.preventAutoHideAsync();
 
 const UserProfileScreen = () => {
   const navigation = useNavigation()
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUser();
+    }, [navigation])
+  )
+
+  const [user, setUser] = useState();
+  const {uid} = firebase.auth().currentUser;
+
+  const getUser = async() => {
+    try {
+      const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
+      const userData = documentSnapshot.data();
+      setUser(userData);
+    } catch {
+      console.log("get data")
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -21,6 +47,7 @@ const UserProfileScreen = () => {
     "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf'),
     "Inter-Medium": require('../assets/fonts/Inter-Medium.ttf'),
   });
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -38,6 +65,7 @@ const UserProfileScreen = () => {
       showsVerticalScrollIndicator={false}
       onLayout={onLayoutRootView}
     >
+    
     <TouchableOpacity
       onPress={() => {navigation.navigate('Background')}}>
       <Image
@@ -45,29 +73,29 @@ const UserProfileScreen = () => {
           width:400,
           height:200
         }}
-        source={require('../assets/images/users/Background.png')} />
-      </TouchableOpacity>
-      <View style={{
-        position:'absolute',
-        top:145,
-        alignItems:'center',
-        justifyContent:'center',
-      }}>
-        <Image 
-          style={{
-            height: 135,
-            width: 135,
-            borderRadius: 75,
-            marginBottom:10,
-          }}
-          source={require('../assets/images/users/Default_pfp.jpg')} />
-          <Text style={{
-            fontFamily:'Inter-SemiBold',
-            fontSize:24,
-            color:'#4F200D',
-            marginBottom:10,
-          }}>
-          Jamal
+        source={{uri: user ? user.background || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Background.png' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Background.png'}} />
+    </TouchableOpacity>
+    <View style={{
+      position:'absolute',
+      top:145,
+      alignItems:'center',
+      justifyContent:'center',
+    }}>
+      <Image 
+        style={{
+          height: 135,
+          width: 135,
+          borderRadius: 75,
+          marginBottom:10,
+        }}
+        source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}} />
+        <Text style={{
+          fontFamily:'Inter-SemiBold',
+          fontSize:24,
+          color:'#4F200D',
+          marginBottom:10,
+        }}>
+        {user ? user.userName || 'User' : 'User'}
           </Text>
           <Text style={{
             fontFamily:'Inter-Medium',
@@ -76,7 +104,7 @@ const UserProfileScreen = () => {
             color:'#544C4C',
             marginBottom:5,
           }}>
-          Photographer
+          {user ? user.occupation || 'no occupation' : ''}
           </Text>
 
         <View
@@ -90,13 +118,12 @@ const UserProfileScreen = () => {
           <MaterialIcons name="location-pin" size={24} color="#544C4C" />
           <Text
             style={{
-        
               fontFamily:'Inter-Medium',
               fontSize:13,
               color:'#544C4C'
             }}
           >
-          Milan, Italy
+          {user ? user.city || 'city' : ''}, {user ? user.country || 'country' : ''}
           </Text>
         </View>
 
@@ -107,7 +134,7 @@ const UserProfileScreen = () => {
           color:'#544C4C',
           marginBottom:10,
         }}>
-        Live in the present and enjoy the time!
+        {user ? user.bio || 'no bio added' : ''}
         </Text>
 
         
@@ -358,6 +385,7 @@ const UserProfileScreen = () => {
         </View>
         
     </ScrollView>
+    
   )
 }
 

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
 import React, { useCallback } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { firebase } from '../config'
+
 import { useNavigation } from '@react-navigation/native'
 import { ScrollView } from 'react-native-gesture-handler'
 
