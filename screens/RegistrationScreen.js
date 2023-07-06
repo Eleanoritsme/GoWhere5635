@@ -21,10 +21,18 @@ const RegistrationScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [occupation, setOccupation] = useState(null)
+  const [country, setCountry] = useState(null)
+  const [city, setCity] = useState(null)
+  const [bio, setBio] = useState(null)
+  const [background, setBackground] = useState(null)
+  const [image, setImage] = useState(null)
 
   const [date, setDate] = useState(new Date());
   const [dateSelected, setDateSelected] = useState(false);
   const [show, setShow] = useState(false);
+
   const [dateOfBirth, setDateOfBirth] = useState('');
   
   const toggleDatePicker = () => {
@@ -62,15 +70,13 @@ const RegistrationScreen = () => {
   
 
   /*const showMode = (currentMode) => {
+
     setShow(true);
   };
 
   function handleDOBpressed() {
     showMode('date')
   }
-  */
-
-
  
   const [showError, setShowError] = useState(false)
   const [error, setError] = useState({})
@@ -103,7 +109,7 @@ const RegistrationScreen = () => {
     return error
   }
 
-  registerUser = async (userName, dateOfBirth, email, password, confirmPassword) => {
+  const registerUser = async (userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio, background, image) => {
     const error = getError(userName, dateOfBirth, email, password, confirmPassword)
     if (Object.keys(error).length) {
       setShowError(true)
@@ -126,7 +132,13 @@ const RegistrationScreen = () => {
         .set({
           userName,
           dateOfBirth,
+          occupation,
+          country,
+          city,
+          bio,
           email,
+          background,
+          image
         })
       })
       .catch((error) => {
@@ -163,7 +175,7 @@ const RegistrationScreen = () => {
 
   
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex:1, top:15,}}>
     {/* LoginPage Logo */}
       <View style={styles.logo}>
         <Image
@@ -213,6 +225,16 @@ const RegistrationScreen = () => {
           style={styles.icon}
         />
 
+        <TextInput
+          style={styles.input} 
+          placeholder='Date Of Birth (MM/DD/YYYY)'
+          placeholderTextColor={"#B7B7B7"}
+          onChangeText={(dateOfBirth) => setDateOfBirth(dateOfBirth)}
+          autoCorrect={false}
+          keyboardType='default'
+        /> 
+
+
         {show && (
           <DateTimePicker
             mode='date'
@@ -247,6 +269,7 @@ const RegistrationScreen = () => {
             />
           </Pressable>
         )}
+
       </View>
 
       <View style={styles.errorContainer}>
@@ -340,7 +363,7 @@ const RegistrationScreen = () => {
         {/* Conduct Register */}
         <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword)}
+          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio, background, image)}
           style={styles.button}
         >
           <Text style={styles.buttonInput}>Register</Text>
@@ -406,6 +429,8 @@ const styles = StyleSheet.create({
   },
   inputDate:{
     flex:1,
+    paddingVertical:0,
+    color:'#B7B7B7'
     marginLeft:"-110%",
     marginTop:"130%",
     alignItems:"center",    
@@ -451,9 +476,11 @@ const styles = StyleSheet.create({
     fontWeight:'600'
   },
   dateTimeContainer: {
+
     marginTop:-120,
     justifyContent:'center',
     alignItems: 'center',
     backgroundColor: 'grey',
+
   },
 })

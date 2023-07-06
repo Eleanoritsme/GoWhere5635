@@ -53,18 +53,6 @@ const LoginScreen = () => {
       }
     }
   }
-
-  const changePassword = () => {
-    if (email != null) {
-      firebase.auth().sendPasswordResetEmail(email)
-      .then(() => {
-        alert("Password rest email has been sent")
-      }).catch((error) => {
-        alert(error.message)
-      })
-    }
-  }
-  
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
@@ -82,7 +70,7 @@ const LoginScreen = () => {
   }
 
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex:1, top:15,}}>
     <ScrollView>
       {/* LoginPage Logo */}
         <View style={styles.logo}>
