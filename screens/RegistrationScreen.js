@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, Platform, Pressable, View, Image} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform} from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -13,6 +13,8 @@ import * as SplashScreen from 'expo-splash-screen'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 SplashScreen.preventAutoHideAsync();
 
@@ -32,51 +34,31 @@ const RegistrationScreen = () => {
   const [date, setDate] = useState(new Date());
   const [dateSelected, setDateSelected] = useState(false);
   const [show, setShow] = useState(false);
-
-  const [dateOfBirth, setDateOfBirth] = useState('');
   
-  const toggleDatePicker = () => {
-    setShow(!show);
-  }
+  
+  const OnChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setDate(currentDate);
 
-  const OnChange = ({type}, selectedDate) => {
-    if (type == 'set') {
-      const currentDate = selectedDate;
-      setDate(currentDate);
-
-      if (Platform.OS === "android") {
-        toggleDatePicker();
-        setDateOfBirth(fDate(currentDate))
-      }
-    } else {
-      toggleDatePicker();
-    }
+    let tempDate = new Date(currentDate);
+    let fDate =
+      tempDate.getDate() +
+      '/' +
+      (tempDate.getMonth() + 1).toString().padStart(2, '0') +
+      '/' +
+      tempDate.getFullYear();
+    setDateOfBirth(fDate);
+    setDateSelected(true);
   };
 
-  const confirmDateIOS = () => {
-    setDateOfBirth(fDate(date));
-    toggleDatePicker();
-  }
-
-  const fDate = (rawDate) => {
-    let tempDate = new Date(rawDate);
-    return tempDate.getDate() +
-    '/' +
-    (tempDate.getMonth() + 1).toString().padStart(2, '0') +
-    '/' +
-    tempDate.getFullYear();
-  }
-
-  
-
-  /*const showMode = (currentMode) => {
-
+  const showMode = (currentMode) => {
     setShow(true);
   };
 
   function handleDOBpressed() {
     showMode('date')
   }
+
  
   const [showError, setShowError] = useState(false)
   const [error, setError] = useState({})
@@ -117,6 +99,12 @@ const RegistrationScreen = () => {
       console.log(error)
     } else {
       await firebase.auth().createUserWithEmailAndPassword(email, password)
+      .catch((error => {
+      if (error.code == 'auth/email-already-in-use') {
+        alert('The email address is already in use by another account.')
+      } 
+      console.log(error.message)
+    }))
     .then(() => {
       firebase.auth().currentUser.sendEmailVerification({
         handleCodeInApp: true,
@@ -145,12 +133,7 @@ const RegistrationScreen = () => {
         console.log(error.message)
       })
     })
-    .catch((error => {
-      if (error.code == 'auth/email-already-in-use') {
-        alert('The email address is already in use by another account.')
-      } 
-      console.log(error.message)
-    }))
+    
   }
 }
 
@@ -172,9 +155,13 @@ const RegistrationScreen = () => {
     return null;
   }
 
-
-  
   return (
+    <KeyboardAwareScrollView 
+    style={{flex:1}}
+    enableAutomaticScroll
+    extraScrollHeight={50}
+    keyboardVerticalOffset={70}
+    >
     <SafeAreaView style={{flex:1, top:15,}}>
     {/* LoginPage Logo */}
       <View style={styles.logo}>
@@ -217,14 +204,14 @@ const RegistrationScreen = () => {
           </Text>
       </View>
 
-      <View style={styles.inputContainer}>
+      <View style={styles.inputContainer}
+      behavior='padding'>
         <Fontisto 
           name='date' 
           size={20} 
           color='#8C8383'
           style={styles.icon}
         />
-
         <TextInput
           style={styles.input} 
           placeholder='Date Of Birth (MM/DD/YYYY)'
@@ -233,43 +220,6 @@ const RegistrationScreen = () => {
           autoCorrect={false}
           keyboardType='default'
         /> 
-
-
-        {show && (
-          <DateTimePicker
-            mode='date'
-            display='default'
-            value={date}
-            onChange={OnChange}
-            style={{height:170, marginTop:-10}}
-            //styles={styles.dateTimeContainer}
-          />
-        )}
-
-        {show && Platform.OS === "ios" && (
-          <View style = {{flex:1, flexDirection:"row", justifyContent: "space-around"}}>
-            <TouchableOpacity onPress={confirmDateIOS}>
-              <Text style={styles.inputDate}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {!show && ( 
-          <Pressable
-            onPress = {toggleDatePicker}
-          >
-            <TextInput 
-              style={styles.input}
-              placeholder="Date of Birth (MM/DD/YYYY)"
-              placeholderTextColor={"#B7B7B7"}
-              value={dateOfBirth}
-              onChangeText={setDateOfBirth}
-              editable={false}
-              onPressIn={toggleDatePicker}
-            />
-          </Pressable>
-        )}
-
       </View>
 
       <View style={styles.errorContainer}>
@@ -281,7 +231,8 @@ const RegistrationScreen = () => {
 
       <View 
         style={styles.inputContainer}
-        behavior='padding'>
+        behavior='padding'
+      >
         <Fontisto 
           name='email' 
           size={20} 
@@ -308,7 +259,8 @@ const RegistrationScreen = () => {
 
         <View 
           style={styles.inputContainer}
-          behavior='padding'>
+          behavior='padding'
+        >
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
@@ -335,7 +287,8 @@ const RegistrationScreen = () => {
 
         <View 
           style={styles.inputContainer}
-          behavior='padding'>
+          behavior='padding'
+        >
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
@@ -381,6 +334,7 @@ const RegistrationScreen = () => {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    </KeyboardAwareScrollView>
   )
 }
 
@@ -425,16 +379,11 @@ const styles = StyleSheet.create({
   },
   input:{
     flex:1,
-    paddingVertical:0
   },
   inputDate:{
     flex:1,
     paddingVertical:0,
     color:'#B7B7B7'
-    marginLeft:"-110%",
-    marginTop:"130%",
-    alignItems:"center",    
-    width:150,
   },
   errorContainer:{
     marginTop:8,
@@ -476,11 +425,10 @@ const styles = StyleSheet.create({
     fontWeight:'600'
   },
   dateTimeContainer: {
-
-    marginTop:-120,
+    flex:1,
+    marginTop:'110%',
     justifyContent:'center',
     alignItems: 'center',
-    backgroundColor: 'grey',
-
+    backgroundColor: '#F5F5F5',
   },
 })

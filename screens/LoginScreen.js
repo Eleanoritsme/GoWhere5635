@@ -11,6 +11,8 @@ import * as SplashScreen from 'expo-splash-screen'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+
 SplashScreen.preventAutoHideAsync();
 
 const LoginScreen = () => {
@@ -53,6 +55,7 @@ const LoginScreen = () => {
       }
     }
   }
+  
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
@@ -70,6 +73,12 @@ const LoginScreen = () => {
   }
 
   return (
+    <KeyboardAwareScrollView 
+    style={{flex:1}}
+    enableAutomaticScroll
+    extraScrollHeight={50}
+    keyboardVerticalOffset={70}
+    >
     <SafeAreaView style={{flex:1, top:15,}}>
     <ScrollView>
       {/* LoginPage Logo */}
@@ -175,7 +184,7 @@ const LoginScreen = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
-    
+    </KeyboardAwareScrollView>
   )
 }
 
