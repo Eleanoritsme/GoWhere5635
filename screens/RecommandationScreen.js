@@ -12,6 +12,7 @@ import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
 const RecommandationScreen = ({route}) => {
+
   const {selectedCategory, price, time, location} = route.params;
   console.log(price)
   console.log(time)
@@ -101,6 +102,7 @@ const RecommandationScreen = ({route}) => {
   return (
     <SafeAreaView>
       <View style={styles.title} >
+
         <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
         <Image
           source={require('../assets/images/users/Default_pfp.jpg')} 
@@ -111,6 +113,7 @@ const RecommandationScreen = ({route}) => {
             height:90,
             borderRadius:400 / 2
           }}
+
         />
         </TouchableOpacity>
       </View>
@@ -186,6 +189,7 @@ const RecommandationScreen = ({route}) => {
 export default RecommandationScreen
 
 const styles = StyleSheet.create({
+
   map: {
     height: 500,
     marginHorizontal:10,

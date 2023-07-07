@@ -11,6 +11,7 @@ import * as SplashScreen from 'expo-splash-screen'
 const PasswordResettingScreen = () => {
   const navigation = useNavigation()
   const [email, setEmail] = useState('')
+
   const changePassword = () => {
     if (email != null) {
       firebase.auth().sendPasswordResetEmail(email)
@@ -60,9 +61,12 @@ const PasswordResettingScreen = () => {
       <TextInput
       placeholder='example@gmail.com'
       placeholderTextColor={'#ACACAC'}
-      onChangeText={(text => setEmail(text))}
+      autoCorrect={false}
+      autoCapitalize='none'
+      onChangeText={(text) => setEmail(text)}
       fontSize={14}
         style={{
+          letterSpacing:0.6,
           left:20,
           borderWidth:1,
           height:50,
@@ -70,7 +74,8 @@ const PasswordResettingScreen = () => {
           borderColor:'#4F200D',
           borderRadius:6,
           marginBottom:40,
-          padding:15,
+          paddingLeft:15,
+          paddingHorizontal:10,
           fontFamily:'Inter-Medium'
         }}>
       </TextInput>
@@ -84,14 +89,14 @@ const PasswordResettingScreen = () => {
           borderRadius:10,
           marginBottom:40,
         }}
-        onPress={() => changePassword()}>
+        onPress={() => {changePassword()}}>
           <Text style={{
             fontFamily:'Inder-Regular',
             fontSize:20,
             color:'#4F200D'
           }}>Send An Email</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{
+        {/* <TouchableOpacity style={{
           backgroundColor:'#FFCE84',
           width:256,
           height:48,
@@ -106,7 +111,7 @@ const PasswordResettingScreen = () => {
             fontSize:20,
             color:'#4F200D'
           }}>Back To Login</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
     </SafeAreaView>
   )
 }

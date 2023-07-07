@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,ScrollView, Alert, Image} from 'react-native'
+import { StyleSheet, Text, View,ScrollView, Alert, Modal, Image} from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -229,8 +229,11 @@ const FilterScreen = ({route}) => {
   
 
   /*const[data, setData] = useState('');
-  const [totalResults, setTotalResults] = useState(0);
+=======
+  const navigation = useNavigation()
 
+  const[data, setData] = useState('');
+  const [totalResults, setTotalResults] = useState(0);
   const getData = async () => {
     try {
       //Get the unix time for timeText
@@ -286,6 +289,7 @@ const FilterScreen = ({route}) => {
   //console.log(data)
   //console.log(userChosenLocation)
   
+
   const navigation = useNavigation()
   
   const [fontsLoaded] = useFonts({
@@ -315,14 +319,16 @@ const FilterScreen = ({route}) => {
           </Text>
           <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
           <Image
-          source={require('../assets/images/users/Default_pfp.jpg')} 
-          style={{
-            marginLeft:20,
+            source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
+            style={{
+              marginLeft:40,
               width:90,
               height:90,
-              borderRadius:400 / 2
-          }}
-          />
+              borderRadius:400 / 2,
+              bottom:8
+            }}
+            />
+
           </TouchableOpacity>
         </View>
         
@@ -473,7 +479,6 @@ const FilterScreen = ({route}) => {
               //getData();
               navigation.navigate('Main', { selectedCategory:selectedCategory, price: priceSelected, time: timeText, location: userChosenLocation});
                  }}
-            //存储选择 要添加一下 下面同理
             style={
               {backgroundColor:'#FFCE84',
               width:280,

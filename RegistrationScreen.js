@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -14,8 +14,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-
 SplashScreen.preventAutoHideAsync();
 
 const RegistrationScreen = () => {
@@ -28,12 +26,11 @@ const RegistrationScreen = () => {
   const [country, setCountry] = useState(null)
   const [city, setCity] = useState(null)
   const [bio, setBio] = useState(null)
-  const [background, setBackground] = useState(null)
-  const [image, setImage] = useState(null)
 
   const [date, setDate] = useState(new Date());
   const [dateSelected, setDateSelected] = useState(false);
   const [show, setShow] = useState(false);
+  
   
   const OnChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -90,7 +87,7 @@ const RegistrationScreen = () => {
     return error
   }
 
-  const registerUser = async (userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio, background, image) => {
+  const registerUser = async (userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio) => {
     const error = getError(userName, dateOfBirth, email, password, confirmPassword)
     if (Object.keys(error).length) {
       setShowError(true)
@@ -98,12 +95,6 @@ const RegistrationScreen = () => {
       console.log(error)
     } else {
       await firebase.auth().createUserWithEmailAndPassword(email, password)
-      .catch((error => {
-      if (error.code == 'auth/email-already-in-use') {
-        alert('The email address is already in use by another account.')
-      } 
-      console.log(error.message)
-    }))
     .then(() => {
       firebase.auth().currentUser.sendEmailVerification({
         handleCodeInApp: true,
@@ -114,7 +105,7 @@ const RegistrationScreen = () => {
       }).catch((error) => {
         alert(error.message)
       })
-      .then(() => {
+      .thenjma(() => {
         firebase.firestore().collection('users').doc(firebase.auth().currentUser.uid)
         .set({
           userName,
@@ -124,15 +115,18 @@ const RegistrationScreen = () => {
           city,
           bio,
           email,
-          background,
-          image
         })
       })
       .catch((error) => {
         console.log(error.message)
       })
     })
-    
+    .catch((error => {
+      if (error.code == 'auth/email-already-in-use') {
+        alert('The email address is already in use by another account.')
+      } 
+      console.log(error.message)
+    }))
   }
 }
 
@@ -154,14 +148,10 @@ const RegistrationScreen = () => {
     return null;
   }
 
+
+  
   return (
-    <KeyboardAwareScrollView 
-    style={{flex:1}}
-    enableAutomaticScroll
-    extraScrollHeight={50}
-    keyboardVerticalOffset={70}
-    >
-    <SafeAreaView style={{flex:1, top:15,}}>
+    <SafeAreaView style={{flex:1}}>
     {/* LoginPage Logo */}
       <View style={styles.logo}>
         <Image
@@ -203,8 +193,7 @@ const RegistrationScreen = () => {
           </Text>
       </View>
 
-      <View style={styles.inputContainer}
-      behavior='padding'>
+      <View style={styles.inputContainer}>
         <Fontisto 
           name='date' 
           size={20} 
@@ -230,8 +219,7 @@ const RegistrationScreen = () => {
 
       <View 
         style={styles.inputContainer}
-        behavior='padding'
-      >
+        behavior='padding'>
         <Fontisto 
           name='email' 
           size={20} 
@@ -258,8 +246,7 @@ const RegistrationScreen = () => {
 
         <View 
           style={styles.inputContainer}
-          behavior='padding'
-        >
+          behavior='padding'>
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
@@ -286,8 +273,7 @@ const RegistrationScreen = () => {
 
         <View 
           style={styles.inputContainer}
-          behavior='padding'
-        >
+          behavior='padding'>
           <Ionicons
             name='ios-lock-closed-outline' 
             size={20} 
@@ -315,7 +301,7 @@ const RegistrationScreen = () => {
         {/* Conduct Register */}
         <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio, background, image)}
+          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio)}
           style={styles.button}
         >
           <Text style={styles.buttonInput}>Register</Text>
@@ -333,7 +319,6 @@ const RegistrationScreen = () => {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
-    </KeyboardAwareScrollView>
   )
 }
 
@@ -378,6 +363,7 @@ const styles = StyleSheet.create({
   },
   input:{
     flex:1,
+    paddingVertical:0
   },
   inputDate:{
     flex:1,

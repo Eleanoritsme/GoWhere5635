@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, TouchableOpacity} from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import React from 'react';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -32,7 +32,11 @@ import Modal from "react-native-modal";
 import ActionSheet from './ActionSheet';
 import ActionSheetUpRightCorner from './ActionSheetUpRightCorner';
 import AfterChoosingScreen from './screens/AfterChoosingScreen';
+import * as ImagePicker from 'expo-image-picker';
+import * as SplashScreen from 'expo-splash-screen';
+
 WebBrowser.maybeCompleteAuthSession();
+SplashScreen.preventAutoHideAsync();
 
 const Stack = createNativeStackNavigator();
 
@@ -40,46 +44,26 @@ function App() {
   const navigation = useNavigation();
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState(null);
+
+  const handleSignOut = () => {
+    firebase.auth().signOut();
+  }
   
   const actionItems = [
     {
       id: 1,
-      label: 'Take Photo',
-      onPress: () => {
-      }
-    },
-    {
-      id: 2,
-      label: 'Choose from Album',
-      onPress: () => {
-      }
-    },
-    {
-      id: 3,
-      label: 'Save Photo',
-      onPress: () => {
-      }
-    },
-  ];
-  const [actionSheet, setActionSheet] = useState(false);
-  const closeActionSheet = () => setActionSheet(false);
-
-  const actionItemsUpRightCorner = [
-    {
-      id: 1,
       label: 'Edit Profile',
-      onPress: () => {navigation.navigate('Edit Profile')
+      onPress: () => {navigation.navigate('Edit Profile'); setActionSheet(false)
       }
     },
     {
       id: 2,
       label: 'Log Out',
-      onPress: () => {
+      onPress: () => {handleSignOut(); setActionSheet(false)}
     },
-  }
   ];
-  const [actionSheetUpRightCorner, setActionSheetUpRightCorner] = useState(false);
-  const closeActionSheetUpRightCorner = () => setActionSheetUpRightCorner(false);
+  const [actionSheet, setActionSheet] = useState(false);
+  const closeActionSheet = () => setActionSheet(false);
 
   function onAuthStateChanged(user) {
     setUser(user);
@@ -256,20 +240,21 @@ function App() {
           ),
           headerRight: () => (
             <View>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => setActionSheetUpRightCorner(true)}>
+              <TouchableOpacity activeOpacity={0.7} onPress={() => setActionSheet(true)}>
                 <Entypo name='dots-three-horizontal' size={24} color='#000' />
               </TouchableOpacity>
               <Modal
-                isVisible={actionSheetUpRightCorner}
+                isVisible={actionSheet}
                 backdropOpacity={0}
+                
                 style={{
                   margin: 0,
                   justifyContent: 'flex-end'
                 }}
               >
-              <ActionSheetUpRightCorner
-                actionItemsUpRightCorner={actionItemsUpRightCorner}
-                onCancel={closeActionSheetUpRightCorner}
+              <ActionSheet
+                actionItems={actionItems}
+                onCancel={closeActionSheet}
               />
               </Modal>
             </View>
@@ -328,33 +313,13 @@ function App() {
               <Ionicons name="chevron-back" size={24} />
             </TouchableOpacity>
           ),
-          headerRight: () => (
-            <View>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => setActionSheet(true)}>
-                <Entypo name='dots-three-horizontal' size={24} color='#000' />
-              </TouchableOpacity>
-              <Modal
-                isVisible={actionSheet}
-                style={{
-                  margin: 0,
-                  justifyContent: 'flex-end'
-                }}
-              >
-              <ActionSheet
-                actionItems={actionItems}
-                onCancel={closeActionSheet}
-              />
-              </Modal>
-            </View>
-          ),
-            headerStyle:{
-              height:150,
-              backgroundColor:'#F8F6F4',
-            },
-            
-            contentStyle:{
-              backgroundColor:"#F8F6F4"
-            }
+          headerStyle:{
+            height:150,
+            backgroundColor:'#F8F6F4',
+          },
+          contentStyle:{
+            backgroundColor:"#F8F6F4"
+          }
         }}/>
       <Stack.Screen 
         name="User Image" 
@@ -473,4 +438,3 @@ function App() {
       </NavigationContainer>
     )
   }
-
