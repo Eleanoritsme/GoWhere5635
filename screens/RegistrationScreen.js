@@ -21,13 +21,9 @@ const RegistrationScreen = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-
-  const [date, setDate] = useState(new Date());
-  const [dateSelected, setDateSelected] = useState(false);
-  const [show, setShow] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState('');
   
-  const toggleDatePicker = () => {
+  /*const toggleDatePicker = () => {
     setShow(!show);
   }
 
@@ -61,7 +57,7 @@ const RegistrationScreen = () => {
 
   
 
-  /*const showMode = (currentMode) => {
+  const showMode = (currentMode) => {
     setShow(true);
   };
 
@@ -212,41 +208,15 @@ const RegistrationScreen = () => {
           color='#8C8383'
           style={styles.icon}
         />
-
-        {show && (
-          <DateTimePicker
-            mode='date'
-            display='default'
-            value={date}
-            onChange={OnChange}
-            style={{height:170, marginTop:-10}}
-            //styles={styles.dateTimeContainer}
-          />
-        )}
-
-        {show && Platform.OS === "ios" && (
-          <View style = {{flex:1, flexDirection:"row", justifyContent: "space-around"}}>
-            <TouchableOpacity onPress={confirmDateIOS}>
-              <Text style={styles.inputDate}>Confirm</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {!show && ( 
-          <Pressable
-            onPress = {toggleDatePicker}
-          >
-            <TextInput 
-              style={styles.input}
-              placeholder="Date of Birth (MM/DD/YYYY)"
-              placeholderTextColor={"#B7B7B7"}
-              value={dateOfBirth}
-              onChangeText={setDateOfBirth}
-              editable={false}
-              onPressIn={toggleDatePicker}
-            />
-          </Pressable>
-        )}
+        <TextInput 
+          style={styles.input}
+          placeholder="Date of Birth (DD/MM/YYYY)"
+          placeholderTextColor={"#B7B7B7"}
+          value={dateOfBirth}
+          autoCapitalize='none'
+          autoCorrect={false}
+          onChangeText={(dateOfBirth) => setDateOfBirth(dateOfBirth)}
+        />
       </View>
 
       <View style={styles.errorContainer}>
