@@ -34,6 +34,7 @@ import ActionSheetUpRightCorner from './ActionSheetUpRightCorner';
 import AfterChoosingScreen from './screens/AfterChoosingScreen';
 import * as ImagePicker from 'expo-image-picker';
 import * as SplashScreen from 'expo-splash-screen';
+import { Alert } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 SplashScreen.preventAutoHideAsync();
@@ -59,7 +60,13 @@ function App() {
     {
       id: 2,
       label: 'Log Out',
-      onPress: () => {handleSignOut(); setActionSheet(false)}
+      onPress: () => {Alert.alert(
+        'Warning',
+        'Are you sure to log out?',
+        [
+          {text: 'Confirm', style: 'cancel', onPress: () => {handleSignOut()}},
+          {text: 'Cancel', style: 'destructive', onPress: () => console.log('Cancel Pressed')}
+        ]); setActionSheet(false)}
     },
   ];
   const [actionSheet, setActionSheet] = useState(false);
