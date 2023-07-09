@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,ScrollView, Alert, Modal, Image} from 'react-native'
+import { StyleSheet, Text, View,ScrollView, Modal, Image} from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -11,13 +11,19 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import moment from 'moment';
 import CheckBox from '../CheckBoxComponent'
-import AppLoading from 'expo-app-loading'
+import { firebase } from '../config'
+import { useFocusEffect } from '@react-navigation/native'
 
 const FilterScreen = ({route}) => {
+  useFocusEffect(
+    React.useCallback(() => {
+      getUser();
+    }, [navigation])
+  )
+
   const {selectedCategory} = route.params;
   console.log(selectedCategory);
 
-  
   //For time picker
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('time');
@@ -26,7 +32,7 @@ const FilterScreen = ({route}) => {
   const [timeText, setTimeText] = useState('')
 
   //https://www.youtube.com/watch?v=Imkw-xFFLeE&t=298s
-  /*const OnChange = () => {
+  const OnChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     //setDate(currentDate);
@@ -100,17 +106,13 @@ const FilterScreen = ({route}) => {
           const addressComponents = results[0].address_components;
           const route = addressComponents.find(component => component.types.includes('route'));
           const neighborhood = addressComponents.find(component => component.types.includes('neighborhood'));
-          const sublocale = addressComponents.find(component => component.types.includes('sublocality'));
-          const locale = addressComponents.find(component => component.types.includes('locality'));
           let streetname = '';
           if (route) {
-            streetname = route.short_name + " , " + locale.long_name
+            streetname = route.short_name
           } else if (!route && neighborhood) {
-            streetname = neighborhood.short_name + " , " + locale.long_name
-          } else if (!route && !neighborhood && sublocale) {
-            streetname = sublocale.long_name + " , " + locale.long_name
-          } else if (!route && !neighborhood && !sublocale && locale) {
-            streetname = locale.long_name
+            streetname = neighborhood.short_name
+          } else if (!route && !neighborhood) {
+            streetname = 'No address found'
           }
           console.log('Address:', addressComponents);
           setPlaceName(streetname); 
@@ -152,13 +154,6 @@ const FilterScreen = ({route}) => {
   };
 
   const handleOtherClicked = () => {
-    Alert.alert(
-      'Notice',
-      'Enter the time in 24hr format Eg: 17:00',
-      [
-        { text: 'OK', onPress: () => {TextInputRefer.focus()} },
-      ],
-    );
     setNow(false);
     setOtherTimePeriod(true);
   };
@@ -171,7 +166,7 @@ const FilterScreen = ({route}) => {
   const handleElseWhereClicked = () => {
     setNearMe(false);
     setTypeTheLocation(true);
-   //getCoordinates(userChosenLocation)
+    getCoordinates(userChosenLocation)
   }
 
   const handleButtonPress = (buttonNo) => {
@@ -191,18 +186,24 @@ const FilterScreen = ({route}) => {
     "50++": '4',
   };
 
-  const priceSelected = priceButton.map((buttonNo) => priceMapping[buttonNo]).sort((button1, button2) => button1 - button2);
+  const priceSelected = priceButton.map((buttonNo) => priceMapping[buttonNo])
   console.log(priceSelected);
 
-  //const [latitude, setLatitude] = useState(null);
-  //const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+  useEffect(() => {
+    getCoordinates(userChosenLocation);
+  }, [userChosenLocation]);
   
- /*const getCoordinates = async (place) => {
+  const getCoordinates = async (place) => {
     try {
       const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
         params: {
           address: place,
+          components: 'country:SG',
           key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
+
         }
       });
       const { results } = response.data;
@@ -212,8 +213,7 @@ const FilterScreen = ({route}) => {
         setLongitude(lng);
         console.log('Latitude:', lat);
         console.log('Longitude:', lng);
-        //console.log("Time" + timeText)
-        console.log(results)
+        //console.log(results)
       } else {
         console.log('No results found.');
       }
@@ -222,61 +222,54 @@ const FilterScreen = ({route}) => {
     }
   };
 
-  useEffect(() => {
-    getCoordinates(userChosenLocation);
-  }, [userChosenLocation]);
-  */
-  
   const navigation = useNavigation()
 
   const[data, setData] = useState('');
   const [totalResults, setTotalResults] = useState(0);
+
+  const [user, setUser] = useState();
+  const {uid} = firebase.auth().currentUser;
+
+  const getUser = async() => {
+    try {
+      const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
+      const userData = documentSnapshot.data();
+      setUser(userData);
+    } catch {
+      console.log("get data")
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   const getData = async () => {
     try {
       //Get the unix time for timeText
-      const[hours, minutes] = timeText.split(":");
+      const[hours, minutes] = timeText.split(":")
       const time = moment().hours(hours).minutes(minutes).unix();
-      const geocodingResponse = await axios.get(
-        'https://maps.googleapis.com/maps/api/geocode/json',
+      const response = await axios.get(
+        'https://api.yelp.com/v3/businesses/search',
         {
           params: {
-            address: userChosenLocation,
-            components: 'country:SG',
-            key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
-          }
-        }
-      );
-      const { results } = geocodingResponse.data;
-      const { lat, lng } = results[0].geometry.location;
-      console.log('Location' + userChosenLocation)
-      console.log('lat' + lat)
-      console.log('lng' + lng)
-      const response = await axios.get(
-        'https://api.yelp.com/v3/businesses/search'
-        , { 
-          params: {
             term: selectedCategory,
-            latitude: lat,
-            longitude: lng,
-            //location: userChosenLocation,
-            radius:2000,
-            price: priceSelected.join(","),
+            latitude: latitude,
+            longitude: longitude,
             open_at: time,
-            limit:50,
+            price: priceSelected.join(","),
+            limit:50
           },
-            headers: {
+          headers: {
             Authorization: `Bearer ${'l2WdiWyvXyQZCQcc2XAGz6gn6LcrkK8Peix0d4sjZxpFOGu4E3by9096JwD0Wtp3RkWQ9-6emuXm1cKaivxwxozQZ-iHo0xR_DOL4eAvTQ02pVNINNMqknxBUgJ_ZHYx'}`
           },
         }
       );
       const jsonData = await response.data;
       setData(jsonData);
-      //setData(jsonData);
-      //setTotalResults(data.length);
-      console.log('Time'+ time)
-      console.log('lat' + lat)
-      console.log('long' + lng)
-      navigation.navigate('Main', { recommendations: data, price: priceSelected, time: timeText, location: userChosenLocation});
+      setTotalResults(jsonData.total);
+      console.log(time)
+      navigation.navigate('Main', { recommendations: jsonData });
     } catch (error) {
       console.error('Error fetching Yelp data:', error);
     }
@@ -284,6 +277,9 @@ const FilterScreen = ({route}) => {
   console.log(totalResults)
   //console.log(data)
   //console.log(userChosenLocation)
+  
+
+  
   
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
@@ -293,8 +289,7 @@ const FilterScreen = ({route}) => {
   
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      await SplashScreen.preventAutoHideAsync();
-      SplashScreen.hideAsync();
+      await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]); 
   
@@ -321,7 +316,6 @@ const FilterScreen = ({route}) => {
               bottom:8
             }}
             />
-
           </TouchableOpacity>
         </View>
         
@@ -352,10 +346,8 @@ const FilterScreen = ({route}) => {
               fontFamily:'Inder-Regular',
               fontSize:20,
               color:'#4F200D',
-              width:150
             }}
-            ref={ref => { TextInputRefer = ref; }}
-            placeholder='Choose Time'
+            placeholder='Time HH:MM'
             placeholderTextColor="#4F200D" 
             autoCapitalize='none'
             autoCorrect={false}
@@ -468,12 +460,11 @@ const FilterScreen = ({route}) => {
           style={styles.buttonContainerApply} onLayout={onLayoutRootView}>
           <TouchableOpacity
             onPress={() => 
-              {//getCoordinates(userChosenLocation);
-              getData();
+              {getCoordinates(userChosenLocation); getData();
                  }}
             style={
               {backgroundColor:'#FFCE84',
-              width:280,
+              width:256,
               height:48,
               alignItems:'center',
               justifyContent:'center',
@@ -562,7 +553,6 @@ const styles = StyleSheet.create({
     fontFamily:'Inder-Regular',
     fontSize:20,
     color:'#4F200D',
-    width:235
   },
   dateTimeContainer: {
     flex:1,
