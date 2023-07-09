@@ -1,12 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
-import DateTimePicker from '@react-native-community/datetimepicker';
-import Modal from "react-native-modal";
-
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
@@ -26,6 +23,7 @@ const RegistrationScreen = () => {
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [occupation, setOccupation] = useState(null)
   const [country, setCountry] = useState(null)
+  const [state, setState] = useState(null)
   const [city, setCity] = useState(null)
   const [bio, setBio] = useState(null)
   const [background, setBackground] = useState(null)
@@ -34,6 +32,7 @@ const RegistrationScreen = () => {
   const [date, setDate] = useState(new Date());
   const [dateSelected, setDateSelected] = useState(false);
   const [show, setShow] = useState(false);
+  
   
   const OnChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -90,7 +89,7 @@ const RegistrationScreen = () => {
     return error
   }
 
-  const registerUser = async (userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio, background, image) => {
+  const registerUser = async (userName, dateOfBirth, email, password, confirmPassword, occupation, country, state, city, bio, background, image) => {
     const error = getError(userName, dateOfBirth, email, password, confirmPassword)
     if (Object.keys(error).length) {
       setShowError(true)
@@ -121,6 +120,7 @@ const RegistrationScreen = () => {
           dateOfBirth,
           occupation,
           country,
+          state,
           city,
           bio,
           email,
@@ -213,7 +213,7 @@ const RegistrationScreen = () => {
         />
         <TextInput
           style={styles.input} 
-          placeholder='Date Of Birth (MM/DD/YYYY)'
+          placeholder='Date Of Birth (DD/MM/YYYY)'
           placeholderTextColor={"#B7B7B7"}
           onChangeText={(dateOfBirth) => setDateOfBirth(dateOfBirth)}
           autoCorrect={false}
@@ -315,7 +315,7 @@ const RegistrationScreen = () => {
         {/* Conduct Register */}
         <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio, background, image)}
+          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, state, city, bio, background, image)}
           style={styles.button}
         >
           <Text style={styles.buttonInput}>Register</Text>
