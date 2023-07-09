@@ -7,7 +7,6 @@ import { TextInput } from 'react-native-gesture-handler'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
-import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
 import moment from 'moment';
 import CheckBox from '../CheckBoxComponent'
@@ -42,18 +41,6 @@ const FilterScreen = ({route}) => {
     setTimeText(fTime);
   }
   
-    /*let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' 
-    + tempDate.getFullYear().toString().slice(-2);
-    let fTime = tempDate.getHours() + ' : ' + tempDate.getMinutes().toString().padStart(2, '0');
-    if (mode === 'date') {
-      setDateText(fDate);
-    }
-    else if (mode === 'time') {
-      setTimeText(fTime);
-    }
-  }
-  */
-
   const OnChangeNow = () => {
     const currentDate = new Date
     //setDate(currentDate);
@@ -134,10 +121,6 @@ const FilterScreen = ({route}) => {
 
   //Display selected buttons
   //https://reactgo.com/react-change-button-color-onclick/
-  const [isNowClicked, setIsNowClicked] = useState(false);
-  const [isOtherClicked, setOtherClicked] = useState(false);
-  const [isCurrentClicked, setCurrentClicked] = useState(false);
-  const [isElseWhereButtonPressed, setElseWhereClicked] = useState(false);
   const [priceButton, setPriceButton] = useState([]);
   const [now, setNow] = useState(false);
   const [otherTimePeriod, setOtherTimePeriod] = useState(false);
@@ -177,7 +160,6 @@ const FilterScreen = ({route}) => {
       setPriceButton([...priceButton,buttonNo]);
     }
   }
-  //console.log(priceButton)
 
   const priceMapping = {
     "0-10": '1',
@@ -225,15 +207,7 @@ const FilterScreen = ({route}) => {
   useEffect(() => {
     getCoordinates(userChosenLocation);
   }, [userChosenLocation]);
-  */
-  
 
-  /*const[data, setData] = useState('');
-
-  const navigation = useNavigation()
-
-  const[data, setData] = useState('');
-  const [totalResults, setTotalResults] = useState(0);
 
   const [user, setUser] = useState();
   const {uid} = firebase.auth().currentUser;
@@ -251,46 +225,6 @@ const FilterScreen = ({route}) => {
   useEffect(() => {
     getUser();
   }, []);
-
-  const getData = async () => {
-    try {
-      //Get the unix time for timeText
-      const[hours, minutes] = timeText.split(":")
-      const time = moment().hours(hours).minutes(minutes).unix();
-      const response = await axios.get(
-        'https://api.yelp.com/v3/businesses/search',
-        {
-          params: {
-            term: selectedCategory,
-            latitude: latitude,
-            longitude: longitude,
-            open_at: time,
-            price: priceSelected.join(","),
-            limit:50
-          },
-          headers: {
-            Authorization: `Bearer ${'l2WdiWyvXyQZCQcc2XAGz6gn6LcrkK8Peix0d4sjZxpFOGu4E3by9096JwD0Wtp3RkWQ9-6emuXm1cKaivxwxozQZ-iHo0xR_DOL4eAvTQ02pVNINNMqknxBUgJ_ZHYx'}`
-          },
-        }
-      );
-      const jsonData = await response.data;
-      setData(jsonData);
-
-      //setData(jsonData);
-      //setTotalResults(data.length);
-      console.log('Time'+ time)
-      console.log('lat' + lat)
-      console.log('long' + lng)
-      
-    } catch (error) {
-      console.error('Error fetching Yelp data:', error);
-    }
-  }
-  */
-  //console.log(totalResults)
-  //console.log(data)
-  //console.log(userChosenLocation)
-  
 
   const navigation = useNavigation()
   
@@ -310,7 +244,6 @@ const FilterScreen = ({route}) => {
     return null;
   }
 
-  
   return (    
     <SafeAreaView>
       <ScrollView>
@@ -326,7 +259,7 @@ const FilterScreen = ({route}) => {
               width:90,
               height:90,
               borderRadius:400 / 2,
-              bottom:8
+              bottom:5,
             }}
             />
           </TouchableOpacity>
@@ -389,15 +322,23 @@ const FilterScreen = ({route}) => {
         </View>
 
         <View
-          style={styles.buttonContainerLocation} onLayout={onLayoutRootView}>
-          <View style={styles.group}>
-            <TextInput 
-            style={
-              {marginLeft:33,
-              alignItems:'center',
+          style={{
+            width:300,
+            height:45,
+            marginTop:10,
+            marginBottom:10,
+            backgroundColor:'#FFCE84',
+            borderRadius:10,
+            marginBottom:10,
+            marginLeft:40,
+          }} onLayout={onLayoutRootView}>
+          <TextInput 
+            style={{
+              flex: 1,
               fontFamily:'Inder-Regular',
               fontSize:20,
               color:'#4F200D',
+              textAlign:'center'
             }}
             placeholder='Type the Location'
             placeholderTextColor="#4F200D" 
@@ -407,7 +348,6 @@ const FilterScreen = ({route}) => {
             onChangeText={text => setUserChosenLocation(text)}
             onPressIn={handleElseWhereClicked}
             />
-          </View>
         </View>
 
         <View style={styles.subTitle}>
@@ -526,6 +466,7 @@ const styles = StyleSheet.create({
   },
   buttonContainerNow:{
     width:140,
+    height: 45,
     backgroundColor:'#FFCE84',
     borderRadius:10,
     marginBottom:10,
@@ -533,13 +474,15 @@ const styles = StyleSheet.create({
   },
   buttonContainerOtherTime:{
     width:230,
+    height: 45,
     backgroundColor:'#FFCE84',
     borderRadius:10,
     marginBottom:10,
     marginLeft:40,
   },
   buttonContainerLocation:{
-    width:250,
+    width:300,
+    height:45,
     flexDirection:'column',
     backgroundColor:'#FFCE84',
     borderRadius:10,
@@ -547,22 +490,24 @@ const styles = StyleSheet.create({
     marginLeft:40,
   },
   buttonContainerPrice:{
-    width:160,
+    width:150,
+    height: 45,
     backgroundColor:'#FFCE84',
     borderRadius:10,
     marginBottom:10,
     marginLeft:40,
   },
   buttonContainerPrice2:{
-    width:160,
+    width:150,
+    height: 45,
     backgroundColor:'#FFCE84',
     borderRadius:10,
     marginBottom:10,
-    marginLeft:20,
+    marginLeft:15,
   },
   buttonContainerApply:{
     alignItems:'center',
-    marginTop:20,
+    marginTop:30,
   },
   inputText:{
     alignItems:'center',
