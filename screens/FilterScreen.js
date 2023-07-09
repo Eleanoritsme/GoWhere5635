@@ -222,6 +222,14 @@ const FilterScreen = ({route}) => {
     }
   };
 
+  useEffect(() => {
+    getCoordinates(userChosenLocation);
+  }, [userChosenLocation]);
+  */
+  
+
+  /*const[data, setData] = useState('');
+
   const navigation = useNavigation()
 
   const[data, setData] = useState('');
@@ -267,19 +275,24 @@ const FilterScreen = ({route}) => {
       );
       const jsonData = await response.data;
       setData(jsonData);
-      setTotalResults(jsonData.total);
-      console.log(time)
-      navigation.navigate('Main', { recommendations: jsonData });
+
+      //setData(jsonData);
+      //setTotalResults(data.length);
+      console.log('Time'+ time)
+      console.log('lat' + lat)
+      console.log('long' + lng)
+      
     } catch (error) {
       console.error('Error fetching Yelp data:', error);
     }
   }
-  console.log(totalResults)
+  */
+  //console.log(totalResults)
   //console.log(data)
   //console.log(userChosenLocation)
   
 
-  
+  const navigation = useNavigation()
   
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
@@ -460,7 +473,10 @@ const FilterScreen = ({route}) => {
           style={styles.buttonContainerApply} onLayout={onLayoutRootView}>
           <TouchableOpacity
             onPress={() => 
-              {getCoordinates(userChosenLocation); getData();
+
+              {//getCoordinates(userChosenLocation);
+              //getData();
+              navigation.navigate('Main', { selectedCategory:selectedCategory, price: priceSelected, time: timeText, location: userChosenLocation});
                  }}
             style={
               {backgroundColor:'#FFCE84',

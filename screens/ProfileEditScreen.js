@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font'
 import { firebase } from '../config';
 import * as SplashScreen from 'expo-splash-screen'
 import Entypo from 'react-native-vector-icons/Entypo'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 SplashScreen.preventAutoHideAsync();
 
@@ -69,6 +70,12 @@ const ProfileEditScreen = () => {
   
 
   return (
+    <KeyboardAwareScrollView 
+    style={{flex:1}}
+    extraScrollHeight={120}
+    keyboardVerticalOffset={70}
+    enableResetScrollToCoords={false}
+    >
     <ScrollView
       style={{flex:1}}
       contentContainerStyle={{alignContent:'flex-start', paddingBottom:60}}
@@ -327,11 +334,9 @@ const ProfileEditScreen = () => {
             fontSize:20,
             color:'white'
           }}>Save Changes</Text>
-        </TouchableOpacity>
-      
-
-        
+        </TouchableOpacity>  
   </ScrollView>
+  </KeyboardAwareScrollView>
     
 
     

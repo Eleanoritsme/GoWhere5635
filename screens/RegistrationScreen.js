@@ -35,7 +35,6 @@ const RegistrationScreen = () => {
   const [dateSelected, setDateSelected] = useState(false);
   const [show, setShow] = useState(false);
   
-  
   const OnChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setDate(currentDate);

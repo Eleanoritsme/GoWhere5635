@@ -1,28 +1,24 @@
-
-import { StyleSheet, Text, View, Image, ScrollView, Button } from 'react-native'
-import React, { useCallback, useState, useRef } from 'react'
+import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { firebase } from '../config'
-import { AntDesign } from 'react-native-vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import Animated from 'react-native-reanimated';
-import BottomSheet from 'reanimated-bottom-sheet';
+import axios from 'axios'
+import moment from 'moment';
 
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
 const RecommandationScreen = ({route}) => {
 
-  const {recommendations, price, time, location} = route.params;
+  const {selectedCategory, price, time, location} = route.params;
   console.log(price)
   console.log(time)
   console.log(location)
 
   const navigation = useNavigation()
-  
-
   const [selectedLocationIcon, setSelectedLocationIcon] = useState(null);
   const mapRef = useRef(null);
   const priceMapping = {
@@ -33,6 +29,59 @@ const RecommandationScreen = ({route}) => {
   };
 
   const filterPrice = price.map((buttonNo) => priceMapping[buttonNo]);
+
+  const[recommendations, setRecommendations] = useState('');
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const[hours, minutes] = time.split(":");
+        const timing = moment().hours(hours).minutes(minutes).unix();
+        const geocodingResponse = await axios.get(
+          'https://maps.googleapis.com/maps/api/geocode/json',
+          {
+            params: {
+              address: location,
+              components: 'country:SG',
+              key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
+            }
+          }
+        );
+        const { results } = geocodingResponse.data;
+        const { lat, lng } = results[0].geometry.location;
+        //console.log('Location' + location)
+        console.log('lat' + lat)
+        console.log('lng' + lng)
+        const response = await axios.get(
+          'https://api.yelp.com/v3/businesses/search'
+          , { 
+            params: {
+              term: selectedCategory,
+              latitude: lat,
+              longitude: lng,
+              radius:2000,
+              price: price.join(","),
+              open_at: timing,
+              limit:50,
+            },
+              headers: {
+              Authorization: `Bearer ${'l2WdiWyvXyQZCQcc2XAGz6gn6LcrkK8Peix0d4sjZxpFOGu4E3by9096JwD0Wtp3RkWQ9-6emuXm1cKaivxwxozQZ-iHo0xR_DOL4eAvTQ02pVNINNMqknxBUgJ_ZHYx'}`
+            },
+          }
+        );
+        const jsonData = await response.data;
+        setRecommendations(jsonData);
+        //console.log('Time'+ time)
+        //console.log('lat' + lat)
+        //console.log('long' + lng)
+      } catch (error) {
+        console.error('Error fetching Yelp data:', error);
+      }
+    };
+    getData();
+  }, [selectedCategory, price, time, location]);
+  
+
 
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
@@ -104,8 +153,7 @@ const RecommandationScreen = ({route}) => {
         </MapView>
         <View style={styles.bottomSheetContainer} onLayout={onLayoutRootView}>
           <ScrollView>
-          {recommendations &&
-              recommendations.businesses &&
+          {recommendations && recommendations.businesses &&
               recommendations.businesses.map((item, index) => (
                 <View key={index} style={styles.bottomSheetContent} onLayout={onLayoutRootView}>
                   <Text style={styles.inputText1} 
@@ -122,7 +170,7 @@ const RecommandationScreen = ({route}) => {
                   >
                   {item.name}</Text>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate("Details")}>
+                    onPress={() => {navigation.navigate("Details", {business: item})}}>
                     <Image 
                     style={styles.image}
                     source={require('../assets/images/misc/Locationred.png')}
