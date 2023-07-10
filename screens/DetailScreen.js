@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image} from 'react-native'
+import { StyleSheet, Text, View, Image, Alert} from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -52,7 +52,8 @@ const DetailScreen = ({route}) => {
       address: address,
       phone: business.phone,
       price: business.price,
-      uid:userId
+      uid: userId
+
     })
     .then(() => {
       console.log('Restaurant saved to Firebase!');
@@ -103,7 +104,6 @@ const DetailScreen = ({route}) => {
     return () => unsubscribe();
   }, []);
   console.log('Result' + JSON.stringify(results))
-  //console.log(results[0])
 
   const [checkFilled, setCheckedFilled] = useState(false)
 
@@ -166,12 +166,10 @@ const DetailScreen = ({route}) => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView onLayout={onLayoutRootView}>
     <View style={{
-      flexDirection:'row',
-      marginBottom:20,
-      }}
-      onLayout={onLayoutRootView}>
+      marginBottom:90,
+      }}>
       <View style={{
         flexDirection:'row', 
         left:20,
@@ -182,7 +180,7 @@ const DetailScreen = ({route}) => {
           alignSelf:'center',
           marginRight:10,
           width:30,
-          marginTop:40,
+          top:10,
           height:30,
         }}
         onPress={() => {
@@ -198,7 +196,7 @@ const DetailScreen = ({route}) => {
           alignSelf:'center',
           marginRight:10,
           width:30,
-          marginTop:40,
+          top:10,
           height:30,
         }}
         onPress={() => {
@@ -213,19 +211,23 @@ const DetailScreen = ({route}) => {
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',
         fontSize:20,
-        width:180
+        width:150,
+        top:10,
       }}>{business.name}</Text>
-
-       <Image style={{
+      
+      <Image style={{
+        position:'absolute',
         width:163,
         height:111,
         borderRadius:10,
-        right:10,  
-       }} source={{uri: business ? business.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'}}/>
+        left:190,
+        bottom:-50  
+      }} source={{uri: business ? business.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'}}/>
       </View>
       </View>
-      <View 
-      style={{
+
+      <View style={{
+
         left:20,
         flexDirection:'row',
         marginBottom:60,
@@ -330,7 +332,36 @@ const DetailScreen = ({route}) => {
         alignSelf:'center',
         borderRadius:14,
         justifyContent:'center',
+        marginBottom:20,
       }}
+
+      onPress={() => {saveToCollection(); Alert.alert(
+        'Saved Successfully', 
+        'The place now can be found on the collection list!',
+        [
+          {text: 'OK', style: 'cancel', onPress: () => {}},
+          {text: 'Go to Collection List', onPress: () => {navigation.navigate('PCL')}},
+        ]
+        )}}>
+      <Text style={{
+        alignSelf:'center',
+        fontFamily:'Inter-SemiBold',
+        fontSize:17,
+        lineHeight:22,
+      }}>Save to Collection List</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+      style={{
+        top:30,
+        width:365,
+        height:60,
+        backgroundColor:'#92BDFF',
+        alignSelf:'center',
+        borderRadius:14,
+        justifyContent:'center',
+      }}
+
       onPress={() => {chooseThis(); navigation.navigate('After Choosing')}}>
       <Text style={{
         alignSelf:'center',
@@ -344,4 +375,3 @@ const DetailScreen = ({route}) => {
 }
 
 export default DetailScreen
-

@@ -1,15 +1,13 @@
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
-import React, { useCallback, useState, useRef, useEffect } from 'react'
+import { StyleSheet, Text, View, Image } from 'react-native'
+import React, { useCallback } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { firebase } from '../config'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import axios from 'axios'
-import moment from 'moment';
 
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+
 
 const RecommandationScreen = ({route}) => {
 
@@ -95,10 +93,10 @@ const RecommandationScreen = ({route}) => {
     getUser();
   }, []);
   
+
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
-    "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf'),
-    "Inter-Regular": require('../assets/fonts/Inter-Regular.ttf')
+    "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf')
   });
   
   const onLayoutRootView = useCallback(async () => {
@@ -230,11 +228,11 @@ const RecommandationScreen = ({route}) => {
           </ScrollView>
         </View>
       </View>
+     
       </View>
     </SafeAreaView>
-  );
-};
-
+  )
+}
 
 export default RecommandationScreen
 
@@ -311,3 +309,4 @@ const styles = StyleSheet.create({
     width:35
   }
 })
+

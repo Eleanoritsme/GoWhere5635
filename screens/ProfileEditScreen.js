@@ -1,3 +1,4 @@
+
 import { Text, TouchableOpacity, View, Image, Alert } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
@@ -11,9 +12,102 @@ import { Dropdown } from 'react-native-element-dropdown'
 import axios from 'axios'
 import { useFocusEffect } from '@react-navigation/native'
 
+
 SplashScreen.preventAutoHideAsync();
 
 const ProfileEditScreen = () => {
+  const [countryData, setCountryData] = useState([])
+  const [cityData, setCityData] = useState([])
+  const [stateData, setStateData] = useState([])
+  const [countryName, setCountryName] = useState(null);
+  const [cityName, setCityName] = useState(null);
+  const [stateName, setStateName] = useState(null);
+  const [country, setCountry] = useState(null);
+  const [city, setCity] = useState(null);
+  const [state, setState] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+
+  useEffect(() => {
+    var config = {
+      method: 'get',
+      url: 'https://api.countrystatecity.in/v1/countries',
+      headers: {
+        'X-CSCAPI-KEY': 'SHRPbWNoOTByRUI0ZjhZUGxkdDVHY1FaMk1SVnd3eGU5ZWtnZUY1VQ== '
+      }
+    };
+    
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+      var count = Object.keys(response.data).length;
+      let countryArray = [];
+      for (var i = 0; i < count; i++ ){
+        countryArray.push({
+          value: response.data[i].iso2,
+          label: response.data[i].name,
+        });
+      }
+      setCountryData(countryArray)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }, [])
+
+  const handleState = (countryCode) => {
+    var config = {
+      method: 'get',
+      url: `https://api.countrystatecity.in/v1/countries/${countryCode}/states`,
+      headers: {
+        'X-CSCAPI-KEY': 'SHRPbWNoOTByRUI0ZjhZUGxkdDVHY1FaMk1SVnd3eGU5ZWtnZUY1VQ== '
+      }
+    };
+    
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+      var count = Object.keys(response.data).length;
+      let stateArray = [];
+      for (var i = 0; i < count; i++ ){
+        stateArray.push({
+          value: response.data[i].iso2,
+          label: response.data[i].name,
+        });
+      }
+      setStateData(stateArray)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });    
+  };
+
+  const handleCity = (countryCode, stateCode) =>{
+    var config = {
+      method: 'get',
+      url: `https://api.countrystatecity.in/v1/countries/${countryCode}/states/${stateCode}/cities`,
+      headers: {
+        'X-CSCAPI-KEY': 'SHRPbWNoOTByRUI0ZjhZUGxkdDVHY1FaMk1SVnd3eGU5ZWtnZUY1VQ== '
+      }
+    };
+    
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+      var count = Object.keys(response.data).length;
+      let cityArray = [];
+      for (var i = 0; i < count; i++ ){
+        cityArray.push({
+          value: response.data[i].id,
+          label: response.data[i].name,
+        });
+      }
+      setCityData(cityArray)
+    })
+    .catch(function (error) {
+      console.log(error);
+    });    
+  }
+
   const navigation = useNavigation()
 
   useFocusEffect(
@@ -134,7 +228,7 @@ const ProfileEditScreen = () => {
       dateOfBirth: user.dateOfBirth, 
       occupation: user.occupation, 
       country: countryName, 
-      city: cityName, 
+      city: cityName,
       bio: user.bio,
     })
     .then(() => {
@@ -316,6 +410,7 @@ const ProfileEditScreen = () => {
           maxHeight={300}
           labelField="label"
           valueField="value"
+
           placeholder={user ? user.country : '...'}
           placeholderTextColor='#000000'
           searchPlaceholder="Search Country/Region"
@@ -368,6 +463,7 @@ const ProfileEditScreen = () => {
             setStateName(item.label);
           }}
         /> */}
+
 
       <Text style={{
         fontFamily:'Inter-Bold',
