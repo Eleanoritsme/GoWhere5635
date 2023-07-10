@@ -141,10 +141,10 @@ function App() {
       <Stack.Screen 
         name="Main" 
         component={RecommendationScreen} 
-        options={{ 
-          title:'Recommendations',
-          headerTitleAlign:'left',
-          headerLeft: () => (
+        options={{
+          headerTitle:'',
+          headerTransparent:true,
+          headerLeft: () => ( 
             <TouchableOpacity
               onPress={() => navigation.goBack()}
             >

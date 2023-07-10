@@ -8,7 +8,7 @@ import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
 const DetailScreen = ({route}) => {
-  const { business } = route.params;
+  const { business} = route.params;
   const navigation = useNavigation()
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -19,39 +19,41 @@ const DetailScreen = ({route}) => {
   });
   
   let address = '';
-  if (business.location.address1) {
-    address += business.location.address1;
-  }
-  if (business.location.address2) {
-    address += ` ${business.location.address2}`;
-  }
-  if (business.location.address3) {
-    address += ` ${business.location.address3}`;
+  if (business.address) {
+    address += business.address;
+  } else {
+    if (business.location.address1) {
+      address += business.location.address1;
+    }
+    if (business.location.address2) {
+      address += ` ${business.location.address2}`;
+    }
+    if (business.location.address3) {
+      address += ` ${business.location.address3}`;
+    }
   }
 
   const priceMapping = {
-    "$": '$0 - $10 ',
-    "$$": '$10 - $30 ',
-    "$$$": '$30 - $50 ',
-    "$$$$": '$50+++ ',
+    "$": '$0-10',
+    "$$": '$10-30',
+    "$$$": '$30-50',
+    "$$$$": '$50++',
   };
-
+  
   const filterPrice = priceMapping[business.price];
 
-  const [starFilled, setStarFilled] = useState(false);
-  const [starredBusinesses, setStarredBusinesses] = useState([]);
-
-  console.log(starFilled)
   const handleStarIconPress = () => {
     const userId= firebase.auth().currentUser.uid;
     const db = firebase.firestore();
-    db.collection('users').doc(userId).collection('Star List')
+    db.collection('users').doc(userId)
+    .collection('Star List')
     .add({
       name: business.name,
       address: address,
       phone: business.phone,
       price: business.price,
       uid: userId
+
     })
     .then(() => {
       console.log('Restaurant saved to Firebase!');
@@ -63,10 +65,13 @@ const DetailScreen = ({route}) => {
 
   const handleUnstarredRestaurant = () => {
     const db = firebase.firestore();
+    const userId= firebase.auth().currentUser.uid;
     // Query the saved restaurants collection and find the specific restaurant to remove
-    db.collection('users').doc(firebase.auth().currentUser.uid).collection('Star List')
+    db.collection('users').doc(userId)
+      .collection('Star List')
       .where('name', '==', business.name)
       .where('address', '==', address)
+      .where('phone', '==', business.phone)
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -84,12 +89,14 @@ const DetailScreen = ({route}) => {
         console.error('Error querying saved restaurants:', error);
       });
   };
-  
+
   const [results, setResults] = useState([]);
 
   useEffect(() => {
     const db = firebase.firestore();
-    const unsubscribe = db.collection('users').doc(firebase.auth().currentUser.uid).collection('Star List').onSnapshot((snapshot) => {
+    const userId= firebase.auth().currentUser.uid;
+    const unsubscribe = db.collection('users').doc(userId)
+    .collection('Star List').onSnapshot((snapshot) => {
       const businessData = snapshot.docs.map((doc) => doc.data());
       setResults(businessData);
     });
@@ -146,6 +153,7 @@ const DetailScreen = ({route}) => {
       console.error('Error saving place to collection list:', error);
     });
   };
+
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -219,6 +227,7 @@ const DetailScreen = ({route}) => {
       </View>
 
       <View style={{
+
         left:20,
         flexDirection:'row',
         marginBottom:60,
@@ -318,12 +327,41 @@ const DetailScreen = ({route}) => {
       style={{
         top:30,
         width:365,
+        height:50,
+        backgroundColor:'#92BDFF',
+        alignSelf:'center',
+        borderRadius:14,
+        justifyContent:'center',
+        marginBottom:20,
+      }}
+
+      onPress={() => {saveToCollection(); Alert.alert(
+        'Saved Successfully', 
+        'The place now can be found on the collection list!',
+        [
+          {text: 'OK', style: 'cancel', onPress: () => {}},
+          {text: 'Go to Collection List', onPress: () => {navigation.navigate('PCL')}},
+        ]
+        )}}>
+      <Text style={{
+        alignSelf:'center',
+        fontFamily:'Inter-SemiBold',
+        fontSize:17,
+        lineHeight:22,
+      }}>Save to Collection List</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+      style={{
+        top:30,
+        width:365,
         height:60,
         backgroundColor:'#92BDFF',
         alignSelf:'center',
         borderRadius:14,
         justifyContent:'center',
       }}
+
       onPress={() => {chooseThis(); navigation.navigate('After Choosing')}}>
       <Text style={{
         alignSelf:'center',

@@ -106,4 +106,3 @@ const AfterChoosingScreen = () => {
 }
 
 export default AfterChoosingScreen
-
