@@ -1,13 +1,30 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
-import React, { useCallback } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
+import { firebase } from '../config'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
 const AfterChoosingScreen = () => {
+  const [user, setUser] = useState();
+  const {uid} = firebase.auth().currentUser;
+
+  const getUser = async() => {
+    try {
+      const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
+      const userData = documentSnapshot.data();
+      setUser(userData);
+    } catch {
+      console.log("get data")
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   const navigation = useNavigation()
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -34,7 +51,7 @@ const AfterChoosingScreen = () => {
       }}
       onLayout={onLayoutRootView}>
       <Image
-          source={require('../assets/images/users/Default_pfp.jpg')} 
+          source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
           style={{
             left:130,
             marginLeft:20,
