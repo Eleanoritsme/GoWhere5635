@@ -3,12 +3,12 @@ import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
+import { firebase } from '../config'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
 const DetailScreen = ({route}) => {
-  const { business } = route.params;
+  const { business} = route.params;
   const navigation = useNavigation()
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -19,58 +19,40 @@ const DetailScreen = ({route}) => {
   });
   
   let address = '';
-  if (business.location.address1) {
-    address += business.location.address1;
-  }
-  if (business.location.address2) {
-    address += ` ${business.location.address2}`;
-  }
-  if (business.location.address3) {
-    address += ` ${business.location.address3}`;
-  }
-
-  const [starFilled, setStarFilled] = useState(false);
-  const [starredBusinesses, setStarredBusinesses] = useState([]);
-
-  /*const handleStarPress = (phoneNo) => {
-    if (starredBusiness.includes(phoneNo)) {
-      const businessList = starredBusiness.filter((number) => number !== phoneNo)
-      setStarredBusiness(businessList);
-    } else {
-      setStarredBusiness([...starredBusiness,phoneNo]);
+  if (business.address) {
+    address += business.address;
+  } else {
+    if (business.location.address1) {
+      address += business.location.address1;
+    }
+    if (business.location.address2) {
+      address += ` ${business.location.address2}`;
+    }
+    if (business.location.address3) {
+      address += ` ${business.location.address3}`;
     }
   }
-  */
 
-  //const starred = starredBusinesses.some((businessItem) => businessItem.phone === business.phone);
-  console.log(starFilled)
-  const handleStarIconPress = () => {
-    /*const isStarred = starredBusinesses.some(
-      (businessItem) => businessItem.phone === business.phone
-    );
+  const priceMapping = {
+    "$": '$0-10',
+    "$$": '$10-30',
+    "$$$": '$30-50',
+    "$$$$": '$50++',
+  };
   
-    if (isStarred) {
-      // Remove the business from the starredBusinesses state
-      const updatedStarredBusinesses = starredBusinesses.filter(
-        (businessItem) => businessItem.phone !== business.phone
-      );
-      setStarredBusinesses(updatedStarredBusinesses);
-      setStarFilled(false);
-    } else {
-      // Add the business to the starredBusinesses state
-      setStarredBusinesses([...starredBusinesses, business]);
-      setStarFilled(true);
-    }
-    */
+  const filterPrice = priceMapping[business.price];
 
+  const handleStarIconPress = () => {
     const userId= firebase.auth().currentUser.uid;
     const db = firebase.firestore();
-    db.collection('collectionlist')
+    db.collection('users').doc(userId)
+    .collection('Star List')
     .add({
       name: business.name,
       address: address,
       phone: business.phone,
-      uid: userId
+      price: business.price,
+      uid:userId
     })
     .then(() => {
       console.log('Restaurant saved to Firebase!');
@@ -82,10 +64,13 @@ const DetailScreen = ({route}) => {
 
   const handleUnstarredRestaurant = () => {
     const db = firebase.firestore();
+    const userId= firebase.auth().currentUser.uid;
     // Query the saved restaurants collection and find the specific restaurant to remove
-    db.collection('collectionlist')
+    db.collection('users').doc(userId)
+      .collection('Star List')
       .where('name', '==', business.name)
       .where('address', '==', address)
+      .where('phone', '==', business.phone)
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
@@ -104,41 +89,13 @@ const DetailScreen = ({route}) => {
       });
   };
 
-  /*useEffect(() => {
-    AsyncStorage.setItem('starredBusinesses', JSON.stringify(starredBusinesses))
-      .then(() => {
-        console.log('Starred businesses saved to AsyncStorage!');
-      })
-      .catch((error) => {
-        console.error('Error saving starred businesses to AsyncStorage:', error);
-      });
-  }, [starredBusinesses]);
-  console.log('business:' + starredBusinesses)
-  console.log('filled' + starFilled)
-
-  useEffect(() => {
-    AsyncStorage.getItem('starredBusinesses')
-      .then((value) => {
-        if (value) {
-          const parsedValue = JSON.parse(value);
-          setStarredBusinesses(parsedValue);
-          const isStarred = parsedValue.some(
-            (businessItem) => businessItem.phone === business.phone
-          );
-          setStarFilled(isStarred);
-        }
-      })
-      .catch((error) => {
-        console.error('Error loading starred businesses from AsyncStorage:', error);
-      });
-  }, []);
-  */
-  
   const [results, setResults] = useState([]);
 
   useEffect(() => {
     const db = firebase.firestore();
-    const unsubscribe = db.collection('collectionlist').onSnapshot((snapshot) => {
+    const userId= firebase.auth().currentUser.uid;
+    const unsubscribe = db.collection('users').doc(userId)
+    .collection('Star List').onSnapshot((snapshot) => {
       const businessData = snapshot.docs.map((doc) => doc.data());
       setResults(businessData);
     });
@@ -155,6 +112,48 @@ const DetailScreen = ({route}) => {
     setCheckedFilled(sameBusiness)
   }, [results, business]);
   console.log('check:' + checkFilled)
+  if (business.phone === ''){
+    business.phone = 'contact not available'
+  }
+
+  const chooseThis = () => {
+    const userId= firebase.auth().currentUser.uid;
+    const db = firebase.firestore();
+    db.collection('users').doc(userId).collection('Place List')
+    .add({
+      name: business.name,
+      address: address,
+      phone: business.phone,
+      price: business.price,
+      uid: userId
+    })
+    .then(() => {
+      console.log('Place has been chosen and saved to place list!');
+    })
+    .catch((error) => {
+      console.error('Error saving place to place list:', error);
+    });
+  };
+
+  const saveToCollection = () => {
+    const userId= firebase.auth().currentUser.uid;
+    const db = firebase.firestore();
+    db.collection('users').doc(userId).collection('Collection List')
+    .add({
+      name: business.name,
+      address: address,
+      phone: business.phone,
+      price: business.price,
+      uid: userId
+    })
+    .then(() => {
+      console.log('Place has been chosen and saved to collection list!');
+    })
+    .catch((error) => {
+      console.error('Error saving place to collection list:', error);
+    });
+  };
+
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -171,7 +170,8 @@ const DetailScreen = ({route}) => {
     <View style={{
       flexDirection:'row',
       marginBottom:20,
-      }}>
+      }}
+      onLayout={onLayoutRootView}>
       <View style={{
         flexDirection:'row', 
         left:20,
@@ -215,17 +215,17 @@ const DetailScreen = ({route}) => {
         fontSize:20,
         width:180
       }}>{business.name}</Text>
+
+       <Image style={{
+        width:163,
+        height:111,
+        borderRadius:10,
+        right:10,  
+       }} source={{uri: business ? business.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'}}/>
+      </View>
       </View>
       <View 
       style={{
-        left:90,
-        width:163,
-        height:111,
-        backgroundColor:'#E2E2E2',
-        borderRadius:10,
-      }}></View>
-      </View>
-      <View style={{
         left:20,
         flexDirection:'row',
         marginBottom:60,
@@ -270,7 +270,7 @@ const DetailScreen = ({route}) => {
           fontSize:15,
           alignSelf:'center',
         }}>
-          {business.price}
+          {filterPrice}
         </Text>
       </View>
       <TouchableOpacity 
@@ -298,13 +298,40 @@ const DetailScreen = ({route}) => {
       style={{
         top:30,
         width:365,
+        height:60,
+        backgroundColor:'#92BDFF',
+        alignSelf:'center',
+        borderRadius:14,
+        justifyContent:'center',
+        marginBottom:20,
+      }}
+      onPress={() => {saveToCollection(); Alert.alert(
+        'Saved Successfully', 
+        'The place now can be found on the collection list!',
+        [
+          {text: 'OK', style: 'cancel', onPress: () => {}},
+          {text: 'Go to Collection List', onPress: () => {navigation.navigate('PCL')}},
+        ]
+        )}}>
+      <Text style={{
+        alignSelf:'center',
+        fontFamily:'Inter-SemiBold',
+        fontSize:17,
+        lineHeight:22,
+      }}>Save to Collection List</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+      style={{
+        top:30,
+        width:365,
         height:50,
         backgroundColor:'#92BDFF',
         alignSelf:'center',
         borderRadius:14,
         justifyContent:'center',
       }}
-      onPress={() => {navigation.navigate('After Choosing')}}>
+      onPress={() => {chooseThis(); navigation.navigate('After Choosing')}}>
       <Text style={{
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',

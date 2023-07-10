@@ -390,5 +390,3 @@ const UserProfileScreen = () => {
 }
 
 export default UserProfileScreen
-
-

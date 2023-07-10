@@ -15,16 +15,16 @@ const RecommandationScreen = ({route}) => {
 
   const {selectedCategory, price, time, location} = route.params;
   console.log(price)
-  console.log(time)
+  //console.log(time)
   console.log(location)
 
   const navigation = useNavigation()
   const [selectedLocationIcon, setSelectedLocationIcon] = useState(null);
   const mapRef = useRef(null);
   const priceMapping = {
-    "1": '$, ',
-    "2": '$$, ',
-    "3": '$$$, ',
+    "1": '$ ',
+    "2": '$$ ',
+    "3": '$$$ ',
     "4": '$$$$',
   };
 
@@ -71,18 +71,30 @@ const RecommandationScreen = ({route}) => {
         );
         const jsonData = await response.data;
         setRecommendations(jsonData);
-        //console.log('Time'+ time)
-        //console.log('lat' + lat)
-        //console.log('long' + lng)
       } catch (error) {
         console.error('Error fetching Yelp data:', error);
       }
     };
     getData();
-  }, [selectedCategory, price, time, location]);
+  },[selectedCategory, price, time, location])
+
+  const [user, setUser] = useState();
+  const {uid} = firebase.auth().currentUser;
+
+  const getUser = async() => {
+    try {
+      const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
+      const userData = documentSnapshot.data();
+      setUser(userData);
+    } catch {
+      console.log("get data")
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
   
-
-
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
     "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf'),
@@ -101,23 +113,33 @@ const RecommandationScreen = ({route}) => {
 
   return (
     <SafeAreaView>
+    <TouchableOpacity 
+      onPress={() => {navigation.navigate('User Profile')}}
+      style={{
+        top:25,
+        left:235,
+      }}>
+          <Image
+            source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
+            style={{
+              marginLeft:40,
+              width:90,
+              height:90,
+              borderRadius:400 / 2,
+              bottom:5,
+            }}
+            />
+      </TouchableOpacity>
+    <View style={{
+      position:'absolute',
+      top:50,
+    }}>
+      <Text style={styles.titleText}>
+        Recommendations
+      </Text>
+    </View>
       <View style={styles.title} >
-
-        <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
-        <Image
-          source={require('../assets/images/users/Default_pfp.jpg')} 
-          style={{
-            marginLeft:"70%",
-            marginTop:-20,
-            width:90,
-            height:90,
-            borderRadius:400 / 2
-          }}
-
-        />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.FilterOptionContainer} onLayout={onLayoutRootView}>
+      <View onLayout={onLayoutRootView}>
         <View style={styles.FilterOptionButton}>
           <Text style={styles.FilterOptionButtonText}>
             {time}
@@ -133,6 +155,7 @@ const RecommandationScreen = ({route}) => {
             {filterPrice}
           </Text>
         </View>
+      </View>
       </View>
 
       <View>
@@ -151,7 +174,32 @@ const RecommandationScreen = ({route}) => {
               longitude: selectedLocationIcon ? selectedLocationIcon.longitude : item.coordinates.longitude}} />
             ))}
         </MapView>
-        <View style={styles.bottomSheetContainer} onLayout={onLayoutRootView}>
+        
+        <View style = {styles.starListContainer}>
+          <TouchableOpacity
+              //style={styles.starListContainer}
+              onPress={() => {
+                navigation.navigate("TCL")
+              }}
+            >
+            <Image
+              source={require('../assets/images/misc/Starlist.png')}
+              style={styles.starIcon}
+            />
+          </TouchableOpacity>
+        </View>
+        
+        <View style={{
+           alignSelf:'center',
+          position:'absolute',
+          height:170,
+          width: 360,
+          top:495,
+          borderRadius:10,
+          backgroundColor:'transparent'
+        }}>
+        <View
+        onLayout={onLayoutRootView}>
           <ScrollView>
           {recommendations && recommendations.businesses &&
               recommendations.businesses.map((item, index) => (
@@ -168,7 +216,8 @@ const RecommandationScreen = ({route}) => {
                     }
                   }}
                   >
-                  {item.name}</Text>
+                  {item.name}
+                  </Text>
                   <TouchableOpacity
                     onPress={() => {navigation.navigate("Details", {business: item})}}>
                     <Image 
@@ -179,7 +228,8 @@ const RecommandationScreen = ({route}) => {
                 </View>
               ))}
           </ScrollView>
-          </View>
+        </View>
+      </View>
       </View>
     </SafeAreaView>
   );
@@ -189,26 +239,37 @@ const RecommandationScreen = ({route}) => {
 export default RecommandationScreen
 
 const styles = StyleSheet.create({
-
+  title:{
+    position:'absolute',
+    top:80,
+    flexDirection:'row',
+    marginTop:20,
+    marginLeft:25,
+  },
+  titleText:{
+    fontFamily:'Inter-ExtraBold',
+    fontSize: 24,
+    marginLeft: 50,
+    marginTop: 10,
+  },
   map: {
-    height: 500,
+    top:55,
+    height: 580,
+    alignSelf:'center',
+    width:370,
     marginHorizontal:10,
     marginTop:30,
-    borderRadius:10
+    borderRadius:12
   },
-  bottomSheetContainer: {
-    position:'absolute',
-    height:150,
-    bottom:0,
-    left:10,
-    right:10,
+  bottomSheetContent: {
+    alignItems:'center',
+    justifyContent:'center',
+    flexDirection:'row',
+    backgroundColor: 'white',
+    height:70,
     borderRadius:8,
-    backgroundColor:'#eaeaea'
-  },
-  FilterOptionContainer: {
-    marginBottom:-5,
-    marginTop:-70,
-    marginLeft:40,
+    paddingHorizontal:30,
+    marginTop:2,
   },
   FilterOptionButton: {
     width:150,
@@ -217,108 +278,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#B4DFFF',
     borderRadius: 20,
     marginBottom: 10,
+    justifyContent:'center',
   },
   FilterOptionButtonText: {
     fontFamily: 'Inder-Regular',
     fontSize: 15,
     color: '#000000',
   },
-  bottomSheetContent: {
-    flexDirection:'row',
-    alignContent:'center',
-    backgroundColor: 'white',
-    height:100,
-    borderRadius:8,
-    paddingHorizontal:30,
-    marginTop:2,
+  starListContainer: {
+    position: 'absolute',
+    bottom:370,
+    right:12,
+    padding: 10,
+    borderRadius: 12,
+    zIndex:1,
   },
-  title:{
-    marginLeft:20,
-    marginTop:20,
-  },
-  titleText:{
-    fontFamily:'Inter-ExtraBold',
-    fontSize: 35,
-  },
-  subTitle:{
-    marginTop:20,
-    marginLeft:20,
-    marginBottom:10,
-  },
-  subtitleText:{
-    fontFamily:'Inter-Bold',
-    fontSize:20
-  },
-  listContainer:{
-    height:250,
-    borderColor:'#4F200D',
-    paddingVertical:10,
-    paddingHorizontal:50,
-    marginTop:1,
-    backgroundColor:'#E2F7FF',
-    shadowColor: '#000000',
-    shadowOffset: { height: 2}, 
-    shadowOpacity: 1, 
-    shadowRadius: 1, 
-  },
-  listContainer1:{
-    justifyContent:'space-around',
-    flexDirection:'row',
-    marginTop:20,
-    marginBottom:15,
-    marginLeft:15,
-    marginRight:200,
-  },
-  buttonInput:{
-    borderColor:'#4F200D',
-    borderWidth:2.5,
-    borderRadius:10,
-    paddingVertical:10,
-    paddingHorizontal:50,
-    shadowColor: '#B3B3B3', 
-    shadowOffset: { height: 2, width: 2 }, 
-    shadowOpacity: 1, 
-    shadowRadius: 1, 
-    backgroundColor:'#FDDBB1',
-  },
-  inputContainer1:{
-    flexDirection:'row',
-    justifyContent:'center',
-    width:260,
-  },
-  inputContainer2:{
-    flexDirection:'row',
-    justifyContent:'center',
-    width:65,
-  },
-  inputContainer3:{
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center',
-    width:5,
-    height:20,
+  starIcon: {
+    width: 60,
+    height: 60,
   },
   inputText1:{
     width:280,
-    marginTop: 5,
     fontFamily:'Inter-Bold',
     fontSize:18,
-    color:'black'
-  },
-  inputText2:{
-    fontFamily:'Inter-Regular',
-    fontSize:15,
-    color:'#000000',
-    width:220,
-    marginTop: 10,
-    marginLeft:-30,
-    lineHeight:30
+    color:'black',
+    marginLeft:10,
   },
   image:{
-    //alignItems:'center',
-    marginLeft:25,
-    marginTop:10,
-    height:40,
-    width:40
+    justifyContent:'center',
+    marginLeft:20,
+    height:35,
+    width:35
   }
 })

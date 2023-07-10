@@ -1,12 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform} from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
-import DateTimePicker from '@react-native-community/datetimepicker';
-import Modal from "react-native-modal";
-
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
@@ -34,6 +31,7 @@ const RegistrationScreen = () => {
   const [date, setDate] = useState(new Date());
   const [dateSelected, setDateSelected] = useState(false);
   const [show, setShow] = useState(false);
+  
   
   const OnChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -213,7 +211,7 @@ const RegistrationScreen = () => {
         />
         <TextInput
           style={styles.input} 
-          placeholder='Date Of Birth (MM/DD/YYYY)'
+          placeholder='Date Of Birth (DD/MM/YYYY)'
           placeholderTextColor={"#B7B7B7"}
           onChangeText={(dateOfBirth) => setDateOfBirth(dateOfBirth)}
           autoCorrect={false}

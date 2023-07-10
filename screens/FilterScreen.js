@@ -7,11 +7,9 @@ import { TextInput } from 'react-native-gesture-handler'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
-import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Location from 'expo-location';
-import moment from 'moment';
 import CheckBox from '../CheckBoxComponent'
-import AppLoading from 'expo-app-loading'
+
 
 const FilterScreen = ({route}) => {
   const {selectedCategory} = route.params;
@@ -319,13 +317,13 @@ const FilterScreen = ({route}) => {
           </Text>
           <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
           <Image
-            source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
+            //source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
             style={{
               marginLeft:40,
               width:90,
               height:90,
               borderRadius:400 / 2,
-              bottom:8
+              bottom:5
             }}
             />
 
@@ -359,7 +357,6 @@ const FilterScreen = ({route}) => {
               fontFamily:'Inder-Regular',
               fontSize:20,
               color:'#4F200D',
-              width:150
             }}
             ref={ref => { TextInputRefer = ref; }}
             placeholder='Choose Time'
@@ -391,15 +388,24 @@ const FilterScreen = ({route}) => {
         </View>
 
         <View
-          style={styles.buttonContainerLocation} onLayout={onLayoutRootView}>
+          style={{
+            width:300,
+            height:45,
+            marginTop:10,
+            marginBottom:10,
+            backgroundColor:'#FFCE84',
+            borderRadius:10,
+            marginBottom:10,
+            marginLeft:40,
+          }} onLayout={onLayoutRootView}>
           <View style={styles.group}>
             <TextInput 
             style={
-              {marginLeft:33,
-              alignItems:'center',
+              {flex: 1,
               fontFamily:'Inder-Regular',
               fontSize:20,
               color:'#4F200D',
+              textAlign:'center'
             }}
             placeholder='Type the Location'
             placeholderTextColor="#4F200D" 
@@ -497,86 +503,90 @@ const FilterScreen = ({route}) => {
                                             
   export default FilterScreen
 
-const styles = StyleSheet.create({
-  title:{
-    flexDirection:'row',
-    marginTop:20,
-    marginLeft:25,
-  },
-  titleText:{
-    fontFamily:'Inter-ExtraBold',
-    letterSpacing:1,
-    fontSize: 32,
-  },
-  subTitle:{
-    marginTop:20,
-    marginLeft:20,
-    marginBottom:10,
-
-  },
-  subtitleText:{
-    fontFamily:'Inter-Bold',
-    fontSize:26,
-    letterSpacing:0.5,
-    color:'#4f200D'
-  },
-  group:{
-    flexDirection:'row',
-    marginTop:10,
-    marginBottom:10,
-  },
-  buttonContainerNow:{
-    width:140,
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:40,
-  },
-  buttonContainerOtherTime:{
-    width:230,
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:40,
-  },
-  buttonContainerLocation:{
-    width:250,
-    flexDirection:'column',
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:40,
-  },
-  buttonContainerPrice:{
-    width:160,
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:40,
-  },
-  buttonContainerPrice2:{
-    width:160,
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:20,
-  },
-  buttonContainerApply:{
-    alignItems:'center',
-    marginTop:20,
-  },
-  inputText:{
-    alignItems:'center',
-    fontFamily:'Inder-Regular',
-    fontSize:20,
-    color:'#4F200D',
-    width:235
-  },
-  dateTimeContainer: {
-    flex:1,
-    marginTop:'110%',
-    justifyContent:'center',
-    alignItems: 'center',
-    backgroundColor: '#D3D0D0',
-  },
-})
+  const styles = StyleSheet.create({
+    title:{
+      flexDirection:'row',
+      marginTop:20,
+      marginLeft:25,
+    },
+    titleText:{
+      fontFamily:'Inter-ExtraBold',
+      letterSpacing:1,
+      fontSize: 32,
+    },
+    subTitle:{
+      marginTop:20,
+      marginLeft:20,
+      marginBottom:10,
+  
+    },
+    subtitleText:{
+      fontFamily:'Inter-Bold',
+      fontSize:26,
+      letterSpacing:0.5,
+      color:'#4f200D'
+    },
+    group:{
+      flexDirection:'row',
+      marginTop:10,
+      marginBottom:10,
+    },
+    buttonContainerNow:{
+      width:140,
+      height: 45,
+      backgroundColor:'#FFCE84',
+      borderRadius:10,
+      marginBottom:10,
+      marginLeft:40,
+    },
+    buttonContainerOtherTime:{
+      width:230,
+      height: 45,
+      backgroundColor:'#FFCE84',
+      borderRadius:10,
+      marginBottom:10,
+      marginLeft:40,
+    },
+    buttonContainerLocation:{
+      width:300,
+      height:45,
+      flexDirection:'column',
+      backgroundColor:'#FFCE84',
+      borderRadius:10,
+      marginBottom:10,
+      marginLeft:40,
+    },
+    buttonContainerPrice:{
+      width:150,
+      height: 45,
+      backgroundColor:'#FFCE84',
+      borderRadius:10,
+      marginBottom:10,
+      marginLeft:40,
+    },
+    buttonContainerPrice2:{
+      width:150,
+      height: 45,
+      backgroundColor:'#FFCE84',
+      borderRadius:10,
+      marginBottom:10,
+      marginLeft:15,
+    },
+    buttonContainerApply:{
+      alignItems:'center',
+      marginTop:30,
+    },
+    inputText:{
+      alignItems:'center',
+      fontFamily:'Inder-Regular',
+      fontSize:20,
+      color:'#4F200D',
+    },
+    dateTimeContainer: {
+      flex:1,
+      marginTop:'110%',
+      justifyContent:'center',
+      alignItems: 'center',
+      backgroundColor: '#D3D0D0',
+    },
+  })
