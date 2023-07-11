@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Alert} from 'react-native'
+import { StyleSheet, Text, View, Alert, Image} from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -6,6 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+
+
 
 const DetailScreen = ({route}) => {
   const { business} = route.params;
@@ -33,6 +35,14 @@ const DetailScreen = ({route}) => {
     }
   }
 
+  /*const [image, setImage] = useState(null)
+  if (business.image_url) {
+    setImage(business.image_url)
+  } else {business.image} {
+    setImage(business.image)
+  }
+  */
+  
   const priceMapping = {
     "$": '$0-10',
     "$$": '$10-30',
@@ -52,8 +62,8 @@ const DetailScreen = ({route}) => {
       address: address,
       phone: business.phone,
       price: business.price,
-      uid: userId
-
+      image_url: business.image_url,
+      uid:userId
     })
     .then(() => {
       console.log('Restaurant saved to Firebase!');
@@ -125,6 +135,7 @@ const DetailScreen = ({route}) => {
       address: address,
       phone: business.phone,
       price: business.price,
+      image_url: business.image_url,
       uid: userId
     })
     .then(() => {
@@ -144,6 +155,7 @@ const DetailScreen = ({route}) => {
       address: address,
       phone: business.phone,
       price: business.price,
+      image_url: business.image_url,
       uid: userId
     })
     .then(() => {
@@ -168,6 +180,8 @@ const DetailScreen = ({route}) => {
   return (
     <SafeAreaView onLayout={onLayoutRootView}>
     <View style={{
+      marginBottom:90,
+      }}>
       marginBottom:90,
       }}>
       <View style={{
@@ -214,7 +228,7 @@ const DetailScreen = ({route}) => {
         width:150,
         top:10,
       }}>{business.name}</Text>
-      
+
       <Image style={{
         position:'absolute',
         width:163,
@@ -222,12 +236,12 @@ const DetailScreen = ({route}) => {
         borderRadius:10,
         left:190,
         bottom:-50  
-      }} source={{uri: business ? business.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'}}/>
+      }} source={{uri: business ? business.image_url || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'
+       : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'}}/>
       </View>
       </View>
 
       <View style={{
-
         left:20,
         flexDirection:'row',
         marginBottom:60,
@@ -361,8 +375,7 @@ const DetailScreen = ({route}) => {
         borderRadius:14,
         justifyContent:'center',
       }}
-
-      onPress={() => {chooseThis(); navigation.navigate('After Choosing')}}>
+      onPress={() => {chooseThis(); navigation.navigate('After Choosing',{business: business})}}>
       <Text style={{
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',

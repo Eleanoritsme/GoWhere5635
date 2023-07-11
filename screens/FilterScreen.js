@@ -12,6 +12,7 @@ import CheckBox from '../CheckBoxComponent'
 import { firebase } from '../config'
 import { useFocusEffect } from '@react-navigation/native'
 
+
 const FilterScreen = ({route}) => {
   useFocusEffect(
     React.useCallback(() => {
@@ -332,9 +333,9 @@ const FilterScreen = ({route}) => {
             marginBottom:10,
             marginLeft:40,
           }} onLayout={onLayoutRootView}>
-          <TextInput 
-            style={{
-              flex: 1,
+            <TextInput 
+            style={
+              {flex: 1,
               fontFamily:'Inder-Regular',
               fontSize:20,
               color:'#4F200D',
