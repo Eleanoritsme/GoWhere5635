@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,ScrollView, Alert, Modal, Image} from 'react-native'
+import { StyleSheet, Text, View,ScrollView, Modal, Image} from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -14,10 +14,15 @@ import { useFocusEffect } from '@react-navigation/native'
 
 
 const FilterScreen = ({route}) => {
+  useFocusEffect(
+    React.useCallback(() => {
+      getUser();
+    }, [navigation])
+  )
+
   const {selectedCategory} = route.params;
   console.log(selectedCategory);
 
-  
   //For time picker
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState('time');
@@ -26,7 +31,7 @@ const FilterScreen = ({route}) => {
   const [timeText, setTimeText] = useState('')
 
   //https://www.youtube.com/watch?v=Imkw-xFFLeE&t=298s
-  /*const OnChange = () => {
+  const OnChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     //setDate(currentDate);
@@ -36,18 +41,6 @@ const FilterScreen = ({route}) => {
     setTimeText(fTime);
   }
   
-    /*let fDate = tempDate.getDate() + '/' + (tempDate.getMonth() + 1) + '/' 
-    + tempDate.getFullYear().toString().slice(-2);
-    let fTime = tempDate.getHours() + ' : ' + tempDate.getMinutes().toString().padStart(2, '0');
-    if (mode === 'date') {
-      setDateText(fDate);
-    }
-    else if (mode === 'time') {
-      setTimeText(fTime);
-    }
-  }
-  */
-
   const OnChangeNow = () => {
     const currentDate = new Date
     //setDate(currentDate);
@@ -100,17 +93,13 @@ const FilterScreen = ({route}) => {
           const addressComponents = results[0].address_components;
           const route = addressComponents.find(component => component.types.includes('route'));
           const neighborhood = addressComponents.find(component => component.types.includes('neighborhood'));
-          const sublocale = addressComponents.find(component => component.types.includes('sublocality'));
-          const locale = addressComponents.find(component => component.types.includes('locality'));
           let streetname = '';
           if (route) {
-            streetname = route.short_name + " , " + locale.long_name
+            streetname = route.short_name
           } else if (!route && neighborhood) {
-            streetname = neighborhood.short_name + " , " + locale.long_name
-          } else if (!route && !neighborhood && sublocale) {
-            streetname = sublocale.long_name + " , " + locale.long_name
-          } else if (!route && !neighborhood && !sublocale && locale) {
-            streetname = locale.long_name
+            streetname = neighborhood.short_name
+          } else if (!route && !neighborhood) {
+            streetname = 'No address found'
           }
           console.log('Address:', addressComponents);
           setPlaceName(streetname); 
@@ -132,10 +121,6 @@ const FilterScreen = ({route}) => {
 
   //Display selected buttons
   //https://reactgo.com/react-change-button-color-onclick/
-  const [isNowClicked, setIsNowClicked] = useState(false);
-  const [isOtherClicked, setOtherClicked] = useState(false);
-  const [isCurrentClicked, setCurrentClicked] = useState(false);
-  const [isElseWhereButtonPressed, setElseWhereClicked] = useState(false);
   const [priceButton, setPriceButton] = useState([]);
   const [now, setNow] = useState(false);
   const [otherTimePeriod, setOtherTimePeriod] = useState(false);
@@ -152,13 +137,6 @@ const FilterScreen = ({route}) => {
   };
 
   const handleOtherClicked = () => {
-    Alert.alert(
-      'Notice',
-      'Enter the time in 24hr format Eg: 17:00',
-      [
-        { text: 'OK', onPress: () => {TextInputRefer.focus()} },
-      ],
-    );
     setNow(false);
     setOtherTimePeriod(true);
   };
@@ -171,7 +149,7 @@ const FilterScreen = ({route}) => {
   const handleElseWhereClicked = () => {
     setNearMe(false);
     setTypeTheLocation(true);
-   //getCoordinates(userChosenLocation)
+    getCoordinates(userChosenLocation)
   }
 
   const handleButtonPress = (buttonNo) => {
@@ -182,7 +160,6 @@ const FilterScreen = ({route}) => {
       setPriceButton([...priceButton,buttonNo]);
     }
   }
-  //console.log(priceButton)
 
   const priceMapping = {
     "0-10": '1',
@@ -191,18 +168,24 @@ const FilterScreen = ({route}) => {
     "50++": '4',
   };
 
-  const priceSelected = priceButton.map((buttonNo) => priceMapping[buttonNo]).sort((button1, button2) => button1 - button2);
+  const priceSelected = priceButton.map((buttonNo) => priceMapping[buttonNo])
   console.log(priceSelected);
 
-  //const [latitude, setLatitude] = useState(null);
-  //const [longitude, setLongitude] = useState(null);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+
+  useEffect(() => {
+    getCoordinates(userChosenLocation);
+  }, [userChosenLocation]);
   
- /*const getCoordinates = async (place) => {
+  const getCoordinates = async (place) => {
     try {
       const response = await axios.get('https://maps.googleapis.com/maps/api/geocode/json', {
         params: {
           address: place,
+          components: 'country:SG',
           key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
+
         }
       });
       const { results } = response.data;
@@ -212,8 +195,7 @@ const FilterScreen = ({route}) => {
         setLongitude(lng);
         console.log('Latitude:', lat);
         console.log('Longitude:', lng);
-        //console.log("Time" + timeText)
-        console.log(results)
+        //console.log(results)
       } else {
         console.log('No results found.');
       }
@@ -225,70 +207,24 @@ const FilterScreen = ({route}) => {
   useEffect(() => {
     getCoordinates(userChosenLocation);
   }, [userChosenLocation]);
-  */
-  
 
-  /*const[data, setData] = useState('');
-=======
-  const navigation = useNavigation()
 
-  const[data, setData] = useState('');
-  const [totalResults, setTotalResults] = useState(0);
-  const getData = async () => {
+  const [user, setUser] = useState();
+  const {uid} = firebase.auth().currentUser;
+
+  const getUser = async() => {
     try {
-      //Get the unix time for timeText
-      const[hours, minutes] = timeText.split(":");
-      const time = moment().hours(hours).minutes(minutes).unix();
-      const geocodingResponse = await axios.get(
-        'https://maps.googleapis.com/maps/api/geocode/json',
-        {
-          params: {
-            address: userChosenLocation,
-            components: 'country:SG',
-            key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
-          }
-        }
-      );
-      const { results } = geocodingResponse.data;
-      const { lat, lng } = results[0].geometry.location;
-      console.log('Location' + userChosenLocation)
-      console.log('lat' + lat)
-      console.log('lng' + lng)
-      const response = await axios.get(
-        'https://api.yelp.com/v3/businesses/search'
-        , { 
-          params: {
-            term: selectedCategory,
-            latitude: lat,
-            longitude: lng,
-            //location: userChosenLocation,
-            radius:2000,
-            price: priceSelected.join(","),
-            open_at: time,
-            limit:50,
-          },
-            headers: {
-            Authorization: `Bearer ${'l2WdiWyvXyQZCQcc2XAGz6gn6LcrkK8Peix0d4sjZxpFOGu4E3by9096JwD0Wtp3RkWQ9-6emuXm1cKaivxwxozQZ-iHo0xR_DOL4eAvTQ02pVNINNMqknxBUgJ_ZHYx'}`
-          },
-        }
-      );
-      const jsonData = await response.data;
-      setData(jsonData);
-      //setData(jsonData);
-      //setTotalResults(data.length);
-      console.log('Time'+ time)
-      console.log('lat' + lat)
-      console.log('long' + lng)
-      
-    } catch (error) {
-      console.error('Error fetching Yelp data:', error);
+      const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
+      const userData = documentSnapshot.data();
+      setUser(userData);
+    } catch {
+      console.log("get data")
     }
-  }
-  */
-  //console.log(totalResults)
-  //console.log(data)
-  //console.log(userChosenLocation)
-  
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   const navigation = useNavigation()
   
@@ -300,8 +236,7 @@ const FilterScreen = ({route}) => {
   
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
-      await SplashScreen.preventAutoHideAsync();
-      SplashScreen.hideAsync();
+      await SplashScreen.hideAsync();
     }
   }, [fontsLoaded]); 
   
@@ -309,7 +244,6 @@ const FilterScreen = ({route}) => {
     return null;
   }
 
-  
   return (    
     <SafeAreaView>
       <ScrollView>
@@ -325,10 +259,10 @@ const FilterScreen = ({route}) => {
               width:90,
               height:90,
               borderRadius:400 / 2,
-              bottom:5
+              bottom:5,
+
             }}
             />
-
           </TouchableOpacity>
         </View>
         
@@ -360,8 +294,7 @@ const FilterScreen = ({route}) => {
               fontSize:20,
               color:'#4F200D',
             }}
-            ref={ref => { TextInputRefer = ref; }}
-            placeholder='Choose Time'
+            placeholder='Time HH:MM'
             placeholderTextColor="#4F200D" 
             autoCapitalize='none'
             autoCorrect={false}
@@ -481,13 +414,14 @@ const FilterScreen = ({route}) => {
           style={styles.buttonContainerApply} onLayout={onLayoutRootView}>
           <TouchableOpacity
             onPress={() => 
+
               {//getCoordinates(userChosenLocation);
               //getData();
               navigation.navigate('Main', { selectedCategory:selectedCategory, price: priceSelected, time: timeText, location: userChosenLocation});
                  }}
             style={
               {backgroundColor:'#FFCE84',
-              width:280,
+              width:256,
               height:48,
               alignItems:'center',
               justifyContent:'center',
@@ -503,90 +437,90 @@ const FilterScreen = ({route}) => {
                                             
   export default FilterScreen
 
-  const styles = StyleSheet.create({
-    title:{
-      flexDirection:'row',
-      marginTop:20,
-      marginLeft:25,
-    },
-    titleText:{
-      fontFamily:'Inter-ExtraBold',
-      letterSpacing:1,
-      fontSize: 32,
-    },
-    subTitle:{
-      marginTop:20,
-      marginLeft:20,
-      marginBottom:10,
-  
-    },
-    subtitleText:{
-      fontFamily:'Inter-Bold',
-      fontSize:26,
-      letterSpacing:0.5,
-      color:'#4f200D'
-    },
-    group:{
-      flexDirection:'row',
-      marginTop:10,
-      marginBottom:10,
-    },
-    buttonContainerNow:{
-      width:140,
-      height: 45,
-      backgroundColor:'#FFCE84',
-      borderRadius:10,
-      marginBottom:10,
-      marginLeft:40,
-    },
-    buttonContainerOtherTime:{
-      width:230,
-      height: 45,
-      backgroundColor:'#FFCE84',
-      borderRadius:10,
-      marginBottom:10,
-      marginLeft:40,
-    },
-    buttonContainerLocation:{
-      width:300,
-      height:45,
-      flexDirection:'column',
-      backgroundColor:'#FFCE84',
-      borderRadius:10,
-      marginBottom:10,
-      marginLeft:40,
-    },
-    buttonContainerPrice:{
-      width:150,
-      height: 45,
-      backgroundColor:'#FFCE84',
-      borderRadius:10,
-      marginBottom:10,
-      marginLeft:40,
-    },
-    buttonContainerPrice2:{
-      width:150,
-      height: 45,
-      backgroundColor:'#FFCE84',
-      borderRadius:10,
-      marginBottom:10,
-      marginLeft:15,
-    },
-    buttonContainerApply:{
-      alignItems:'center',
-      marginTop:30,
-    },
-    inputText:{
-      alignItems:'center',
-      fontFamily:'Inder-Regular',
-      fontSize:20,
-      color:'#4F200D',
-    },
-    dateTimeContainer: {
-      flex:1,
-      marginTop:'110%',
-      justifyContent:'center',
-      alignItems: 'center',
-      backgroundColor: '#D3D0D0',
-    },
-  })
+const styles = StyleSheet.create({
+  title:{
+    flexDirection:'row',
+    marginTop:20,
+    marginLeft:25,
+  },
+  titleText:{
+    fontFamily:'Inter-ExtraBold',
+    letterSpacing:1,
+    fontSize: 32,
+  },
+  subTitle:{
+    marginTop:20,
+    marginLeft:20,
+    marginBottom:10,
+
+  },
+  subtitleText:{
+    fontFamily:'Inter-Bold',
+    fontSize:26,
+    letterSpacing:0.5,
+    color:'#4f200D'
+  },
+  group:{
+    flexDirection:'row',
+    marginTop:10,
+    marginBottom:10,
+  },
+  buttonContainerNow:{
+    width:140,
+    height: 45,
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:40,
+  },
+  buttonContainerOtherTime:{
+    width:230,
+    height: 45,
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:40,
+  },
+  buttonContainerLocation:{
+    width:300,
+    height:45,
+    flexDirection:'column',
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:40,
+  },
+  buttonContainerPrice:{
+    width:150,
+    height: 45,
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:40,
+  },
+  buttonContainerPrice2:{
+    width:150,
+    height: 45,
+    backgroundColor:'#FFCE84',
+    borderRadius:10,
+    marginBottom:10,
+    marginLeft:15,
+  },
+  buttonContainerApply:{
+    alignItems:'center',
+    marginTop:30,
+  },
+  inputText:{
+    alignItems:'center',
+    fontFamily:'Inder-Regular',
+    fontSize:20,
+    color:'#4F200D',
+  },
+  dateTimeContainer: {
+    flex:1,
+    marginTop:'110%',
+    justifyContent:'center',
+    alignItems: 'center',
+    backgroundColor: '#D3D0D0',
+  },
+})

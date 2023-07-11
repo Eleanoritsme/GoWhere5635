@@ -123,7 +123,7 @@ const UserProfileScreen = () => {
               color:'#544C4C'
             }}
           >
-          {user ? user.city || 'city' : ''}, {user ? user.country || 'country' : ''}
+          {user ? user.city || 'city' : ''}, {user ? user.state || 'state' : ''}, {user ? user.country || 'country' : ''}
           </Text>
         </View>
 
@@ -390,3 +390,4 @@ const UserProfileScreen = () => {
 }
 
 export default UserProfileScreen
+

@@ -23,6 +23,7 @@ const RegistrationScreen = () => {
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [occupation, setOccupation] = useState(null)
   const [country, setCountry] = useState(null)
+  const [state, setState] = useState(null)
   const [city, setCity] = useState(null)
   const [bio, setBio] = useState(null)
   const [background, setBackground] = useState(null)
@@ -88,7 +89,7 @@ const RegistrationScreen = () => {
     return error
   }
 
-  const registerUser = async (userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio, background, image) => {
+  const registerUser = async (userName, dateOfBirth, email, password, confirmPassword, occupation, country, state, city, bio, background, image) => {
     const error = getError(userName, dateOfBirth, email, password, confirmPassword)
     if (Object.keys(error).length) {
       setShowError(true)
@@ -119,6 +120,7 @@ const RegistrationScreen = () => {
           dateOfBirth,
           occupation,
           country,
+          state,
           city,
           bio,
           email,
@@ -313,7 +315,7 @@ const RegistrationScreen = () => {
         {/* Conduct Register */}
         <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, city, bio, background, image)}
+          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, state, city, bio, background, image)}
           style={styles.button}
         >
           <Text style={styles.buttonInput}>Register</Text>

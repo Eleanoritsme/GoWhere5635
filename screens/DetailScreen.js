@@ -114,7 +114,6 @@ const DetailScreen = ({route}) => {
     return () => unsubscribe();
   }, []);
   console.log('Result' + JSON.stringify(results))
-  //console.log(results[0])
 
   const [checkFilled, setCheckedFilled] = useState(false)
 
@@ -179,8 +178,10 @@ const DetailScreen = ({route}) => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView onLayout={onLayoutRootView}>
     <View style={{
+      marginBottom:90,
+      }}>
       marginBottom:90,
       }}>
       <View style={{
@@ -193,7 +194,7 @@ const DetailScreen = ({route}) => {
           alignSelf:'center',
           marginRight:10,
           width:30,
-          marginTop:40,
+          top:10,
           height:30,
         }}
         onPress={() => {
@@ -209,7 +210,7 @@ const DetailScreen = ({route}) => {
           alignSelf:'center',
           marginRight:10,
           width:30,
-          marginTop:40,
+          top:10,
           height:30,
         }}
         onPress={() => {
@@ -224,7 +225,8 @@ const DetailScreen = ({route}) => {
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',
         fontSize:20,
-        width:180
+        width:150,
+        top:10,
       }}>{business.name}</Text>
 
       <Image style={{
@@ -344,6 +346,34 @@ const DetailScreen = ({route}) => {
         alignSelf:'center',
         borderRadius:14,
         justifyContent:'center',
+        marginBottom:20,
+      }}
+
+      onPress={() => {saveToCollection(); Alert.alert(
+        'Saved Successfully', 
+        'The place now can be found on the collection list!',
+        [
+          {text: 'OK', style: 'cancel', onPress: () => {}},
+          {text: 'Go to Collection List', onPress: () => {navigation.navigate('PCL')}},
+        ]
+        )}}>
+      <Text style={{
+        alignSelf:'center',
+        fontFamily:'Inter-SemiBold',
+        fontSize:17,
+        lineHeight:22,
+      }}>Save to Collection List</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+      style={{
+        top:30,
+        width:365,
+        height:60,
+        backgroundColor:'#92BDFF',
+        alignSelf:'center',
+        borderRadius:14,
+        justifyContent:'center',
       }}
       onPress={() => {chooseThis(); navigation.navigate('After Choosing',{business: business})}}>
       <Text style={{
@@ -358,4 +388,3 @@ const DetailScreen = ({route}) => {
 }
 
 export default DetailScreen
-
