@@ -8,6 +8,7 @@ import { firebase } from '../config'
 import MasonryList from "@react-native-seoul/masonry-list"
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+import { render } from 'react-dom'
 
 const TemporaryCollectionListScreen = () => {
   const navigation = useNavigation()
@@ -16,7 +17,7 @@ const TemporaryCollectionListScreen = () => {
     "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf')
   });
 
-  const [collections, setCollections] = useState([]);
+  const [starItem, setStarItem] = useState([]);
 
   useEffect (() => {
     const userId= firebase.auth().currentUser.uid;
@@ -25,18 +26,83 @@ const TemporaryCollectionListScreen = () => {
     .collection('Star List')
     .get()
     .then((querySnapshot) => {
-        const data = querySnapshot.docs.map((doc) => doc.data());
+        const data = querySnapshot.docs.map((doc) => {
+          const business = doc.data();
+          return { ...business, checkFilled: true };
         // Access the document data
-        setCollections(data);
         //console.log('Document:', data);  
-      console.log('Collections:' + JSON.stringify(collections))
+      //console.log('starItem:' + JSON.stringify(starItem))
+    })
+    setStarItem(data);
     })
     .catch((error) => {
       console.error('Error fetching documents from Firestore:', error);
     });
   }, [])
 
-  console.log(collections)
+
+  const handleUnstarredBusiness = (starredBusiness) => {
+    const db = firebase.firestore();
+    const userId= firebase.auth().currentUser.uid;
+    // Query the saved restaurants collection and find the specific restaurant to remove
+    db.collection('users').doc(userId)
+      .collection('Star List')
+      .where('name', '==', starredBusiness.name)
+      .where('address', '==', starredBusiness.address)
+      .where('phone', '==', starredBusiness.phone)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // Delete the document from the collection
+          doc.ref.delete()
+            .then(() => {
+              console.log('Restaurant removed from Firebase!');
+              setStarItem((prevBusinesses) =>
+              prevBusinesses.map((business) => {
+                if (business.phone === starredBusiness.phone) {
+                  return {...business, checkFilled: !business.checkFilled}
+                }
+                return business;//setUnstar(true)
+              })
+              )
+            })
+            .catch((error) => {
+              console.error('Error removing restaurant from Firebase:', error);
+            });
+        });
+      })
+      .catch((error) => {
+        console.error('Error querying saved restaurants:', error);
+      });
+  };
+
+  const addBackStar = (starredBusiness) => {
+    const userId= firebase.auth().currentUser.uid;
+    const db = firebase.firestore();
+    db.collection('users').doc(userId)
+    .collection('Star List')
+    .add({
+      name: starredBusiness.name,
+      address: starredBusiness.address,
+      phone: starredBusiness.phone,
+      price: starredBusiness.price,
+      image_url: starredBusiness.image_url,
+      uid:userId
+    })
+    .then(() => {
+      console.log('Restaurant saved to Firebase!');
+      //setStarItem((prevItems) => [...prevItems, starredBusiness]);
+      //setStarItem((prevItems) =>
+        //prevItems.map((item) =>
+          //item.phone === starredBusiness.phone ? { ...item, checkFilled: true } : item
+        //)
+      //;
+    }) 
+    .catch((error) => {
+      console.error('Error saving restaurant to Firebase:', error);
+    });
+  };
+
   
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -52,36 +118,70 @@ const TemporaryCollectionListScreen = () => {
 
   return (
     <SafeAreaView>
-      <View style={styles.title}>
-        <Text style={styles.titleText}>
-          TCL
-        </Text>
-      </View> 
-      <View>
-        <TouchableOpacity onPress={() => navigation.navigate('Main')}>
-          <Text style={styles.resetPswButton}>
-            back //后期转化为一个小尖头
+      <ScrollView>
+        <View style={styles.title}>
+          <Text style={styles.titleText}>
+            Star List
           </Text>
-        </TouchableOpacity>
-      </View>
+        </View> 
 
-      <View style={{ paddingHorizontal: 10, paddingTop: 10 }}>
-        {collections.map((business) => (
-          <View style={styles.businessContainer}>
-            <Text style={styles.businessName}>{business.name}</Text>
-            <Text style={styles.businessAddress}>{business.address}</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("Review")}>
-              <Text style = {{
-                textDecorationLine:'underline',
-                fontFamily:'Inter-Regular',
-                fontSize:12,
-                textAlign:'center',
-                marginBottom:30,
-              }}> Reviews </Text>
-            </TouchableOpacity>
+      
+        <View style={{paddingTop: 10}}>
+        {starItem && starItem.map((starredBusiness, index) => {
+        return(
+        <View key={index} style={styles.businessContainer}>
+        <TouchableOpacity 
+          styles={styles.businessCard}  
+          onPress={() => navigation.navigate("Details", {business: starredBusiness})}>
+          <TouchableOpacity 
+          onPress={() => {
+            handleUnstarredBusiness(starredBusiness)}}>
+          {starredBusiness.checkFilled ? (
+          <Image 
+          style={{marginLeft: 360, marginTop: 20}} source={require('../assets/images/misc/StarFilled.png')}>
+          </Image> ) : (
+          <TouchableOpacity onPress={() => 
+          {setStarItem((prevItems) =>
+                prevItems.map((business) =>
+                  business.phone === starredBusiness.phone ? { ...business, checkFilled: true } : business
+                )
+              );
+            addBackStar(starredBusiness)}}>
+          {starredBusiness.checkFilled ? (
+          <Image 
+          style={{marginLeft: 360, marginTop: 20}} source={require('../assets/images/misc/StarFilled.png')}>
+          </Image> ) : (
+          <Image 
+          style={{marginLeft: 360, marginTop: 20}} source={require('../assets/images/misc/StarCorner.png')}>
+          </Image>
+          )}
+          </TouchableOpacity>
+          )}
+          </TouchableOpacity>
+          <Text style={styles.businessName}>{starredBusiness.name}</Text>
+          <Text style={styles.businessAddress}>{starredBusiness.address}</Text>
+          <Image style={{position:'absolute',
+            width:130,
+            height:90,
+            borderRadius:10,
+            left:270,
+            marginTop:65}} source = {{uri: starredBusiness.image_url}}></Image>
+          <TouchableOpacity onPress={() => navigation.navigate("Review")}>
+          <Text style = {{
+                    textDecorationLine:'underline',
+                    fontFamily:'Inter-Regular',
+                    fontSize:12,
+                    color: "#001F8E",
+                    textAlign:'left',
+                    marginLeft:15,
+                    paddingVertical:10
+                  }}> Reviews </Text>
+          </TouchableOpacity>
+          </TouchableOpacity>
           </View>
-        ))}
-      </View>
+        )})}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   )
 }
@@ -91,97 +191,11 @@ export default TemporaryCollectionListScreen
 const styles = StyleSheet.create({
   title:{
     marginLeft:20,
-    marginTop:20,
+    marginTop:5,
   },
   titleText:{
     fontFamily:'Inter-ExtraBold',
     fontSize: 35,
-  },
-  subTitle:{
-    marginTop:20,
-    marginLeft:20,
-    marginBottom:10,
-  },
-  subtitleText:{
-    fontFamily:'Inter-Bold',
-    fontSize:20
-  },
-  buttonContainer:{
-    justifyContent:'space-around',
-    flexDirection:'row',
-    marginBottom:15,
-    marginLeft:15,
-    marginRight:15,
-  },
-  buttonContainer1:{
-    justifyContent:'space-around',
-    flexDirection:'row',
-    marginTop:15,
-    marginBottom:15,
-    marginLeft:15,
-    marginRight:15,
-  },
-  buttonInput:{
-    borderColor:'#4F200D',
-    borderWidth:2.5,
-    borderRadius:10,
-    paddingVertical:10,
-    paddingHorizontal:50,
-    shadowColor: '#B3B3B3', 
-    shadowOffset: { height: 2, width: 2 }, 
-    shadowOpacity: 1, 
-    shadowRadius: 1, 
-    backgroundColor:'#FDDBB1',
-  },
-  inputContainer1:{
-    flexDirection:'row',
-    justifyContent:'center',
-    width:260,
-  },
-  inputContainer2:{
-    flexDirection:'row',
-    justifyContent:'center',
-    width:65,
-  },
-  inputContainer3:{
-    flexDirection:'row',
-    justifyContent:'center',
-    alignItems:'center',
-    width:5,
-    height:20,
-  },
-  inputText1:{
-    fontFamily:'Inter-Bold',
-    fontSize:25,
-    color:'#7A3E3E',
-  },
-  inputText2:{
-    fontFamily:'Inter-Bold',
-    fontSize:15,
-    color:'#7A3E3E',
-    width:80,
-    justifyContent:'center'
-  },
-  resetPswButton:{
-    color:"#B04759", 
-    fontWeight:'600', 
-    fontSize:14,
-  },
-
-
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  title: {
-    paddingHorizontal: 10,
-    paddingTop: 10,
-    marginBottom: 10,
-  },
-  titleText: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 18,
-    textAlign: 'center',
   },
   backButtonContainer: {
     paddingHorizontal: 10,
@@ -193,32 +207,29 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   businessContainer: {
-    flex: 1,
-    paddingHorizontal: 10,
+    backgroundColor: '#CEEDCE',
+    marginBottom: 2,
   },
   businessCard: {
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#F5F5F5",
     borderRadius: 5,
     elevation: 2,
+    padding: 10,
   },
   businessName: {
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 16,
-    marginBottom: 5,
+    marginLeft: 15,
+    fontFamily: 'Inter-Bold',
+    width:280,
+    fontSize:20,
+    marginBottom:20,
+    marginTop:-30
   },
   businessAddress: {
+    marginLeft: 15,
+    width:170,
     fontFamily: 'Inter-Regular',
-    fontSize: 14,
-    color: '#808080',
-  },
-  reviewLink: {
-    textDecorationLine: 'underline',
-    fontFamily: 'Inter-Regular',
-    fontSize: 12,
-    textAlign: 'center',
-    marginBottom: 10,
+    fontSize: 13,
+    color: 'black',
+    marginBottom:30
   },
 });
-

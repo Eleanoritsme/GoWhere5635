@@ -9,6 +9,8 @@ import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
 import * as Location from 'expo-location';
 import CheckBox from '../CheckBoxComponent'
+import { firebase } from '../config'
+import { useFocusEffect } from '@react-navigation/native'
 
 
 const FilterScreen = ({route}) => {
@@ -398,7 +400,6 @@ const FilterScreen = ({route}) => {
             marginBottom:10,
             marginLeft:40,
           }} onLayout={onLayoutRootView}>
-          <View style={styles.group}>
             <TextInput 
             style={
               {flex: 1,
@@ -415,7 +416,6 @@ const FilterScreen = ({route}) => {
             onChangeText={text => setUserChosenLocation(text)}
             onPressIn={handleElseWhereClicked}
             />
-          </View>
         </View>
 
         <View style={styles.subTitle}>

@@ -71,6 +71,7 @@ const RecommandationScreen = ({route}) => {
         );
         const jsonData = await response.data;
         setRecommendations(jsonData);
+        console.log(recommendations)
       } catch (error) {
         console.error('Error fetching Yelp data:', error);
       }
@@ -287,7 +288,7 @@ const styles = StyleSheet.create({
   },
   starListContainer: {
     position: 'absolute',
-    bottom:370,
+    bottom:455,
     right:12,
     padding: 10,
     borderRadius: 12,
