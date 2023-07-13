@@ -216,6 +216,7 @@ const ReviewPostingScreen = ({ route }) => {
 
   return (
     <ScrollView>
+
       <View
         style={{
           flex: 1
@@ -415,6 +416,7 @@ const ReviewPostingScreen = ({ route }) => {
             color: '#4F200D'
           }}>Submit My Review</Text>
         </TouchableOpacity>
+
       </View>
     </ScrollView>
   )

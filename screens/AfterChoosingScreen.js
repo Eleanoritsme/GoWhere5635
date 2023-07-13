@@ -33,6 +33,46 @@ const AfterChoosingScreen = ({route}) => {
     "Inter-Medium": require('../assets/fonts/Inter-Medium.ttf'),
     "Inter-Regular": require('../assets/fonts/Inter-Regular.ttf')
   });
+
+
+  const [description, setDescription] = useState(null)
+  const [rating, setRating] = useState(null)
+  const [saveForNext, setSaveForNext] = useState(null)
+  const [photo, setPhoto] = useState(null)
+  const [userName, setUserName] = useState(null)
+  
+  const handleReviewPress = () => {
+    const userId= firebase.auth().currentUser.uid;
+    const db = firebase.firestore();
+    db.collection('users').doc(userId).get().then((doc) => {
+      if (doc.exists) {
+        const userData = doc.data();
+        const userName =  JSON.stringify(userData.userName)
+        setUserName(userName)
+      }
+    }).then(() => {
+    
+    db.collection('users').doc(userId).collection(' Review List')
+    .add({
+      business: business.name,
+      description: description,
+      rating: rating,
+      savefornextvisit: saveForNext,
+      photo: photo,
+      uid: userId,
+      username: userName
+    })
+    .then(() => {
+      console.log('Restaurant saved to Firebase!');
+    })
+    .catch((error) => {
+      console.error('Error saving restaurant to Firebase:', error);
+    });
+})
+.catch((error) => {
+  console.error('Error retrieving user data:', error);
+});
+};
   
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {

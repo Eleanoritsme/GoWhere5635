@@ -153,6 +153,7 @@ const TemporaryCollectionListScreen = () => {
           </TouchableOpacity>
           <Text style={styles.businessName}>{starredBusiness.name}</Text>
           <Text style={styles.businessAddress}>{starredBusiness.address}</Text>
+
           <Image style={{
             position:'absolute',
             width:130,

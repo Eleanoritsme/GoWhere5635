@@ -32,6 +32,7 @@ const PermanentCollectionListScreen = () => {
         return { ...business, checkFilled: true };
         //console.log('Document:', data);  
     })
+
     if (data.length !== 0) {
       setCollections(data);
     }
@@ -146,6 +147,7 @@ const PermanentCollectionListScreen = () => {
   }
 
   return (
+
     <View style={{flex:1, paddingHorizontal: 10, paddingTop: 10}} onLayout={onLayoutRootView}>
     {collections ? (
       <MasonryList
@@ -180,6 +182,7 @@ const PermanentCollectionListScreen = () => {
         fontSize:14,
       }}>Go to save some good place!</Text>
       </View>
+
       <TouchableOpacity onPress={() => {navigation.navigate('Activity')}}
         style={{
           marginTop:10,

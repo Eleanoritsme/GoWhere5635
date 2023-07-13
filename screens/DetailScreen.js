@@ -10,7 +10,7 @@ import * as SplashScreen from 'expo-splash-screen'
 
 
 const DetailScreen = ({route}) => {
-  const { business } = route.params;
+  const { business} = route.params;
   const navigation = useNavigation()
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -194,8 +194,6 @@ const DetailScreen = ({route}) => {
         console.error('Error querying the collection list:', error);
       });
   };
-  
-
   const removeAll = () => {
     const userId = firebase.auth().currentUser.uid;
     const db = firebase.firestore();
@@ -212,11 +210,13 @@ const DetailScreen = ({route}) => {
             console.error('Error clearing Star List:', error);
           });
       });
+
     })
     .catch((error) => {
       console.error('Error querying saved places in star list:', error);
     });
   }
+
 
 
   const onLayoutRootView = useCallback(async () => {
@@ -232,6 +232,8 @@ const DetailScreen = ({route}) => {
   return (
     <SafeAreaView onLayout={onLayoutRootView}>
     <View style={{
+      marginBottom:90,
+      }}>
       marginBottom:90,
       }}>
       <View style={{
@@ -372,6 +374,34 @@ const DetailScreen = ({route}) => {
         marginBottom:20,
       }}
       onPress={() => {saveToCollection()}}>
+      <Text style={{
+        alignSelf:'center',
+        fontFamily:'Inter-SemiBold',
+        fontSize:17,
+        lineHeight:22,
+      }}>Save to Collection List</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+      style={{
+        top:30,
+        width:365,
+        height:50,
+        backgroundColor:'#92BDFF',
+        alignSelf:'center',
+        borderRadius:14,
+        justifyContent:'center',
+        marginBottom:20,
+      }}
+
+      onPress={() => {saveToCollection(); Alert.alert(
+        'Saved Successfully', 
+        'The place now can be found on the collection list!',
+        [
+          {text: 'OK', style: 'cancel', onPress: () => {}},
+          {text: 'Go to Collection List', onPress: () => {navigation.navigate('PCL')}},
+        ]
+        )}}>
       <Text style={{
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',

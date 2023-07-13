@@ -8,10 +8,10 @@ import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import axios from 'axios'
 import * as Location from 'expo-location';
-import moment from 'moment';
 import CheckBox from '../CheckBoxComponent'
 import { firebase } from '../config'
 import { useFocusEffect } from '@react-navigation/native'
+
 
 const FilterScreen = ({route}) => {
   useFocusEffect(
@@ -253,13 +253,14 @@ const FilterScreen = ({route}) => {
           </Text>
           <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
           <Image
-            source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
+            //source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
             style={{
               marginLeft:40,
               width:90,
               height:90,
               borderRadius:400 / 2,
               bottom:5,
+
             }}
             />
           </TouchableOpacity>
@@ -332,9 +333,9 @@ const FilterScreen = ({route}) => {
             marginBottom:10,
             marginLeft:40,
           }} onLayout={onLayoutRootView}>
-          <TextInput 
-            style={{
-              flex: 1,
+            <TextInput 
+            style={
+              {flex: 1,
               fontFamily:'Inder-Regular',
               fontSize:20,
               color:'#4F200D',
