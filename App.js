@@ -22,6 +22,7 @@ import BackgroudSettingScreen from './screens/BackgroudSettingScreen';
 import ProfileEditScreen from './screens/ProfileEditScreen';
 import UserImageSettingScreen from './screens/UserImageSettingScreen';
 import PasswordResettingScreen from './screens/PasswordResettingScreen';
+import PlaceListDetail from './screens/PlaceListDetail';
 import * as WebBrowser from "expo-web-browser";
 import { firebase } from './config';
 import 'expo-dev-client';
@@ -35,6 +36,7 @@ import AfterChoosingScreen from './screens/AfterChoosingScreen';
 import * as ImagePicker from 'expo-image-picker';
 import * as SplashScreen from 'expo-splash-screen';
 import { Alert } from 'react-native';
+import { useFonts } from 'expo-font'
 
 WebBrowser.maybeCompleteAuthSession();
 SplashScreen.preventAutoHideAsync();
@@ -50,6 +52,16 @@ function App() {
     firebase.auth().signOut();
   }
   
+  const [fontsLoaded] = useFonts({
+    "Inter-ExtraBold": require('./assets/fonts/Inter-ExtraBold.ttf'),
+    "Inter-Bold": require('./assets/fonts/Inter-Bold.ttf'),
+    "Inder-Regular": require('./assets/fonts/Inder-Regular.ttf')
+  });
+  
+  useEffect(() => {
+
+  }, [fontsLoaded])
+
   const actionItems = [
     {
       id: 1,
@@ -141,9 +153,9 @@ function App() {
       <Stack.Screen 
         name="Main" 
         component={RecommendationScreen} 
-        options={{ 
-          title:'Recommendations',
-          headerTitleAlign:'left',
+        options={{
+          headerTitle: '',
+          headerTransparent:true,
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}
@@ -151,9 +163,6 @@ function App() {
               <Ionicons name="chevron-back" size={24} />
             </TouchableOpacity>
           ),
-          headerStyle:{
-            backgroundColor:'#E2F7FF'
-          },
           contentStyle:{
             backgroundColor:"#E2F7FF"
           }
@@ -177,11 +186,30 @@ function App() {
             backgroundColor:"#F8F6F4"
           }
         }}/>
+        <Stack.Screen 
+        name="Place List Details" 
+        component={PlaceListDetail} 
+        options={{ 
+          headerTitle: () => <Header name='Details' />,
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+            >
+              <Ionicons name="chevron-back" size={24} />
+            </TouchableOpacity>
+          ),
+          headerStyle:{
+            backgroundColor:'#F8F6F4'
+          },
+          contentStyle:{
+            backgroundColor:"#F8F6F4"
+          }
+        }}/>
       <Stack.Screen 
         name="Review" 
         component={ReviewScreen} 
         options={{ 
-          headerTitle: () => <Header name='Name' />,
+          headerTitle: () => <Header name='Reviews' />,
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigation.goBack()}
@@ -208,7 +236,18 @@ function App() {
       <Stack.Screen 
         name="TCL" 
         component={TemporaryCollectionListScreen} 
-        options={{ 
+        options={{
+        headerTitle: () => <Header name='Star List' />,
+        headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+          >
+          <Ionicons name="chevron-back" size={24} />
+          </TouchableOpacity>
+        ),
+        headerStyle:{
+          backgroundColor:'#E3F8D9'
+        },
           contentStyle:{
             backgroundColor:"#E3F8D9"
           } 
@@ -339,25 +378,6 @@ function App() {
             >
               <Ionicons name="chevron-back" size={24} />
             </TouchableOpacity>
-          ),
-          headerRight: () => (
-            <View>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => setActionSheet(true)}>
-                <Entypo name='dots-three-horizontal' size={24} color='#000' />
-              </TouchableOpacity>
-              <Modal
-                isVisible={actionSheet}
-                style={{
-                  margin: 0,
-                  justifyContent: 'flex-end'
-                }}
-              >
-              <ActionSheet
-                actionItems={actionItems}
-                onCancel={closeActionSheet}
-              />
-              </Modal>
-            </View>
           ),
             headerStyle:{
               height:150,

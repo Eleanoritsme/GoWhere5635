@@ -1,25 +1,35 @@
 {
   "expo": {
-    "name": "GoWhere",
+    "name": "gowhere",
     "owner": "gowhere5635",
     "slug": "GoWhere",
     "plugins": [
       [
         "react-native-fbsdk-next",
-        
         {
           "appID": "1465624523842264",
           "clientToken": "5039c8ab2b3e445500a02a86df2c1805",
           "displayName": "GoWhere"
         }
+
       ],
-      ["expo-location",
+      [
+        "expo-image-picker",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(GoWhere) to use your location."
+          "photosPermission": "The app accesses your photos to let you change the photos.",
+          "cameraPermission": "Allow app to access your camera."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow GoWhere to access your photos.",
+          "savePhotosPermission": "Allow GoWhere to save photos.",
+          "isAccessMediaLocationEnabled": true
         }
       ]
     ],
-
+    "jsEngine": "jsc",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -33,11 +43,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTalet": true,
+      "supportsTablet": true,
       "bundleIdentifier": "com.eleanorzheng.GoWhere",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Your app needs access to your location while it's in use.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Your app needs access to your location always, even when it's not in use.",
         "SKAdNetworkItems": [
           {
             "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
@@ -45,8 +53,13 @@
           {
             "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
           }
-        ]
-      }
+        ],
+        "NSLocationWhenInUseUsageDescription": "Your app needs access to your location while it's in use.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Your app needs access to your location always, even when it's not in use.",
+        "NSPhotoLibraryAddUsageDescription": "Your app needs access to your location while it's in use."
+
+      },
+      "jsEngine": "jsc"
     },
     "android": {
       "adaptiveIcon": {
@@ -66,12 +79,8 @@
         "projectId": "ff394263-4c27-4d9e-8fbf-fe976497ac9a"
       }
     },
-    "scheme": [
-      "goWhere", "gowhere1465624523842264"
-    ],
-    "runtimeVersion": {
-      "policy": "sdkVersion"
-    },
+
+    "runtimeVersion": "exposdk:46.0.0",
     "updates": {
       "url": "https://u.expo.dev/ff394263-4c27-4d9e-8fbf-fe976497ac9a"
     }
