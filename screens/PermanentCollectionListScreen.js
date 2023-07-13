@@ -18,7 +18,7 @@ const PermanentCollectionListScreen = () => {
     "Inter-Regular": require('../assets/fonts/Inter-Regular.ttf')
   });
 
-  const [collections, setCollections] = useState([]);
+  const [collections, setCollections] = useState(null);
 
   useEffect (() => {
     const userId= firebase.auth().currentUser.uid;
@@ -32,7 +32,10 @@ const PermanentCollectionListScreen = () => {
         return { ...business, checkFilled: true };
         //console.log('Document:', data);  
     })
-    setCollections(data);
+
+    if (data.length !== 0) {
+      setCollections(data);
+    }
     console.log('Collections:' + JSON.stringify(collections))
   })
     .catch((error) => {
@@ -79,7 +82,7 @@ const PermanentCollectionListScreen = () => {
   };
 
   const addBackCollected = (item) => {
-    const userId= firebase.auth().currentUser.uid;
+    const userId = firebase.auth().currentUser.uid;
     const db = firebase.firestore();
     db.collection('users').doc(userId)
     .collection('Collection List')
@@ -144,7 +147,8 @@ const PermanentCollectionListScreen = () => {
   }
 
   return (
-    <View style={{flex:1, paddingHorizontal: 10, paddingTop: 10}}>
+
+    <View style={{flex:1, paddingHorizontal: 10, paddingTop: 10}} onLayout={onLayoutRootView}>
     {collections ? (
       <MasonryList
         style={{alignSelf:"stretch"}}
@@ -165,7 +169,7 @@ const PermanentCollectionListScreen = () => {
         color:'#949494',
         marginTop:20,
         fontSize:14,
-      }}>You have not collected any places yet</Text>
+      }}>You have not collected any places yet.</Text>
       <View style={{
         flexDirection:'row',
         justifyContent:'center',
@@ -176,17 +180,24 @@ const PermanentCollectionListScreen = () => {
         color:'#949494',
         fontFamily:'Inter-Regular',
         fontSize:14,
-      }}>Go to  </Text>
-      <TouchableOpacity onPress={() => {navigation.navigate('Activity')}}>
-      <Image
-        source={require('../assets/images/misc/Star.png')} />
-      </TouchableOpacity>
-      <Text style={{
-        color:'#949494',
-        fontFamily:'Inter-Regular',
-        fontSize:14,
-      }}>  some good places!</Text>
+      }}>Go to save some good place!</Text>
       </View>
+
+      <TouchableOpacity onPress={() => {navigation.navigate('Activity')}}
+        style={{
+          marginTop:10,
+          borderRadius:20,
+          width:100,
+          height:40,
+          alignItems:'center',
+          justifyContent:'center',
+          borderWidth:1,
+          borderColor:'#949494',
+        }}>
+        <Text>
+        Have a try
+        </Text>
+      </TouchableOpacity>
     </View>)}
   </View>
   )
@@ -202,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom:10,
     marginHorizontal:5,
     flex:0.5,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFF5E9',
     borderTopLeftRadius:55,
     borderTopRightRadius:55,
     elevation: 2,
@@ -216,8 +227,9 @@ const styles = StyleSheet.create({
   },
   collectionAddress: {
     fontFamily: 'Inter-Regular',
-    fontSize: 10,
-    color: '#808080',
+    fontSize: 11,
+    color: 'black',
+    lineHeight:20,
   },
   heartImage: {
     //position:'absolute',
@@ -227,13 +239,14 @@ const styles = StyleSheet.create({
     height:25
   },
   businessImage: {
-      width:175,
-      height:100,
-      borderRadius:50,
-      marginTop:-14,
-      marginLeft:-5,
-      alignContent:'center',
-      marginBottom:5
+    width:165,
+    height:110,
+    borderRadius:15,
+    // borderRadius:50,
+    marginTop:-14,
+    marginLeft:-5,
+    alignContent:'center',
+    marginBottom:5
   }
 });
 

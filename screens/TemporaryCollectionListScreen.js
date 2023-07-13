@@ -14,7 +14,8 @@ const TemporaryCollectionListScreen = () => {
   const navigation = useNavigation()
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
-    "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf')
+    "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf'),
+    "Inter-Regular": require('../assets/fonts/Inter-Regular.ttf')
   });
 
   const [starItem, setStarItem] = useState([]);
@@ -117,16 +118,8 @@ const TemporaryCollectionListScreen = () => {
  
 
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>
-            Star List
-          </Text>
-        </View> 
-
-      
-        <View style={{paddingTop: 10}}>
+      <ScrollView onLayout={onLayoutRootView}>      
+        <View>
         {starItem && starItem.map((starredBusiness, index) => {
         return(
         <View key={index} style={styles.businessContainer}>
@@ -138,7 +131,7 @@ const TemporaryCollectionListScreen = () => {
             handleUnstarredBusiness(starredBusiness)}}>
           {starredBusiness.checkFilled ? (
           <Image 
-          style={{marginLeft: 360, marginTop: 20}} source={require('../assets/images/misc/StarFilled.png')}>
+          style={{marginLeft: 340, marginTop: 20}} source={require('../assets/images/misc/StarFilled.png')}>
           </Image> ) : (
           <TouchableOpacity onPress={() => 
           {setStarItem((prevItems) =>
@@ -149,10 +142,10 @@ const TemporaryCollectionListScreen = () => {
             addBackStar(starredBusiness)}}>
           {starredBusiness.checkFilled ? (
           <Image 
-          style={{marginLeft: 360, marginTop: 20}} source={require('../assets/images/misc/StarFilled.png')}>
+          style={{marginLeft: 340, marginTop: 20}} source={require('../assets/images/misc/StarFilled.png')}>
           </Image> ) : (
           <Image 
-          style={{marginLeft: 360, marginTop: 20}} source={require('../assets/images/misc/StarCorner.png')}>
+          style={{marginLeft: 340, marginTop: 20}} source={require('../assets/images/misc/StarCorner.png')}>
           </Image>
           )}
           </TouchableOpacity>
@@ -160,29 +153,30 @@ const TemporaryCollectionListScreen = () => {
           </TouchableOpacity>
           <Text style={styles.businessName}>{starredBusiness.name}</Text>
           <Text style={styles.businessAddress}>{starredBusiness.address}</Text>
-          <Image style={{position:'absolute',
+
+          <Image style={{
+            position:'absolute',
             width:130,
             height:90,
             borderRadius:10,
-            left:270,
+            left:250,
             marginTop:65}} source = {{uri: starredBusiness.image_url}}></Image>
-          <TouchableOpacity onPress={() => navigation.navigate("Review")}>
+          <TouchableOpacity style={{top:10}} onPress={() => navigation.navigate("Review")}>
           <Text style = {{
-                    textDecorationLine:'underline',
-                    fontFamily:'Inter-Regular',
-                    fontSize:12,
-                    color: "#001F8E",
-                    textAlign:'left',
-                    marginLeft:15,
-                    paddingVertical:10
-                  }}> Reviews </Text>
+            textDecorationLine:'underline',
+            fontFamily:'Inter-Regular',
+            fontSize:13,
+            color: "#001F8E",
+            textAlign:'left',
+            marginLeft:12,
+            paddingVertical:0
+          }}> Reviews </Text>
           </TouchableOpacity>
           </TouchableOpacity>
           </View>
         )})}
         </View>
       </ScrollView>
-    </SafeAreaView>
   )
 }
 
@@ -197,10 +191,6 @@ const styles = StyleSheet.create({
     fontFamily:'Inter-ExtraBold',
     fontSize: 35,
   },
-  backButtonContainer: {
-    paddingHorizontal: 10,
-    marginBottom: 10,
-  },
   resetPswButton: {
     fontFamily: 'Inter-Regular',
     fontSize: 14,
@@ -208,7 +198,8 @@ const styles = StyleSheet.create({
   },
   businessContainer: {
     backgroundColor: '#CEEDCE',
-    marginBottom: 2,
+    marginBottom: 5,
+    height:180,
   },
   businessCard: {
     backgroundColor: "#F5F5F5",
@@ -228,7 +219,7 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     width:170,
     fontFamily: 'Inter-Regular',
-    fontSize: 13,
+    fontSize: 14,
     color: 'black',
     marginBottom:30
   },

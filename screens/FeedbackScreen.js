@@ -1,13 +1,36 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
-import React, { useCallback } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
+import { useFocusEffect } from '@react-navigation/native'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+import { firebase } from '../config'
 
 const FeedbackScreen = () => {
+  useFocusEffect(
+    React.useCallback(() => {
+      getUser();
+    }, [navigation])
+  )
+
+  const [user, setUser] = useState();
+  const {uid} = firebase.auth().currentUser;
+  const getUser = async() => {
+    try {
+      const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
+      const userData = documentSnapshot.data();
+      setUser(userData);
+    } catch {
+      console.log("get data")
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   const navigation = useNavigation()
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -34,7 +57,7 @@ const FeedbackScreen = () => {
       }}
       onLayout={onLayoutRootView}>
       <Image
-          source={require('../assets/images/users/Default_pfp.jpg')} 
+          source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
           style={{
             left:130,
             marginLeft:20,
@@ -52,6 +75,16 @@ const FeedbackScreen = () => {
         lineHeight:50,
         marginBottom:80,
       }}>Thanks for your feedback! :)</Text>
+      <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
+        <Text style={{
+          textDecorationLine:'underline',
+          fontFamily:'Inter-Regular',
+          fontSize:20,
+          letterSpacing:-0.41,
+          textAlign:'center',
+          marginBottom:30,
+        }}>My Profile</Text>
+      </TouchableOpacity>
       <TouchableOpacity onPress={() => {navigation.navigate('Visited')}}>
         <Text style={{
           textDecorationLine:'underline',
@@ -60,7 +93,7 @@ const FeedbackScreen = () => {
           letterSpacing:-0.41,
           textAlign:'center',
           marginBottom:30,
-        }}>Back to view places</Text>
+        }}>View places</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => {navigation.navigate('Activity')}}>
         <Text style={{
@@ -72,16 +105,7 @@ const FeedbackScreen = () => {
           marginBottom:30,
         }}>Choose an activity</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
-        <Text style={{
-          textDecorationLine:'underline',
-          fontFamily:'Inter-Regular',
-          fontSize:20,
-          letterSpacing:-0.41,
-          textAlign:'center',
-          marginBottom:30,
-        }}>Back to my profile</Text>
-      </TouchableOpacity>
+      
 
       
     </SafeAreaView>

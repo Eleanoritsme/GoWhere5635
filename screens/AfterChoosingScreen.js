@@ -109,7 +109,7 @@ const AfterChoosingScreen = ({route}) => {
         lineHeight:50,
         marginBottom:80,
       }}>Enjoy Your Time! :)</Text>
-      <TouchableOpacity onPress={() => {handleReviewPress();navigation.navigate('Review Posting')}}>
+      <TouchableOpacity onPress={() => {navigation.navigate('Review Posting', {business: business})}}>
         <Text style={{
           textDecorationLine:'underline',
           fontFamily:'Inter-Regular',

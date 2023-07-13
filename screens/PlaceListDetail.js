@@ -7,10 +7,8 @@ import { firebase } from '../config'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
-
-
-const DetailScreen = ({route}) => {
-  const { business} = route.params;
+const PlaceListDetail = ({route}) => {
+  const { business } = route.params;
   const navigation = useNavigation()
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -34,14 +32,6 @@ const DetailScreen = ({route}) => {
       address += ` ${business.location.address3}`;
     }
   }
-
-  /*const [image, setImage] = useState(null)
-  if (business.image_url) {
-    setImage(business.image_url)
-  } else {business.image} {
-    setImage(business.image)
-  }
-  */
   
   const priceMapping = {
     "$": '$0-10',
@@ -51,53 +41,6 @@ const DetailScreen = ({route}) => {
   };
   
   const filterPrice = priceMapping[business.price];
-
-  const handleStarIconPress = () => {
-    const userId= firebase.auth().currentUser.uid;
-    const db = firebase.firestore();
-    db.collection('users').doc(userId)
-    .collection('Star List')
-    .add({
-      name: business.name,
-      address: address,
-      phone: business.phone,
-      price: business.price,
-      image_url: business.image_url,
-      uid:userId
-    })
-    .then(() => {
-      console.log('Restaurant saved to Firebase!');
-    })
-    .catch((error) => {
-      console.error('Error saving restaurant to Firebase:', error);
-    });
-  };
-
-  const handleUnstarredRestaurant = () => {
-    const db = firebase.firestore();
-    const userId= firebase.auth().currentUser.uid;
-    // Query the saved restaurants collection and find the specific restaurant to remove
-    db.collection('users').doc(userId)
-      .collection('Star List')
-      .where('name', '==', business.name)
-      .where('phone', '==', business.phone)
-      .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          // Delete the document from the collection
-          doc.ref.delete()
-            .then(() => {
-              console.log('Restaurant removed from Firebase!');
-            })
-            .catch((error) => {
-              console.error('Error removing restaurant from Firebase:', error);
-            });
-        });
-      })
-      .catch((error) => {
-        console.error('Error querying saved restaurants:', error);
-      });
-  };
 
   const [results, setResults] = useState([]);
 
@@ -125,36 +68,20 @@ const DetailScreen = ({route}) => {
     business.phone = 'contact not available'
   }
 
-  const chooseThis = () => {
-    const userId= firebase.auth().currentUser.uid;
-    const db = firebase.firestore();
-    db.collection('users').doc(userId).collection('Place List')
-    .add({
-      name: business.name,
-      address: address,
-      phone: business.phone,
-      price: business.price,
-      image_url: business.image_url,
-      uid: userId
-    })
-    .then(() => {
-      console.log('Place has been chosen and saved to place list!');
-    })
-    .catch((error) => {
-      console.error('Error saving place to place list:', error);
-    });
-  };
+
 
   const saveToCollection = () => {
     const userId = firebase.auth().currentUser.uid;
     const db = firebase.firestore();
   
+    // Query the collection list to find a matching document
     db.collection('users').doc(userId).collection('Collection List')
       .where('name', '==', business.name)
       .where('phone', '==', business.phone)
       .get()
       .then((querySnapshot) => {
         if (querySnapshot.empty) {
+          // No matching document found, save the item to the collection list
           db.collection('users').doc(userId).collection('Collection List')
             .add({
               name: business.name,
@@ -179,6 +106,7 @@ const DetailScreen = ({route}) => {
               ]
               )
         } else {
+          // A matching document already exists
           Alert.alert(
             'Oh no!',
             'Place is already saved in the collection list!',
@@ -194,29 +122,36 @@ const DetailScreen = ({route}) => {
         console.error('Error querying the collection list:', error);
       });
   };
-  const removeAll = () => {
+
+  const checkReviewed = () => {
     const userId = firebase.auth().currentUser.uid;
     const db = firebase.firestore();
-    db.collection('users').doc(userId).collection("Star List")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        // Delete the document from the collection
-        doc.ref.delete()
-          .then(() => {
-            console.log('Star list cleared!');
-          })
-          .catch((error) => {
-            console.error('Error clearing Star List:', error);
-          });
+  
+    db.collection('users').doc(userId).collection('Review List')
+      .where('business', '==', business.name)
+      .where('phone', '==', business.phone)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          navigation.navigate('Review Posting', { business: business });
+        } else {
+          Alert.alert(
+            'Oh no!',
+            'You have already posted a review for this place.',
+            [
+              { text: 'OK', style: 'cancel', onPress: () => {} },
+              { text: 'Go to My Reviews', onPress: () => { navigation.navigate('My Reviews') } },
+            ]
+          );
+          console.log('You have already posted a review for this place.');
+        }
+      })
+      .catch((error) => {
+        console.error('Error querying the review list:', error);
       });
-
-    })
-    .catch((error) => {
-      console.error('Error querying saved places in star list:', error);
-    });
-  }
-
+  };
+  
+  
 
 
   const onLayoutRootView = useCallback(async () => {
@@ -233,52 +168,16 @@ const DetailScreen = ({route}) => {
     <SafeAreaView onLayout={onLayoutRootView}>
     <View style={{
       marginBottom:90,
+      flexDirection:'row',
+      left:20,
       }}>
-      marginBottom:90,
-      }}>
-      <View style={{
-        flexDirection:'row', 
-        left:20,
-      }}>
-      {checkFilled ? (
-        <TouchableOpacity
-        style={{
-          alignSelf:'center',
-          marginRight:10,
-          width:30,
-          top:10,
-          height:30,
-        }}
-        onPress={() => {
-          setCheckedFilled(false)
-          handleUnstarredRestaurant();
-        }}>
-        <Image 
-        source={require('../assets/images/misc/StarFilled.png')}/>
-      </TouchableOpacity>
-      ) : (
-      <TouchableOpacity
-        style={{
-          alignSelf:'center',
-          marginRight:10,
-          width:30,
-          top:10,
-          height:30,
-        }}
-        onPress={() => {
-          setCheckedFilled(true);
-          handleStarIconPress();
-        }}>
-        <Image 
-        source={require('../assets/images/misc/StarCorner.png')}/> 
-      </TouchableOpacity>
-      )}
       <Text style={{
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',
         fontSize:20,
         width:150,
         top:10,
+        marginLeft:10,
       }}>{business.name}</Text>
 
       <Image style={{
@@ -291,7 +190,6 @@ const DetailScreen = ({route}) => {
       }} source={{uri: business ? business.image_url || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'
        : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'}}/>
       </View>
-      </View>
 
       <View style={{
         left:20,
@@ -300,8 +198,10 @@ const DetailScreen = ({route}) => {
       }}>
         <Image style={{
           marginRight:10,
+          height:30,
+          width:30,
         }}
-        source={require('../assets/images/misc/Location.png')} />
+        source={require('../assets/images/misc/LocationGreen.png')} />
         <Text style={{fontFamily:'Inter-Regular',
           fontSize:15,
           alignSelf:'center',
@@ -316,8 +216,10 @@ const DetailScreen = ({route}) => {
       }}>
         <Image style={{
           marginRight:10,
+          height:30,
+          width:30,
         }}
-        source={require('../assets/images/misc/Phone.png')} />
+        source={require('../assets/images/misc/PhoneGreen.png')} />
         <Text style={{fontFamily:'Inter-Regular',
           fontSize:15,
           alignSelf:'center'}}>
@@ -331,8 +233,10 @@ const DetailScreen = ({route}) => {
       }}>
         <Image style={{
           marginRight:10,
+          height:30,
+          width:30,
         }}
-        source={require('../assets/images/misc/Price.png')} />
+        source={require('../assets/images/misc/PriceGreen.png')} />
         <Text style={{
           fontFamily:'Inter-Regular',
           fontSize:15,
@@ -341,17 +245,22 @@ const DetailScreen = ({route}) => {
           {filterPrice}
         </Text>
       </View>
+      <View style={{
+        marginBottom:50,
+      }}>
       <TouchableOpacity 
       onPress={() => {navigation.navigate('Review', {business: business})}}
       style={{
         left:20,
         flexDirection:'row',
-        marginBottom:60,
+        marginBottom:10,
       }}>
         <Image style={{
           marginRight:10,
+          height:30,
+          width:30,
         }}
-        source={require('../assets/images/misc/Rating.png')} />
+        source={require('../assets/images/misc/RatingGreen.png')} />
         <Text style={{
           textDecorationLine:'underline',
           fontFamily:'Inter-Regular',
@@ -361,52 +270,26 @@ const DetailScreen = ({route}) => {
           See Reviews
         </Text>
       </TouchableOpacity>
+      </View>
 
       <TouchableOpacity 
       style={{
         top:30,
         width:365,
         height:60,
-        backgroundColor:'#92BDFF',
+        backgroundColor:'#264223',
         alignSelf:'center',
         borderRadius:14,
         justifyContent:'center',
         marginBottom:20,
       }}
-      onPress={() => {saveToCollection()}}>
+      onPress={() => {saveToCollection(); }}>
       <Text style={{
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',
         fontSize:17,
         lineHeight:22,
-      }}>Save to Collection List</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity 
-      style={{
-        top:30,
-        width:365,
-        height:50,
-        backgroundColor:'#92BDFF',
-        alignSelf:'center',
-        borderRadius:14,
-        justifyContent:'center',
-        marginBottom:20,
-      }}
-
-      onPress={() => {saveToCollection(); Alert.alert(
-        'Saved Successfully', 
-        'The place now can be found on the collection list!',
-        [
-          {text: 'OK', style: 'cancel', onPress: () => {}},
-          {text: 'Go to Collection List', onPress: () => {navigation.navigate('PCL')}},
-        ]
-        )}}>
-      <Text style={{
-        alignSelf:'center',
-        fontFamily:'Inter-SemiBold',
-        fontSize:17,
-        lineHeight:22,
+        color:'#FFFFFF'
       }}>Save to Collection List</Text>
       </TouchableOpacity>
 
@@ -415,21 +298,22 @@ const DetailScreen = ({route}) => {
         top:30,
         width:365,
         height:60,
-        backgroundColor:'#92BDFF',
+        backgroundColor:'#264223',
         alignSelf:'center',
         borderRadius:14,
         justifyContent:'center',
       }}
-      onPress={() => {chooseThis(); removeAll(); navigation.navigate('After Choosing', {business: business})}}>
+      onPress={() => {checkReviewed()}}>
       <Text style={{
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',
+        color:'#FFFFFF',
         fontSize:17,
         lineHeight:22,
-      }}>Choose this!</Text>
+      }}>Write a review</Text>
       </TouchableOpacity>
     </SafeAreaView>
   )
 }
 
-export default DetailScreen
+export default PlaceListDetail
