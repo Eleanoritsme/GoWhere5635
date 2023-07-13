@@ -7,10 +7,10 @@ import { firebase } from '../config'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 
-const AfterChoosingScreen = () => {
+const AfterChoosingScreen = ({route}) => {
+  const { business} = route.params;
   const [user, setUser] = useState();
   const {uid} = firebase.auth().currentUser;
-
   const getUser = async() => {
     try {
       const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
@@ -69,7 +69,7 @@ const AfterChoosingScreen = () => {
         lineHeight:50,
         marginBottom:80,
       }}>Enjoy Your Time! :)</Text>
-      <TouchableOpacity onPress={() => {navigation.navigate('Review Posting')}}>
+      <TouchableOpacity onPress={() => {navigation.navigate('Review Posting', {business: business})}}>
         <Text style={{
           textDecorationLine:'underline',
           fontFamily:'Inter-Regular',
@@ -106,4 +106,3 @@ const AfterChoosingScreen = () => {
 }
 
 export default AfterChoosingScreen
-

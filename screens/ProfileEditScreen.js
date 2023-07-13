@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View, Image, Alert, Platform, StyleSheet } from 'react-native'
+import { Text, TouchableOpacity, View, Image, Alert } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { ScrollView, TextInput } from 'react-native-gesture-handler'
@@ -9,16 +9,22 @@ import Entypo from 'react-native-vector-icons/Entypo'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Dropdown } from 'react-native-element-dropdown'
 import axios from 'axios'
+import { useFocusEffect } from '@react-navigation/native'
 
 SplashScreen.preventAutoHideAsync();
 
 const ProfileEditScreen = () => {
+  const navigation = useNavigation()
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUser();
+    }, [navigation])
+  )
   const [countryData, setCountryData] = useState([])
   const [cityData, setCityData] = useState([])
-  const [stateData, setStateData] = useState([])
   const [countryName, setCountryName] = useState(null);
   const [cityName, setCityName] = useState(null);
-  const [stateName, setStateName] = useState(null);
   const [country, setCountry] = useState(null);
   const [city, setCity] = useState(null);
   const [state, setState] = useState(null);
@@ -51,37 +57,37 @@ const ProfileEditScreen = () => {
     });
   }, [])
 
-  const handleState = (countryCode) => {
-    var config = {
-      method: 'get',
-      url: `https://api.countrystatecity.in/v1/countries/${countryCode}/states`,
-      headers: {
-        'X-CSCAPI-KEY': 'SHRPbWNoOTByRUI0ZjhZUGxkdDVHY1FaMk1SVnd3eGU5ZWtnZUY1VQ== '
-      }
-    };
+  // const handleState = (countryCode) => {
+  //   var config = {
+  //     method: 'get',
+  //     url: `https://api.countrystatecity.in/v1/countries/${countryCode}/states`,
+  //     headers: {
+  //       'X-CSCAPI-KEY': 'SHRPbWNoOTByRUI0ZjhZUGxkdDVHY1FaMk1SVnd3eGU5ZWtnZUY1VQ== '
+  //     }
+  //   };
     
-    axios(config)
-    .then(function (response) {
-      console.log(JSON.stringify(response.data));
-      var count = Object.keys(response.data).length;
-      let stateArray = [];
-      for (var i = 0; i < count; i++ ){
-        stateArray.push({
-          value: response.data[i].iso2,
-          label: response.data[i].name,
-        });
-      }
-      setStateData(stateArray)
-    })
-    .catch(function (error) {
-      console.log(error);
-    });    
-  };
+  //   axios(config)
+  //   .then(function (response) {
+  //     console.log(JSON.stringify(response.data));
+  //     var count = Object.keys(response.data).length;
+  //     let stateArray = [];
+  //     for (var i = 0; i < count; i++ ){
+  //       stateArray.push({
+  //         value: response.data[i].iso2,
+  //         label: response.data[i].name,
+  //       });
+  //     }
+  //     setStateData(stateArray)
+  //   })
+  //   .catch(function (error) {
+  //     console.log(error);
+  //   });    
+  // };
 
   const handleCity = (countryCode, stateCode) =>{
     var config = {
       method: 'get',
-      url: `https://api.countrystatecity.in/v1/countries/${countryCode}/states/${stateCode}/cities`,
+      url: `https://api.countrystatecity.in/v1/countries/${countryCode}/cities`,
       headers: {
         'X-CSCAPI-KEY': 'SHRPbWNoOTByRUI0ZjhZUGxkdDVHY1FaMk1SVnd3eGU5ZWtnZUY1VQ== '
       }
@@ -105,7 +111,6 @@ const ProfileEditScreen = () => {
     });    
   }
 
-  const navigation = useNavigation()
   const [user, setUser] = useState();
   const {uid} = firebase.auth().currentUser;
 
@@ -119,14 +124,17 @@ const ProfileEditScreen = () => {
     }
   };
 
+  useEffect(() => {
+    getUser();
+  }, []);
+
   const handleUpdate = async() => {
     firebase.firestore().collection('users').doc(uid).update({
       userName: user.userName,
       dateOfBirth: user.dateOfBirth, 
       occupation: user.occupation, 
-      country: country, 
-      state: state,
-      city: city, 
+      country: countryName, 
+      city: cityName, 
       bio: user.bio,
     })
     .then(() => {
@@ -141,9 +149,7 @@ const ProfileEditScreen = () => {
     })
   }
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  
 
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -190,7 +196,7 @@ const ProfileEditScreen = () => {
           borderRadius: 75,
           marginTop:10,
         }}
-        source={user ? user.background : require('../assets/images/users/Default_pfp.jpg')} />
+        source={{uri: user ? user.image : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}} />
       <View style={{
         position:'absolute',
         contentContainerStyle:''
@@ -294,7 +300,7 @@ const ProfileEditScreen = () => {
           paddingLeft:15,
           paddingHorizontal:10,
           fontFamily:'Inter-Medium'
-          }, isFocus && { borderColor: '#D3D3D3' }]}
+          }, { borderColor: '#D3D3D3' }]}
           placeholderStyle={{fontSize: 14, color:"black", fontFamily:'Inter-Medium'}}
           selectedTextStyle={{fontSize: 14, fontFamily:'Inter-Medium'}}
           inputSearchStyle={ {
@@ -310,21 +316,18 @@ const ProfileEditScreen = () => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? user.country : '...'}
+          placeholder={user ? user.country : '...'}
           placeholderTextColor='#000000'
           searchPlaceholder="Search Country/Region"
           value={user ? user.country : country}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
           onChange={item => {
-            setCountryName(item.value);
-            handleState(item.value);
-            setCountry(item.label);
-            setIsFocus(false);
+            setCountry(item.value);
+            handleCity(item.value);
+            setCountryName(item.label);
           }}
         />
 
-      <Text style={{
+      {/* <Text style={{
         fontFamily:'Inter-Bold',
         fontSize:16,
         marginBottom:11,
@@ -340,7 +343,7 @@ const ProfileEditScreen = () => {
           paddingLeft:15,
           paddingHorizontal:10,
           fontFamily:'Inter-Medium'
-          }, isFocus && { borderColor: '#D3D3D3' }]}
+          }, { borderColor: '#D3D3D3' }]}
           placeholderStyle={{fontSize: 14, color:"black", fontFamily:'Inter-Medium'}}
           selectedTextStyle={{fontSize: 14, fontFamily:'Inter-Medium'}}
           inputSearchStyle={ {
@@ -356,18 +359,15 @@ const ProfileEditScreen = () => {
           maxHeight={300}
           labelField="label"
           valueField="black"
-          placeholder={!isFocus ? user.state : '...'}
+          placeholder={user ? user.state : '...'}
           searchPlaceholder="Search State"
-          value={stateName}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
+          value={state}
           onChange={item => {
-            setStateName(item.value);
-            handleCity(countryName, item.value);
-            setState(item.label);
-            setIsFocus(false);
+            setState(item.value);
+            handleCity(country, item.value);
+            setStateName(item.label);
           }}
-        />
+        /> */}
 
       <Text style={{
         fontFamily:'Inter-Bold',
@@ -385,7 +385,7 @@ const ProfileEditScreen = () => {
           paddingLeft:15,
           paddingHorizontal:10,
           fontFamily:'Inter-Medium'
-          }, isFocus && { borderColor: '#D3D3D3' }]}
+          }, { borderColor: '#D3D3D3' }]}
           placeholderStyle={{fontSize: 14, color:"black", fontFamily:'Inter-Medium'}}
           selectedTextStyle={{fontSize: 14, fontFamily:'Inter-Medium'}}
           inputSearchStyle={ {
@@ -401,15 +401,12 @@ const ProfileEditScreen = () => {
           maxHeight={300}
           labelField="label"
           valueField="value"
-          placeholder={!isFocus ? user.city : '...'}
+          placeholder={user ? user.city : '...'}
           searchPlaceholder="Search City"
-          value={cityName}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
+          value={city}
           onChange={item => {
-            setCityName(item.value);
-            setIsFocus(false);
-            setCity(item.label);
+            setCity(item.value);
+            setCityName(item.label);
           }}
         />
 

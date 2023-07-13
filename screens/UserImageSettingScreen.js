@@ -1,11 +1,15 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, StatusBar, Button } from 'react-native'
-import React, { useState, useCallback, useEffect } from 'react'
-import { useNavigation } from '@react-navigation/native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useFonts } from 'expo-font'
-import * as SplashScreen from 'expo-splash-screen'
+import React, { useState, useEffect, useCallback } from 'react';
+import { Text, View, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { firebase } from '../config'
+import { useFonts } from 'expo-font';
+import { firebase } from '../config';
+import * as SplashScreen from 'expo-splash-screen'
+import { useNavigation } from '@react-navigation/native'
+import { useFocusEffect } from '@react-navigation/native';
+import * as MediaLibrary from 'expo-media-library';
+import { Alert } from 'react-native';
+
+
 
 const Separator = () => <View style={{
   top: 180,
@@ -15,10 +19,14 @@ const Separator = () => <View style={{
   }} />;
 
 const UserImageSettingScreen = () => {
-  const navigation = useNavigation();
-  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [image, setImage] = useState(null);
+  const navigation = useNavigation()
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUser();
+    }, [navigation])
+  )
+
   const [user, setUser] = useState();
   const {uid} = firebase.auth().currentUser;
 
@@ -27,78 +35,96 @@ const UserImageSettingScreen = () => {
       const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
       const userData = documentSnapshot.data();
       setUser(userData);
+      setImage(userData?.image || null);
     } catch {
       console.log("get data")
     }
   };
 
   useEffect(() => {
-    (async () => {
-      const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasGalleryPermission(galleryStatus.status === 'granted'); 
-      const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === 'granted');
-    })();
     getUser();
   }, []);
 
-  const pickImage = async () => {
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasGalleryPermission(galleryStatus.status === 'granted');
+    })();
+  }, []);
+
+  const pickImage = async() => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes:ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4,3],
-      quality:1,
+      aspect: [8,3],
+      quality: 1,
     });
 
-    
-    if (!result.canceled) {
-      setImage(result.assets);
+    if (!result.canceled){
+      setImage(result.assets[0].uri);
+      handleUpdate(result.assets[0].uri);
     }
+    
   };
 
   if (hasGalleryPermission === false){
-    return <Text>No access to internal storage.</Text>
+    return <Text>No access to internal gallery.</Text>
   }
+
+  const [hasCameraPermission, setHasCameraPermission] = useState(null)
+
+  useEffect(() => {
+    (async () => {
+      const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraStatus.status === 'granted');
+    })();
+  }, [])
 
   const takePhoto = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4,3],
-      quality:1,
+      aspect: [8, 3],
+      quality: 1,
     });
 
-    console.log(result);
-    if (!result.canceled) {
+    if (!result.canceled){
       setImage(result.assets[0].uri);
+      handleUpdate(result.assets[0].uri);
+    }
+    
+  };
+
+  if (hasCameraPermission === false) {
+    return <Text>No access to the camera.</Text>
+  }
+
+  const handleSavePhoto = async () => {
+    try {
+      const asset = await MediaLibrary.createAssetAsync(image);
+      if (asset) {
+        Alert.alert('Saved Successfully', 'Photo is saved to your album.')
+        console.log('Photo saved successfully!');
+      } else {
+        Alert.alert('Failed to save', 'Photo failed to save to the album, please try again')
+        console.log('Failed to save the photo.');
+      }
+    } catch (error) {
+      console.error('Error saving photo:', error);
     }
   };
 
-  if (hasCameraPermission === false){
-    return <Text>No access to the camera.</Text>
+  const handleUpdate = async(imageURI) => {
+    firebase.firestore().collection('users').doc(uid).update({
+      image: imageURI
+    })
+    .then(() => {
+      console.log('User data updated!');
+    })
   }
-  // const actionItems = [
-  //   {
-  //     id: 1,
-  //     label: 'Take Photo',
-  //     onPress: () => {
-  //     }
-  //   },
-  //   {
-  //     id: 2,
-  //     label: 'Choose from Album',
-  //     onPress: () => pickImage()
-  //   },
-  //   {
-  //     id: 3,
-  //     label: 'Save Photo',
-  //     onPress: () => {
-  //     }
-  //   },
-  // ];
-  // const [actionSheet, setActionSheet] = useState(false);
-  // const closeActionSheet = () => setActionSheet(false);
-
 
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -107,6 +133,7 @@ const UserImageSettingScreen = () => {
     "Inter-Medium": require('../assets/fonts/Inter-Medium.ttf'),
     "Inter-Regular": require('../assets/fonts/Inter-Regular.ttf')
   });
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -116,33 +143,26 @@ const UserImageSettingScreen = () => {
   if (!fontsLoaded) {
     return null;
   }
-  
+
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={{
-        justifyContent:'center', 
-        alignSelf:'center'
-      }}
-      onLayout={onLayoutRootView}>
-      <Image style={{
-          height: 400,
-          width: 400
-        }}
-        source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}  />
-        
-        <View style={{
+    <SafeAreaView
+    onLayout={onLayoutRootView}
+    style={{
+      flex:1,
+    }}>
+    {image && <Image source={{uri: image}} style={{flex:1/2, top:80,}} />}
+    <View style={{
           position:'absolute',
-          top:350,
+          top:370,
           alignSelf:'center'
         }}>
-        <TouchableOpacity 
+    <TouchableOpacity 
         style={{
           alignItems:'center',
           justifyContent:'center',
           top:180
         }}
-        onPress={() => takePhoto()}
+        onPress={() => {takePhoto()}}
         >
           <Text style={{
             lineHeight:25,
@@ -154,18 +174,17 @@ const UserImageSettingScreen = () => {
           }}>
           Take Photo
           </Text>
-          {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
         </TouchableOpacity>
         
         <Separator />
-        
-        <TouchableOpacity 
+
+    <TouchableOpacity 
         style={{
           alignItems:'center',
           justifyContent:'center',
           top:180
         }}
-        onPress={() => pickImage()}>
+        onPress={() => {pickImage()}}>
           <Text style={{
             lineHeight:25,
             letterSpacing:0.38,
@@ -177,12 +196,15 @@ const UserImageSettingScreen = () => {
           Choose from Album
           </Text>
         </TouchableOpacity>
+
         <Separator />
+
         <TouchableOpacity style={{
           alignItems:'center',
           justifyContent:'center',
           top:180,
-        }}>
+        }}
+        onPress={handleSavePhoto}>
           <Text style={{
             lineHeight:25,
             letterSpacing:0.38,
@@ -195,10 +217,8 @@ const UserImageSettingScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
-
-      </SafeAreaView>
-    </>
-  );
-};
+    </SafeAreaView>
+  )
+}
 
 export default UserImageSettingScreen;

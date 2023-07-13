@@ -1,12 +1,13 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
-import React, { useCallback } from 'react'
+import { StyleSheet, Text, View, Image, FlatList } from 'react-native'
+import React, { useCallback, useState, useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
-
 import { useNavigation } from '@react-navigation/native'
 import { ScrollView } from 'react-native-gesture-handler'
-
+import { firebase } from '../config'
+import MasonryList from "@react-native-seoul/masonry-list"
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+
 
 const VisitedPlaceListScreen = () => {
   const navigation = useNavigation()
@@ -15,8 +16,68 @@ const VisitedPlaceListScreen = () => {
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
     "Inter-Bold": require('../assets/fonts/Inter-Bold.ttf'),
     "Inter-Medium": require('../assets/fonts/Inter-Medium.ttf'),
-    "Inter-Regular": require('../assets/fonts/Inter-Regular.ttf')
+    "Inter-Regular": require('../assets/fonts/Inter-Regular.ttf'),
   });
+
+  const [visited, setVisited] = useState(null);
+
+  //Retrieve data from firestore
+  useEffect(() => {
+    const db = firebase.firestore();
+    const userId= firebase.auth().currentUser.uid;
+    const unsubscribe = db.collection('users').doc(userId)
+    .collection('Place List').onSnapshot((snapshot) => {
+      const businessData = snapshot.docs.map((doc) => doc.data());
+      if (businessData.length !== 0) {
+        if (businessData.image_url === '') {
+          businessData.image_url === 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png';
+        }
+        setVisited(businessData);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+  console.log('Visited' + JSON.stringify(visited))
+
+
+  // const [userName, setUserName] = useState(null)
+
+  // const getUserName = () => {
+  //   const userId = firebase.auth().currentUser.uid;
+  //   const db = firebase.firestore();
+  //   db.collection('users').doc(userId).get().then((doc) => {
+  //     if (doc.exists) {
+  //       const userData = doc.data();
+  //       const userName =  JSON.stringify(userData.userName)
+  //       setUserName(userName)
+  //     }
+  //   }).then(() => {
+  //       console.log('Get UserName', userName);
+  //   })
+  //   .catch((error) => {
+  //     console.error('Username not found', error);
+  //   });
+  // }
+
+  // useEffect(() => {
+  //   getUserName();
+  // }, []);
+  
+  const renderVisited = ({ item }) => (
+    <TouchableOpacity style={styles.collectionCard} onPress={() => navigation.navigate("Place List Details", { business: item })}>
+      <Image style={styles.businessImage}
+        source={{ uri: item.image_url }}></Image>
+      <Text style={styles.collectionName}>{item.name}</Text>
+      <Text style={styles.collectionAddress}>{item.address}</Text>
+      {/* <TouchableOpacity style={{alignSelf:'flex-end'}} onPress={() => {handleReviewPress(item); navigation.navigate("Review Posting")}}>
+          <Image
+            style={styles.reviewImage}
+            source={require('../assets/images/misc/Review.png')}>
+          </Image>
+      </TouchableOpacity> */}
+    </TouchableOpacity>
+  );
+
   
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -29,12 +90,16 @@ const VisitedPlaceListScreen = () => {
   }
 
   return (
-    <ScrollView
-      style={{flex:1}}
-      contentContainerStyle={{alignContent:'flex-start', paddingBottom:60}}
-      showsVerticalScrollIndicator={false}
-      onLayout={onLayoutRootView}
-    >
+    <ScrollView style={{flex:1, paddingHorizontal: 10, paddingTop: 10}} onLayout={onLayoutRootView}>
+    { visited ? (
+      <MasonryList
+        style={{alignSelf:"stretch"}}
+        contentContainerStyle={{paddingHorizontal:1, alignSelf:"stretch"}}
+        data={visited}
+        renderItem={renderVisited}
+        numColumns={2}>
+      </MasonryList>
+      ) : (
     <View style={{
       height:'100%',
       alignItems:'center',
@@ -68,11 +133,54 @@ const VisitedPlaceListScreen = () => {
         Have a try
         </Text>
       </TouchableOpacity>
-    </View>
-    
-    
+    </View>)}
     </ScrollView>
   )
 }
 
 export default VisitedPlaceListScreen
+  const styles = StyleSheet.create({
+    flatListContainer: {
+      justifyContent: 'space-between',
+    },
+    collectionCard: {
+      marginBottom:10,
+      marginHorizontal:5,
+      flex:0.5,
+      backgroundColor: '#FFFCE1',
+      borderRadius:15,
+      // borderTopLeftRadius:55,
+      // borderTopRightRadius:55,
+      elevation: 2,
+      paddingHorizontal: 10,
+      paddingVertical: 15,
+    },
+    collectionName: {
+      fontFamily: 'Inter-Bold',
+      fontSize: 15,
+      marginBottom:5,
+    },
+    collectionAddress: {
+      fontFamily: 'Inter-Regular',
+      fontSize: 11,
+      color: 'black',
+      marginBottom:10,
+      lineHeight:20,
+    },
+    reviewImage: {
+      marginTop:10,
+      marginRight:3,
+      width: 25,
+      height:25
+    },
+    businessImage: {
+        width:165,
+        height:110,
+        borderRadius:15,
+        // borderRadius:50,
+        marginTop:-14,
+        marginLeft:-5,
+        alignContent:'center',
+        marginBottom:5
+    }
+  });
