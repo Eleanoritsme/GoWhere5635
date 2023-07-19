@@ -49,7 +49,7 @@ const ReviewScreen = ({route}) => {
   const renderReviewed = ({ item }) => (
     <View style={styles.collectionCard}>
     <View style={{flexDirection:'row'}}>
-    <Image style={styles.userImage} source={{ uri: user.image }} />
+    <Image style={styles.userImage} source={{ uri: item.userImage }} />
     <Text style={styles.collectionName}>{item.business}</Text>
     </View>
     <StarRating
