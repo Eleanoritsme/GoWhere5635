@@ -32,7 +32,6 @@ const PermanentCollectionListScreen = () => {
         return { ...business, checkFilled: true };
         //console.log('Document:', data);  
     })
-
     if (data.length !== 0) {
       setCollections(data);
     }
@@ -106,7 +105,7 @@ const PermanentCollectionListScreen = () => {
   const renderCollections = ({ item }) => (
     <TouchableOpacity style={styles.collectionCard} onPress={() => navigation.navigate("Details", { business: item })}>
       <Image style={styles.businessImage}
-        source={{ uri: item.image_url }}></Image>
+        source={{ uri: item.image_url || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png' }}></Image>
       <Text style={styles.collectionName}>{item.name}</Text>
       <Text style={styles.collectionAddress}>{item.address}</Text>
       <TouchableOpacity style={{alignSelf:'flex-end'}}onPress={() => { handleUncollectedBusiness(item)}}>
@@ -147,7 +146,6 @@ const PermanentCollectionListScreen = () => {
   }
 
   return (
-
     <View style={{flex:1, paddingHorizontal: 10, paddingTop: 10}} onLayout={onLayoutRootView}>
     {collections ? (
       <MasonryList
@@ -155,6 +153,7 @@ const PermanentCollectionListScreen = () => {
         contentContainerStyle={{paddingHorizontal:1, alignSelf:"stretch"}}
         data={collections}
         renderItem={renderCollections}
+        showsVerticalScrollIndicator={false}
         numColumns={2}>
       </MasonryList>
       ) : (
@@ -182,7 +181,6 @@ const PermanentCollectionListScreen = () => {
         fontSize:14,
       }}>Go to save some good place!</Text>
       </View>
-
       <TouchableOpacity onPress={() => {navigation.navigate('Activity')}}
         style={{
           marginTop:10,
