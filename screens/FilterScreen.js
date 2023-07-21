@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View,ScrollView, Modal, Image} from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Modal, Image, TouchableOpacity, StatusBar } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native-gesture-handler'
 import { useFonts } from 'expo-font'
@@ -10,8 +9,7 @@ import axios from 'axios'
 import * as Location from 'expo-location';
 import CheckBox from '../CheckBoxComponent'
 import { firebase } from '../config'
-import { useFocusEffect } from '@react-navigation/native'
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const FilterScreen = ({route}) => {
   useFocusEffect(
@@ -185,7 +183,6 @@ const FilterScreen = ({route}) => {
           address: place,
           components: 'country:SG',
           key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
-
         }
       });
       const { results } = response.data;
@@ -244,22 +241,23 @@ const FilterScreen = ({route}) => {
     return null;
   }
 
-  return (    
+  return (
+    <ScrollView showsVerticalScrollIndicator={false}>    
+    <StatusBar barStyle={'dark-content'} />
     <SafeAreaView>
-      <ScrollView>
         <View style={styles.title}>
           <Text style={styles.titleText}>
             Select Your Preferences
           </Text>
           <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
           <Image
-            //source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
+            source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
             style={{
-              marginLeft:40,
-              width:90,
-              height:90,
-              borderRadius:400 / 2,
-              bottom:5,
+              marginLeft: wp('10.26%'),
+              width: wp('23.08%'),
+              height: wp('23.08%'),
+              borderRadius: 200,
+              bottom: hp('0.6%'),
 
             }}
             />
@@ -288,10 +286,10 @@ const FilterScreen = ({route}) => {
           <View style={styles.group}>
           <TextInput
             style={
-              {marginLeft:33,
+              {marginLeft:wp('8.46%'),
               alignItems:'center',
               fontFamily:'Inder-Regular',
-              fontSize:20,
+              fontSize:wp('5.13%'),
               color:'#4F200D',
             }}
             placeholder='Time HH:MM'
@@ -315,7 +313,7 @@ const FilterScreen = ({route}) => {
           style={styles.buttonContainerLocation} onLayout={onLayoutRootView}>
           <View style={styles.group}>
           <CheckBox
-            onPress={() => [handleCurrentClicked(),setUserChosenLocation(placeName)]}
+            onPress={() => [handleCurrentClicked(), setUserChosenLocation(placeName)]}
             isChecked={nearMe}
           />
           <Text style={styles.inputText}>Near me: {searchingText}</Text>
@@ -324,26 +322,24 @@ const FilterScreen = ({route}) => {
 
         <View
           style={{
-            width:300,
-            height:45,
-            marginTop:10,
-            marginBottom:10,
-            backgroundColor:'#FFCE84',
-            borderRadius:10,
-            marginBottom:10,
-            marginLeft:40,
+            width: wp('77%'),
+            height: hp('5.8%'),
+            backgroundColor: '#FFCE84',
+            borderRadius: 10,
+            marginBottom: hp('1.18%'),
+            marginLeft: wp('10.25%'),
           }} onLayout={onLayoutRootView}>
             <TextInput 
             style={
               {flex: 1,
-              fontFamily:'Inder-Regular',
-              fontSize:20,
-              color:'#4F200D',
-              textAlign:'center'
+              fontFamily: 'Inder-Regular',
+              fontSize: wp('5.13%'),
+              color: '#4F200D',
+              textAlign: 'center'
             }}
             placeholder='Type the Location'
             placeholderTextColor="#4F200D" 
-            autoCapitalize='none'
+            autoCapitalize='words'
             autoCorrect={false}
             value={userChosenLocation}
             onChangeText={text => setUserChosenLocation(text)}
@@ -414,24 +410,23 @@ const FilterScreen = ({route}) => {
           style={styles.buttonContainerApply} onLayout={onLayoutRootView}>
           <TouchableOpacity
             onPress={() => 
-
               {//getCoordinates(userChosenLocation);
               //getData();
               navigation.navigate('Main', { selectedCategory:selectedCategory, price: priceSelected, time: timeText, location: userChosenLocation});
                  }}
             style={
               {backgroundColor:'#FFCE84',
-              width:256,
-              height:48,
-              alignItems:'center',
-              justifyContent:'center',
-              borderRadius:10,
+              width: wp('65.64%'),
+              height: hp('5.69%'),
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
             }}>
             <Text style={styles.inputText}>See Recommendations!</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
     </SafeAreaView>
+    </ScrollView>
   )
 }
                                             
@@ -440,86 +435,98 @@ const FilterScreen = ({route}) => {
 const styles = StyleSheet.create({
   title:{
     flexDirection:'row',
-    marginTop:20,
-    marginLeft:25,
+    marginTop: hp('2.37%'),
+    marginLeft: wp('6.41%'),
   },
   titleText:{
-    fontFamily:'Inter-ExtraBold',
-    letterSpacing:1,
-    fontSize: 32,
+    fontFamily: 'Inter-ExtraBold',
+    letterSpacing: 1,
+    fontSize: wp('8.21%'),
   },
   subTitle:{
-    marginTop:20,
-    marginLeft:20,
-    marginBottom:10,
+    marginTop: hp('2.37%'),
+    marginLeft: wp('5.13%'),
+    marginBottom: hp('1.18%'),
 
   },
   subtitleText:{
-    fontFamily:'Inter-Bold',
-    fontSize:26,
-    letterSpacing:0.5,
-    color:'#4f200D'
+    fontFamily: 'Inter-Bold',
+    fontSize: wp('6.67%'),
+    letterSpacing: 0.5,
+    color: '#4f200D'
   },
   group:{
-    flexDirection:'row',
-    marginTop:10,
-    marginBottom:10,
+    flexDirection: 'row',
+    marginTop: hp('1.18%'),
+    marginBottom: hp('1.18%'),
   },
   buttonContainerNow:{
-    width:140,
-    height: 45,
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:40,
+    justifyContent:'center',
+    width: wp('35.9%'),
+    height: hp('5.8%'),
+    backgroundColor: '#FFCE84',
+    borderRadius: 10,
+    paddingBottom: hp('-0.95%'),
+    marginBottom: hp('1.18%'),
+    marginLeft: wp('10.27%'),
   },
   buttonContainerOtherTime:{
-    width:230,
-    height: 45,
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:40,
+    justifyContent:'center',
+    width: wp('58.98%'),
+    height: hp('5.8%'),
+    backgroundColor: '#FFCE84',
+    borderRadius: 10,
+    paddingBottom: hp('-0.95%'),
+    marginBottom: hp('1.18%'),
+    marginLeft: wp('10.27%'),
   },
   buttonContainerLocation:{
-    width:300,
-    height:45,
-    flexDirection:'column',
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:40,
+    justifyContent:'center',
+    width: wp('76.92%'),
+    height: hp('5.8%'),
+    flexDirection: 'column',
+    backgroundColor: '#FFCE84',
+    borderRadius: 10,
+    paddingBottom: hp('-0.95%'),
+    marginBottom: hp('1.18%'),
+    marginLeft: wp('10.27%'),
   },
   buttonContainerPrice:{
-    width:150,
-    height: 45,
-    backgroundColor:'#FFCE84',
-    borderRadius:10,
-    marginBottom:10,
-    marginLeft:40,
+    justifyContent:'center',
+    width: wp('38.46%'),
+    height: hp('5.8%'),
+    backgroundColor: '#FFCE84',
+    borderRadius: 10,
+    paddingBottom: hp('-0.95%'),
+    marginBottom: hp('1.18%'),
+    marginLeft: wp('10.27%'),
   },
   buttonContainerPrice2:{
-    width:150,
-    height: 45,
+    justifyContent:'center',
+    width: wp('38.46%'),
+    height: hp('5.8%'),
     backgroundColor:'#FFCE84',
     borderRadius:10,
-    marginBottom:10,
-    marginLeft:15,
+    paddingBottom: hp('-0.95%'),
+    marginBottom: hp('1.18%'),
+    marginLeft: wp('3.85%'),
   },
   buttonContainerApply:{
-    alignItems:'center',
-    marginTop:30,
+    justifyContent:'center',
+    alignItems: 'center',
+    marginTop: hp('5.92%'),
   },
   inputText:{
-    alignItems:'center',
-    fontFamily:'Inder-Regular',
-    fontSize:20,
-    color:'#4F200D',
+    textAlignVertical:'center',
+    alignItems: 'center',
+    fontFamily: 'Inder-Regular',
+    fontSize: wp('5.13%'),
+    color: '#4F200D',
   },
   dateTimeContainer: {
-    flex:1,
-    marginTop:'110%',
-    justifyContent:'center',
+    flex: 1,
+    marginTop: '110%',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#D3D0D0',
   },

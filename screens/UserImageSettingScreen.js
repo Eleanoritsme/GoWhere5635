@@ -1,21 +1,22 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Text, View, Image, TouchableOpacity, SafeAreaView } from 'react-native';
+import { Text, View, Image, TouchableOpacity, SafeAreaView, Dimensions, StatusBar } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useFonts } from 'expo-font';
 import { firebase } from '../config';
 import * as SplashScreen from 'expo-splash-screen'
-import { useNavigation } from '@react-navigation/native'
-import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import * as MediaLibrary from 'expo-media-library';
 import { Alert } from 'react-native';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
-
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 const Separator = () => <View style={{
-  top: 180,
+  top: hp('21.33%'),
   borderBottomColor: 'rgba(60,60,67,0.36)',
-  borderBottomWidth:0.5,
-  width:400,
+  borderBottomWidth: 0.5,
+  width: screenWidth + 10,
   }} />;
 
 const UserImageSettingScreen = () => {
@@ -150,27 +151,28 @@ const UserImageSettingScreen = () => {
     style={{
       flex:1,
     }}>
-    {image && <Image source={{uri: image}} style={{flex:1/2, top:80,}} />}
+    <StatusBar barStyle={'dark-content'} />
+    {image && <Image source={{uri: image}} style={{flex:1/2, top: hp('9.48%')}} />}
     <View style={{
-          position:'absolute',
-          top:370,
-          alignSelf:'center'
+          position: 'absolute',
+          top: hp('43.84%'),
+          alignSelf: 'center'
         }}>
     <TouchableOpacity 
         style={{
-          alignItems:'center',
-          justifyContent:'center',
-          top:180
+          alignItems: 'center',
+          justifyContent: 'center',
+          top: hp('21.33%')
         }}
         onPress={() => {takePhoto()}}
         >
           <Text style={{
-            lineHeight:25,
-            letterSpacing:0.38,
-            fontSize:20,
-            fontFamily:'Inter-Regular',
-            color:'#007AFF',
-            paddingVertical:20,
+            lineHeight: hp('2.96%'),
+            letterSpacing: 0.38,
+            fontSize: wp('5.13%'),
+            fontFamily: 'Inter-Regular',
+            color: '#007AFF',
+            paddingVertical: wp('5.13%'),
           }}>
           Take Photo
           </Text>
@@ -180,18 +182,18 @@ const UserImageSettingScreen = () => {
 
     <TouchableOpacity 
         style={{
-          alignItems:'center',
-          justifyContent:'center',
-          top:180
+          alignItems: 'center',
+          justifyContent: 'center',
+          top: hp('21.33%')
         }}
         onPress={() => {pickImage()}}>
           <Text style={{
-            lineHeight:25,
-            letterSpacing:0.38,
-            fontSize:20,
-            fontFamily:'Inter-Regular',
-            color:'#007AFF',
-            paddingVertical:20,
+            lineHeight: hp('2.96%'),
+            letterSpacing: 0.38,
+            fontSize: wp('5.13%'),
+            fontFamily: 'Inter-Regular',
+            color: '#007AFF',
+            paddingVertical: wp('5.13%'),
           }}>
           Choose from Album
           </Text>
@@ -202,16 +204,16 @@ const UserImageSettingScreen = () => {
         <TouchableOpacity style={{
           alignItems:'center',
           justifyContent:'center',
-          top:180,
+          top: hp('21.33%')
         }}
         onPress={handleSavePhoto}>
           <Text style={{
-            lineHeight:25,
-            letterSpacing:0.38,
-            fontSize:20,
-            fontFamily:'Inter-Regular',
-            color:'#007AFF',
-            paddingVertical:20,
+            lineHeight: hp('2.96%'),
+            letterSpacing: 0.38,
+            fontSize: wp('5.13%'),
+            fontFamily: 'Inter-Regular',
+            color: '#007AFF',
+            paddingVertical: wp('5.13%'),
           }}>
           Save Photo
           </Text>

@@ -1,13 +1,14 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
-import React, { useCallback } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, StatusBar  } from 'react-native'
+import React, { useCallback, useState, useRef, useEffect } from 'react'
 import { firebase } from '../config'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import axios from 'axios'
+import moment from 'moment';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
-
 
 const RecommandationScreen = ({route}) => {
 
@@ -18,6 +19,28 @@ const RecommandationScreen = ({route}) => {
 
   const navigation = useNavigation()
   const [selectedLocationIcon, setSelectedLocationIcon] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+
+  const getUserLocation = async() => {
+      const geocodingResponse = await axios.get(
+        'https://maps.googleapis.com/maps/api/geocode/json',
+        {
+          params: {
+            address: location,
+            components: 'country:SG',
+            key: 'AIzaSyDerNS1YLni4oQ0ikqY_zLnDcoqYzEaBCk' // Google Maps API key
+          }
+        }
+      );
+      const { results } = geocodingResponse.data;
+      const { lat, lng } = results[0].geometry.location;
+      setUserLocation({ lat, lng });
+  };
+
+  useEffect(() => {
+    getUserLocation();
+  }, []);
+
   const mapRef = useRef(null);
   const priceMapping = {
     "1": '$ ',
@@ -92,8 +115,7 @@ const RecommandationScreen = ({route}) => {
 
   useEffect(() => {
     getUser();
-  }, []);
-  
+  }, []);  
 
   const [fontsLoaded] = useFonts({
     "Inter-ExtraBold": require('../assets/fonts/Inter-ExtraBold.ttf'),
@@ -110,32 +132,38 @@ const RecommandationScreen = ({route}) => {
     return null;
   }
 
+  if (!userLocation) {
+    return null; 
+  }
+
   return (
+    <ScrollView>
+    <StatusBar barStyle={'dark-content'} />
     <SafeAreaView>
     <TouchableOpacity 
       onPress={() => {navigation.navigate('User Profile')}}
       style={{
-        top:25,
-        left:235,
+        top: wp('6.41%'),
+        left: wp('60.26%'),
       }}>
           <Image
             source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
             style={{
-              marginLeft:40,
-              width:90,
-              height:90,
-              borderRadius:400 / 2,
-              bottom:5,
+              marginLeft: wp('10.26%'),
+              width: wp('23.8%'),
+              height: wp('23.8%'),
+              borderRadius: 200,
+              top: wp('5%')
             }}
             />
       </TouchableOpacity>
     <View style={{
-      position:'absolute',
-      top:50,
+      position: 'absolute',
+      top: hp('5.33%'),
     }}>
-      <Text style={styles.titleText}>
+      {/* <Text style={styles.titleText}>
         Recommendations
-      </Text>
+      </Text> */}
     </View>
       <View style={styles.title} >
       <View onLayout={onLayoutRootView}>
@@ -164,8 +192,8 @@ const RecommandationScreen = ({route}) => {
           provider={PROVIDER_GOOGLE}
           style={styles.map} 
           initialRegion={{ 
-            latitude:selectedLocationIcon ? selectedLocationIcon.latitude: 1.3353906, 
-            longitude: selectedLocationIcon ? selectedLocationIcon.longitude: 103.8497414, 
+            latitude: userLocation ? userLocation.lat : 1.3353906, 
+            longitude: userLocation ? userLocation.lng : 103.8497414, 
             latitudeDelta: 0.0922, longitudeDelta: 0.0421 }}>
           {recommendations && recommendations.businesses && recommendations.businesses.map((item, index) => (
             <Marker key={index} coordinate={{ 
@@ -189,17 +217,17 @@ const RecommandationScreen = ({route}) => {
         </View>
         
         <View style={{
-           alignSelf:'center',
+          alignSelf:'center',
           position:'absolute',
-          height:170,
-          width: 360,
-          top:495,
-          borderRadius:10,
-          backgroundColor:'transparent'
+          height: hp('23.18%'),
+          width: wp('92.31%'),
+          top: hp('55.61%'),
+          borderRadius: 10,
+          backgroundColor: 'transparent'
         }}>
         <View
         onLayout={onLayoutRootView}>
-          <ScrollView>
+          <ScrollView showsVerticalScrollIndicator={false}>
           {recommendations && recommendations.businesses &&
               recommendations.businesses.map((item, index) => (
                 <View key={index} style={styles.bottomSheetContent} onLayout={onLayoutRootView}>
@@ -232,6 +260,7 @@ const RecommandationScreen = ({route}) => {
      
       </View>
     </SafeAreaView>
+    </ScrollView>
   )
 }
 
@@ -239,75 +268,74 @@ export default RecommandationScreen
 
 const styles = StyleSheet.create({
   title:{
-    position:'absolute',
-    top:80,
-    flexDirection:'row',
-    marginTop:20,
-    marginLeft:25,
+    position: 'absolute',
+    top: hp('9.48%'),
+    flexDirection: 'row',
+    marginTop: hp('2.37%'),
+    marginLeft: wp('6.41%'),
   },
   titleText:{
-    fontFamily:'Inter-ExtraBold',
-    fontSize: 24,
-    marginLeft: 50,
-    marginTop: 10,
+    fontFamily: 'Inter-ExtraBold',
+    fontSize: wp('6.15%'),
+    marginLeft: wp('12.82%'),
+    marginTop: hp('1.18%'),
   },
   map: {
-    top:55,
-    height: 580,
-    alignSelf:'center',
-    width:370,
-    marginHorizontal:10,
-    marginTop:30,
-    borderRadius:12
+    top: hp('7.52%'),
+    height: hp('70%'),
+    alignSelf: 'center',
+    width: wp('94.87%'),
+    marginHorizontal: wp('2.56%'),
+    marginTop: wp('3.55%'),
+    borderRadius: 12,
   },
   bottomSheetContent: {
-    alignItems:'center',
-    justifyContent:'center',
-    flexDirection:'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
     backgroundColor: 'white',
-    height:70,
-    borderRadius:8,
-    paddingHorizontal:30,
-    marginTop:2,
+    height: hp('8.29%'),
+    borderRadius: 8,
+    paddingHorizontal: wp('7.69%'),
+    marginTop: hp('0.24%'),
   },
   FilterOptionButton: {
-    width:150,
-    height:25,
+    width: wp('38.42%'),
+    height: hp('2.96%'),
     alignItems: 'center',
     backgroundColor: '#B4DFFF',
     borderRadius: 20,
-    marginBottom: 10,
-    justifyContent:'center',
+    marginBottom: hp('1.18%'),
+    justifyContent: 'center',
   },
   FilterOptionButtonText: {
     fontFamily: 'Inder-Regular',
-    fontSize: 15,
+    fontSize: wp('3.85%'),
     color: '#000000',
   },
   starListContainer: {
     position: 'absolute',
-    bottom:455,
-    right:12,
-    padding: 10,
+    bottom: hp('54.2%'),
+    right: 0,
+    padding: hp('1.18%'),
     borderRadius: 12,
-    zIndex:1,
+    zIndex: 1,
   },
   starIcon: {
-    width: 60,
-    height: 60,
+    width: wp('15.38%'),
+    height: wp('15.38%'),
   },
   inputText1:{
-    width:280,
-    fontFamily:'Inter-Bold',
-    fontSize:18,
-    color:'black',
-    marginLeft:10,
+    width: wp('71.79%'),
+    fontFamily: 'Inter-Bold',
+    fontSize: wp('4.62%'),
+    color: 'black',
+    marginLeft: wp('2.56%'),
   },
   image:{
     justifyContent:'center',
-    marginLeft:20,
-    height:35,
-    width:35
+    marginLeft: wp('2.56%'),
+    height: wp('8.97%'),
+    width: wp('8.97%')
   }
 })
-

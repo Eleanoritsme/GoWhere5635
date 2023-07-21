@@ -1,24 +1,32 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, StatusBar, Button } from 'react-native'
-import React, { useState, useCallback, useEffect } from 'react'
-import { useNavigation } from '@react-navigation/native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { useFonts } from 'expo-font'
-import * as SplashScreen from 'expo-splash-screen'
+import React, { useState, useEffect, useCallback } from 'react';
+import { Text, View, Image, TouchableOpacity, SafeAreaView, Alert, Dimensions, StatusBar } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { firebase } from '../config'
+import { useFonts } from 'expo-font';
+import { firebase } from '../config';
+import * as SplashScreen from 'expo-splash-screen'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
+import * as MediaLibrary from 'expo-media-library';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 const Separator = () => <View style={{
-  top: 180,
+  top: hp('21.33%'),
   borderBottomColor: 'rgba(60,60,67,0.36)',
-  borderBottomWidth:0.5,
-  width:400,
+  borderBottomWidth: 0.5,
+  width: screenWidth + 10,
   }} />;
 
 const BackgroudSettingScreen = () => {
-  const navigation = useNavigation();
-  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
-  const [hasCameraPermission, setHasCameraPermission] = useState(null);
-  const [image, setImage] = useState(null);
+  const navigation = useNavigation()
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getUser();
+    }, [navigation])
+  )
+
   const [user, setUser] = useState();
   const {uid} = firebase.auth().currentUser;
 
@@ -27,78 +35,91 @@ const BackgroudSettingScreen = () => {
       const documentSnapshot = await firebase.firestore().collection('users').doc(uid).get();
       const userData = documentSnapshot.data();
       setUser(userData);
+      setImage(userData?.background || null);
     } catch {
       console.log("get data")
     }
   };
 
   useEffect(() => {
-    (async () => {
-      const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasGalleryPermission(galleryStatus.status === 'granted'); 
-      const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
-      setHasCameraPermission(cameraStatus.status === 'granted');
-    })();
     getUser();
   }, []);
 
-  const pickImage = async () => {
+  const [hasGalleryPermission, setHasGalleryPermission] = useState(null);
+  const [image, setImage] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const galleryStatus = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasGalleryPermission(galleryStatus.status === 'granted');
+    })();
+  }, []);
+
+  const pickImage = async() => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes:ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4,3],
-      quality:1,
+      aspect: [8,3],
+      quality: 1,
     });
 
-    
-    if (!result.canceled) {
-      setImage(result.assets);
+    if (!result.canceled){
+      setImage(result.assets[0].uri);
+      handleUpdate(result.assets[0].uri);
     }
   };
 
   if (hasGalleryPermission === false){
-    return <Text>No access to internal storage.</Text>
+    return <Text>No access to internal gallery.</Text>
   }
+
+  const [hasCameraPermission, setHasCameraPermission] = useState(null)
+
+  useEffect(() => {
+    (async () => {
+      const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraStatus.status === 'granted');
+    })();
+  }, [])
 
   const takePhoto = async () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [4,3],
-      quality:1,
+      aspect: [8, 3],
+      quality: 1,
     });
 
-    console.log(result);
-    if (!result.canceled) {
+    if (!result.canceled){
       setImage(result.assets[0].uri);
+      handleUpdate(result.assets[0].uri);
+    }
+    
+  };
+
+  const handleSavePhoto = async () => {
+    try {
+      const asset = await MediaLibrary.createAssetAsync(image);
+      if (asset) {
+        Alert.alert('Saved Successfully', 'Photo is saved to your album.')
+        console.log('Photo saved successfully!');
+      } else {
+        Alert.alert('Failed to save', 'Photo failed to save to the album, please try again')
+        console.log('Failed to save the photo.');
+      }
+    } catch (error) {
+      console.error('Error saving photo:', error);
     }
   };
 
-  if (hasCameraPermission === false){
-    return <Text>No access to the camera.</Text>
+  const handleUpdate = async(imageURI) => {
+    firebase.firestore().collection('users').doc(uid).update({
+      background: imageURI
+    })
+    .then(() => {
+      console.log('User data updated!');
+    })
   }
-  // const actionItems = [
-  //   {
-  //     id: 1,
-  //     label: 'Take Photo',
-  //     onPress: () => {
-  //     }
-  //   },
-  //   {
-  //     id: 2,
-  //     label: 'Choose from Album',
-  //     onPress: () => pickImage()
-  //   },
-  //   {
-  //     id: 3,
-  //     label: 'Save Photo',
-  //     onPress: () => {
-  //     }
-  //   },
-  // ];
-  // const [actionSheet, setActionSheet] = useState(false);
-  // const closeActionSheet = () => setActionSheet(false);
-
 
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -107,6 +128,7 @@ const BackgroudSettingScreen = () => {
     "Inter-Medium": require('../assets/fonts/Inter-Medium.ttf'),
     "Inter-Regular": require('../assets/fonts/Inter-Regular.ttf')
   });
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -116,91 +138,83 @@ const BackgroudSettingScreen = () => {
   if (!fontsLoaded) {
     return null;
   }
-  
+
   return (
-    <>
-      <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={{
-        justifyContent:'center', 
-        alignSelf:'center'
-      }}
-      onLayout={onLayoutRootView}>
-      <Image style={{
-          top:50,
-          height: 250,
-          width: 400
-        }}
-        source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/WholeBackground.png' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/WholeBackground.png'}}  />
-        
-        <View style={{
-          position:'absolute',
-          top:350,
-          alignSelf:'center'
+    <SafeAreaView
+    onLayout={onLayoutRootView}
+    style={{
+      flex:1,
+    }}>
+    <StatusBar barStyle={'dark-content'} />
+    {image && <Image source={{uri: image}} style={{flex:1/2, top: hp('9.48%')}} />}
+    <View style={{
+          position: 'absolute',
+          top: hp('43.84%'),
+          alignSelf: 'center'
         }}>
-        <TouchableOpacity 
+    <TouchableOpacity 
         style={{
-          alignItems:'center',
-          justifyContent:'center',
-          top:180
+          alignItems: 'center',
+          justifyContent: 'center',
+          top: hp('21.33%')
         }}
-        onPress={() => takePhoto()}
+        onPress={() => {takePhoto()}}
         >
           <Text style={{
-            lineHeight:25,
-            letterSpacing:0.38,
-            fontSize:20,
-            fontFamily:'Inter-Regular',
-            color:'#007AFF',
-            paddingVertical:20,
+            lineHeight: hp('2.96%'),
+            letterSpacing: 0.38,
+            fontSize: wp('5.13%'),
+            fontFamily: 'Inter-Regular',
+            color: '#007AFF',
+            paddingVertical: wp('5.13%'),
           }}>
           Take Photo
           </Text>
-          {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
         </TouchableOpacity>
         
         <Separator />
-        
-        <TouchableOpacity 
+
+    <TouchableOpacity 
         style={{
-          alignItems:'center',
-          justifyContent:'center',
-          top:180
+          alignItems: 'center',
+          justifyContent: 'center',
+          top: hp('21.33%')
         }}
-        onPress={() => pickImage()}>
+        onPress={() => {pickImage()}}>
           <Text style={{
-            lineHeight:25,
-            letterSpacing:0.38,
-            fontSize:20,
-            fontFamily:'Inter-Regular',
-            color:'#007AFF',
-            paddingVertical:20,
+            lineHeight: hp('2.96%'),
+            letterSpacing: 0.38,
+            fontSize: wp('5.13%'),
+            fontFamily: 'Inter-Regular',
+            color: '#007AFF',
+            paddingVertical: wp('5.13%'),
           }}>
           Choose from Album
           </Text>
         </TouchableOpacity>
+
         <Separator />
+
         <TouchableOpacity style={{
           alignItems:'center',
           justifyContent:'center',
-          top:180,
+          top: hp('21.33%')
         }}
-        onPress={() => {}}>
+        onPress={handleSavePhoto}>
           <Text style={{
-            lineHeight:25,
-            letterSpacing:0.38,
-            fontSize:20,
-            fontFamily:'Inter-Regular',
-            color:'#007AFF',
-            paddingVertical:20,
+            lineHeight: hp('2.96%'),
+            letterSpacing: 0.38,
+            fontSize: wp('5.13%'),
+            fontFamily: 'Inter-Regular',
+            color: '#007AFF',
+            paddingVertical: wp('5.13%'),
           }}>
           Save Photo
           </Text>
         </TouchableOpacity>
       </View>
-
-      </SafeAreaView>
-    </>
-  );
-};
+    </SafeAreaView>
+  )
+}
 
 export default BackgroudSettingScreen;

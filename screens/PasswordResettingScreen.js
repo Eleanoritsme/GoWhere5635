@@ -1,12 +1,11 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, StatusBar } from 'react-native'
 import React, { useCallback, useState } from 'react'
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
 import { firebase } from '../config'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const PasswordResettingScreen = () => {
   const navigation = useNavigation()
@@ -45,16 +44,17 @@ const PasswordResettingScreen = () => {
   return (
     <SafeAreaView 
     style={{
-      top:30,
+      top: hp('3.55%'),
     }}
     onLayout={onLayoutRootView}>
+    <StatusBar barStyle={'dark-content'} />
       <Text style={{
-        left:20,
-        fontFamily:'Inter-ExtraBold',
-        fontSize:18,
-        letterSpacing:1,
-        lineHeight:50,
-        marginBottom:10,
+        left: wp('5.13%'),
+        fontFamily: 'Inter-ExtraBold',
+        fontSize: wp('4.62%'),
+        letterSpacing: 1,
+        lineHeight: 50,
+        marginBottom: hp('1.18%'),
       }}>
       Please Enter Your Email Address
       </Text>
@@ -64,36 +64,36 @@ const PasswordResettingScreen = () => {
       autoCorrect={false}
       autoCapitalize='none'
       onChangeText={(text) => setEmail(text)}
-      fontSize={14}
+      fontSize={wp('3.59%')}
         style={{
-          letterSpacing:0.6,
-          left:20,
-          borderWidth:1,
-          height:50,
-          width:342,
+          letterSpacing: 0.6,
+          left: wp('5.13%'),
+          borderWidth: 1,
+          height: hp('5.92%'),
+          width: wp('87.69%'),
           borderColor:'#4F200D',
-          borderRadius:6,
-          marginBottom:40,
-          paddingLeft:15,
-          paddingHorizontal:10,
+          borderRadius: 6,
+          marginBottom: hp('4.74%'),
+          paddingLeft: wp('3.85%'),
+          paddingHorizontal: wp('2.56%'),
           fontFamily:'Inter-Medium'
         }}>
       </TextInput>
       <TouchableOpacity style={{
           backgroundColor:'#FFCE84',
-          width:256,
-          height:48,
-          alignSelf:'center',
-          justifyContent:'center',
-          alignItems:'center',
-          borderRadius:10,
-          marginBottom:40,
+          width: wp('65.64%'),
+          height: hp('5.69%'),
+          alignSelf: 'center',
+          justifyContent: 'center',
+          alignItems: 'center',
+          borderRadius: 10,
+          marginBottom: hp('4.74%'),
         }}
         onPress={() => {changePassword()}}>
           <Text style={{
-            fontFamily:'Inder-Regular',
-            fontSize:20,
-            color:'#4F200D'
+            fontFamily: 'Inder-Regular',
+            fontSize: wp('5.13%'),
+            color: '#4F200D'
           }}>Send An Email</Text>
         </TouchableOpacity>
         {/* <TouchableOpacity style={{

@@ -1,22 +1,22 @@
-import { StyleSheet, Text, View, Image, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, SafeAreaView, Dimensions, StatusBar } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
 import { useFocusEffect } from '@react-navigation/native'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 SplashScreen.preventAutoHideAsync();
 
 const ActivityScreen = () => {
-
   useFocusEffect(
     React.useCallback(() => {
       getUser();
+      removeAll();
     }, [navigation])
   )
+
   const [selectedCategory, setSelectedCategory] = useState('')
 
   const navigation = useNavigation()
@@ -44,6 +44,27 @@ const ActivityScreen = () => {
     getUser();
   }, []);
 
+  const removeAll = () => {
+    const userId = firebase.auth().currentUser.uid;
+    const db = firebase.firestore();
+    db.collection('users').doc(userId).collection("Star List")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        // Delete the document from the star list
+        doc.ref.delete()
+          .then(() => {
+            console.log('Star list cleared!');
+          })
+          .catch((error) => {
+            console.error('Error clearing Star List:', error);
+          });
+      });
+    })
+    .catch((error) => {
+      console.error('Error querying saved places in star list:', error);
+    });
+  }
 
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
@@ -56,22 +77,22 @@ const ActivityScreen = () => {
   }
 
   return (
+    <ScrollView showsVerticalScrollIndicator={false}>
+    <StatusBar barStyle={'dark-content'} />
     <SafeAreaView>
-      <ScrollView>
         <View style={styles.title}>
           <Text style={styles.titleText}>
             Looking for?
           </Text>
           <TouchableOpacity onPress={() => {navigation.navigate('User Profile')}}>
           <Image
-            source={require('../assets/images/users/Default_pfp.jpg')} 
+            source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
             style={{
-              marginLeft:40,
-              width:90,
-              height:90,
-              borderRadius:400 / 2,
-              bottom:8
-
+              marginLeft:wp('10.26%'),
+              width:wp('23.08%'),
+              height:wp('23.08%'),
+              borderRadius:200,
+              bottom:wp('1.28%'),
             }}
             />
           </TouchableOpacity>
@@ -112,7 +133,7 @@ const ActivityScreen = () => {
           style={styles.buttonContainer} onLayout={onLayoutRootView}>
           <TouchableOpacity
             onPress={() => 
-            { setSelectedCategory('restaurants+cafe')
+            {setSelectedCategory('restaurants+cafe')
               navigation.navigate('Filter', {selectedCategory})}}
               style={styles.buttonInput}>
             <View style={styles.inputContainer}>
@@ -121,66 +142,71 @@ const ActivityScreen = () => {
             source={require('../assets/images/misc/Eat.png')}/>
             </View>
           </TouchableOpacity> 
-          </View>
-        </ScrollView>
-    </SafeAreaView>
+          </View> 
+      </SafeAreaView>
+    </ScrollView>
   )
 }
 
-export default ActivityScreen
+
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const scaleFactor = 0.1;
 
 const styles = StyleSheet.create({
   title:{
-    flexDirection:'row',
-    marginTop:20,
-    marginLeft:25,
-    marginBottom:40,
-    width:257,
-    height:79,
+    flexDirection: 'row',
+    marginTop: hp('2.37%'),
+    marginLeft: wp('6.41%'),
+    marginBottom: hp('4.74%'),
+    width: wp('65.9%'),
+    height: hp('9.36%'),
   },
   titleText:{
-    fontFamily:'Inter-ExtraBold',
-    letterSpacing:1,
-    marginTop:15,
-    fontSize: 32,
+    fontFamily: 'Inter-ExtraBold',
+    letterSpacing: 1,
+    marginTop: hp('1.78%'),
+    fontSize: wp('8.21%'),
   },
   buttonContainer:{
-    alignItems:'center',
-    marginBottom:30,
+    alignItems: 'center',
+    marginBottom: hp('3.55%'),
   },
   buttonInput:{
-    borderColor:'#212A3E',
-    borderWidth:2.5,
-    borderRadius:20,
+    borderColor: '#212A3E',
+    borderWidth: 2.5,
+    borderRadius: 20,
     shadowColor: '#BBAAAA', 
     shadowOffset: { height: 4, width: 0 }, 
     shadowOpacity: 1, 
     shadowRadius: 1, 
-    backgroundColor:'#FFF4E5',
-    width:350,
-    height:173,
+    backgroundColor: '#FFF4E5',
+    width: wp('89.74%'),
+    height: hp('20.5%'),
   },
   inputContainer:{
-    flexDirection:'row',
-    alignItems:'center',
-    marginLeft:20,
-    marginRight:20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: wp('5.13%'),
+    marginRight: wp('5.13%'),
   },
   inputImage:{
-    width:141,
-    height:172,
-    resizeMode:'contain',
+    width: wp('36.15%'),
+    height: hp('20.39%'),
+    resizeMode: 'contain',
   },
   inputText:{
-    fontFamily:'Inter-ExtraBold',
-    fontSize:36,
-    letterSpacing:1,
-    textAlign:'center',
-    color:'#00060C',
-    height:50,
-    width:126,
-    marginLeft:20,
-    marginRight:20,
+    fontFamily: 'Inter-ExtraBold',
+    fontSize: wp('9.23%'),
+    letterSpacing: 1,
+    textAlign: 'center',
+    color: '#00060C',
+    height: hp('5.92%'),
+    width: wp('32.31%'),
+    marginLeft: wp('5.13%'),
+    marginRight: wp('5.13%'),
   }
 })
 
+export default ActivityScreen
