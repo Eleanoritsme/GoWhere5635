@@ -1,21 +1,26 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image, ScrollView } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, ScrollView, Dimensions, StatusBar, Alert } from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
-
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
-
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { useFocusEffect } from '@react-navigation/native'
 
 SplashScreen.preventAutoHideAsync();
 
 const LoginScreen = () => {
+  useFocusEffect(
+    React.useCallback(() => {
+
+    }, [navigation])
+  )
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -49,7 +54,20 @@ const LoginScreen = () => {
       setError(false)
       setShowError(false)
       try {
-        await firebase.auth().signInWithEmailAndPassword(email, password)
+        await firebase.auth().signInWithEmailAndPassword(email, password);
+        
+        const user = firebase.auth().currentUser;
+        if (user && user.emailVerified) {
+          console.log('Email is verified');
+          navigation.navigate('Activity');
+        } else {
+          Alert.alert(
+            'Email is not verified',
+            'Please check you email and complete the verification.',
+            [
+              {text: 'OK', style: 'cancel', onPress: () => {}},
+            ])
+        }
       } catch (error) {
         alert(error.message)
       }
@@ -74,11 +92,13 @@ const LoginScreen = () => {
 
   return (
     <KeyboardAwareScrollView 
-    style={{flex:1}}
+    style={{flex:1, width:screenWidth, height:screenHeight}}
     enableAutomaticScroll
     extraScrollHeight={50}
     keyboardVerticalOffset={70}
+    showsVerticalScrollIndicator={false}
     >
+    <StatusBar barStyle={'dark-content'} />
     <SafeAreaView style={{flex:1, top:15,}}>
     <ScrollView>
       {/* LoginPage Logo */}
@@ -175,10 +195,10 @@ const LoginScreen = () => {
         {/* Register */}
         <View 
           style={styles.register}>
-          <Text>Don't have an account?</Text>
+          <Text style={styles.registerText1}>Don't have an account?</Text>
           <TouchableOpacity onPress={() => {navigation.navigate('Register')}}>
           <Text 
-            style={styles.resgisterText}> Register now!
+            style={styles.registerText}> Register now!
           </Text>
           </TouchableOpacity>
         </View>
@@ -188,24 +208,27 @@ const LoginScreen = () => {
   )
 }
 
-export default LoginScreen
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+const scaleFactor = 0.1;
 
 const styles = StyleSheet.create({
   logo:{
     alignItems:'center'
   },
   logoImage:{
-    width:400,
-    height:350,
+    width: wp('100%'),
+    height: hp('43%'),
     resizeMode:'contain'
   },
   logInText:{
-    marginLeft:20,
-    marginBottom:30
+    marginLeft:wp('5%'),
+    marginBottom:hp('4%')
   },
   text:{
     fontFamily:'Inter-SemiBold',
-    fontSize: 33,
+    fontSize: wp('9%'),
     fontWeight: '500',
     color: '#333',
   },
@@ -213,62 +236,66 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     borderBottomColor:'#ccc',
     borderBottomWidth:1,
-    paddingBottom:8,
-    marginLeft:20,
-    marginRight:20,
-    marginTop:40,
+    paddingBottom:hp('0.9%'),
+    marginLeft:wp('5.12%'),
+    marginRight:wp('5.12%'),
+    marginTop:wp('10.25%'),
   },
   input:{
     flex:1,
-    paddingVertical:0
   },
   resetPswButton:{
     fontFamily:"Inter-Bold",
     color:"#FFBC11", 
     fontWeight:'600', 
-    fontSize:14,
+    fontSize:wp('3.59%'),
   },
   buttonContainer:{
-    marginLeft:20,
-    marginRight:20,
-    marginTop:20,
+    marginLeft:wp('5.12%'),
+    marginRight:wp('5.12%'),
+    marginTop:hp('2.37'),
   },
   button:{
     backgroundColor:'#FFBC11',
-    width:350,
-    padding:18,
+    width:wp('90%'),
+    padding:wp('5%'),
     borderRadius:10,
     alignItems:'center',
   },
   register:{
-    fontFamily:"Inter-SemiBold",
-    fontSize:15,
     flexDirection:'row', 
     justifyContent:'center', 
     marginTop:20,
     marginBottom:30
   },
-  resgisterText:{
+  registerText:{
     fontFamily:"Inter-ExtraBold",
-    fontSize:15,
+    fontSize:wp('3.84%'),
     color:'#FFBC11',
     fontWeight:'600'
   },
+  registerText1:{
+    fontFamily:"Inter-SemiBold",
+    fontSize:wp('3.84%'),
+    fontWeight:'600'
+  },
   errorContainer:{
-    marginTop:8,
-    marginLeft:20,
+    marginTop:hp('0.94%'),
+    marginLeft:wp('5.12%'),
   },
   error:{
-    fontSize: 14,
+    fontSize:wp('3.59%'),
     color:'red', 
   },
   icon:{
-    marginRight:5
+    marginRight:wp('2%')
   },
   buttonInput:{
     fontFamily:'Inter-ExtraBold',
     color:'white',
     fontWeight:'700',
-    fontSize:18,
+    fontSize:wp('4.61'),
   },
 })
+
+export default LoginScreen

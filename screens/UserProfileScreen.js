@@ -1,12 +1,10 @@
-import { Text, TouchableOpacity, View, Image, TextInput, Alert } from 'react-native'
+import { Text, TouchableOpacity, View, Image, TextInput, Alert, ScrollView, StatusBar } from 'react-native'
 import React, { useState, useCallback, useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
-import { ScrollView } from 'react-native-gesture-handler'
 import { firebase } from '../config'
-import ImageGrid from 'react-native-image-grid';
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Line from '../Line'
 import { useFocusEffect } from '@react-navigation/native'
@@ -116,6 +114,7 @@ const UserProfileScreen = () => {
       showsVerticalScrollIndicator={false}
       onLayout={onLayoutRootView}
     >
+    <StatusBar barStyle={'dark-content'} />
     <View style={{
     position:'absolute',
     transform: [{ translateX: 0}, { translateY: -480 }],
@@ -124,8 +123,8 @@ const UserProfileScreen = () => {
       onPress={() => {navigation.navigate('Background')}}>
       <Image
       style={{
-        height: 350,
-        width: 400,
+        height: hp('41.46%'),
+        width: wp('100%'),
         borderBottomLeftRadius: 70,
         borderBottomRightRadius: 70,
       }}
@@ -135,33 +134,36 @@ const UserProfileScreen = () => {
 
     <View style={{
       position:'absolute',
-      top:160,
-      alignItems:'center',
-      justifyContent:'center',
-      zIndex:1,
+      top: hp('18.96%'),
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1,
     }}>
+        <TouchableOpacity
+      onPress={() => {navigation.navigate('Edit Profile')}}>
       <Image 
         style={{
-          height: 135,
-          width: 135,
+          height: wp('34.62%'),
+          width: wp('34.62%'),
           borderRadius: 75,
-          marginBottom:20,
+          marginBottom: hp('2.37%'),
         }}
         source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}} />
+        </TouchableOpacity>
         <Text style={{
           fontFamily:'Inter-SemiBold',
-          fontSize:24,
+          fontSize: wp('6.15%'),
           color:'#4F200D',
-          marginBottom:20,
+          marginBottom: hp('2.37%'),
         }}>
         {user ? user.userName || 'User' : 'User'}
           </Text>
           <Text style={{
             fontFamily:'Inter-Medium',
             alignItems:'center',
-            fontSize:13,
+            fontSize: wp('3.33%'),
             color:'#544C4C',
-            marginBottom:10,
+            marginBottom: hp('1.18%'),
           }}>
           {user ? user.occupation || 'no occupation' : 'no occupation'}
           </Text>
@@ -169,16 +171,16 @@ const UserProfileScreen = () => {
         <View
           style={{
             flexDirection: "row",
-            marginVertical: 6,
+            marginVertical: hp('0.71%'),
             alignItems: "center",
-            marginBottom:20,
+            marginBottom: hp('2.37%'),
           }}
         >
-          <MaterialIcons name="location-pin" size={24} color="#544C4C" />
+          <MaterialIcons name="location-pin" size={wp('6.15%')} color="#544C4C" />
           <Text
             style={{
               fontFamily:'Inter-Medium',
-              fontSize:13,
+              fontSize: wp('3.33%'),
               color:'#544C4C'
             }}
           >
@@ -187,13 +189,13 @@ const UserProfileScreen = () => {
         </View>
 
         <Text style={{
-          width:300,
-          textAlign:'center',
-          fontFamily:'Inter-Medium',
-          alignItems:'center',
-          fontSize:13,
-          color:'#544C4C',
-          marginBottom:10,
+          width: wp('76,92%'),
+          textAlign: 'center',
+          fontFamily: 'Inter-Medium',
+          alignItems: 'center',
+          fontSize: wp('3.33%'),
+          color: '#544C4C',
+          marginBottom: hp('1.18%'),
         }}>
         {user ? user.bio || 'no bio added' : 'no bio added'}
         </Text>
@@ -201,7 +203,7 @@ const UserProfileScreen = () => {
         
         <View
           style={{
-            paddingVertical: 8,
+            paddingVertical: hp('0.95%'),
             flexDirection: "row",
             justifyContent:'space-around',
           }}
@@ -212,17 +214,17 @@ const UserProfileScreen = () => {
             style={{
               flexDirection: "column",
               alignItems: "center",
-              padding:10,
-              marginRight:25,
+              padding: hp('1.18%'),
+              marginRight: wp('6.41%'),
             }}
           >
             <Text
               style={{
-                fontFamily:'Inter-SemiBold',
-                fontSize:24,
-                color:'#4F200D',
-                lineHeight:30,
-                marginBottom:5,
+                fontFamily: 'Inter-SemiBold',
+                fontSize: wp('6.15%'),
+                color: '#4F200D',
+                lineHeight: hp('3.55%'),
+                marginBottom: hp('0.59%'),
               }}
             >
               {placeNum}
@@ -230,7 +232,7 @@ const UserProfileScreen = () => {
             <Text
               style={{
                 fontFamily:'Inter-Medium',
-                fontSize:14,
+                fontSize: wp('3.59%'),
                 color:'#544C4C'
               }}
             >
@@ -244,17 +246,17 @@ const UserProfileScreen = () => {
             style={{
               flexDirection: "column",
               alignItems: "center",
-              padding:10,
-              marginRight:25,
+              padding: hp('1.18%'),
+              marginRight: wp('6.41%'),
             }}
           >
             <Text
               style={{
-                fontFamily:'Inter-SemiBold',
-                fontSize:24,
-                color:'#4F200D',
-                lineHeight:30,
-                marginBottom:5,
+                fontFamily: 'Inter-SemiBold',
+                fontSize: wp('6.15%'),
+                color: '#4F200D',
+                lineHeight: hp('3.55%'),
+                marginBottom: hp('0.59%'),
               }}
             >
               {collectionNum}
@@ -263,7 +265,7 @@ const UserProfileScreen = () => {
             <Text
               style={{
                 fontFamily:'Inter-Medium',
-                fontSize:14,
+                fontSize: wp('3.59%'),
                 color:'#544C4C'
               }}
             >
@@ -277,16 +279,16 @@ const UserProfileScreen = () => {
             style={{
               flexDirection: "column",
               alignItems: "center",
-              padding:10,
+              padding: hp('1.18%'),
             }}
           >
             <Text
               style={{
-                fontFamily:'Inter-SemiBold',
-                fontSize:24,
-                color:'#4F200D',
-                lineHeight:30,
-                marginBottom:5,
+                fontFamily: 'Inter-SemiBold',
+                fontSize: wp('6.15%'),
+                color: '#4F200D',
+                lineHeight: hp('3.55%'),
+                marginBottom: hp('0.59%'),
               }}
             >
               {reviewNum}
@@ -294,7 +296,7 @@ const UserProfileScreen = () => {
             <Text
               style={{
                 fontFamily:'Inter-Medium',
-                fontSize:14,
+                fontSize: wp('3.59%'),
                 color:'#544C4C'
               }}
             >
@@ -307,11 +309,11 @@ const UserProfileScreen = () => {
         <Line/>
 
         <Text style={{
-          width:360,
+          width: wp('92.31%'),
           fontFamily:'Inter-SemiBold',
-          fontSize:20,
-          color:'#4F200D',
-          marginBottom:20,
+          fontSize: wp('5.13%'),
+          color: '#4F200D',
+          marginBottom: hp('2.37%'),
         }}>
           Collections
         </Text>
@@ -319,76 +321,80 @@ const UserProfileScreen = () => {
         
         <ScrollView 
         style={{
-          marginLeft:30,
-          width:400,
-          marginBottom:20,
+          flex:1,
+          marginLeft: wp('7.69%'),
+          width: wp('100%'),
+          marginBottom: hp('2.37%'),
         }}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         >
         <TouchableOpacity  style={{flexDirection:'row'}} onPress={() => navigation.navigate('PCL')}>
-        {collectionPhotos? collectionPhotos.map((image_url, index) => (
-      <View key={index} style={{marginLeft:20, height:180}}>
+        {collectionPhotos ? collectionPhotos.map((image_url, index) => (
+      <View key={index} style={{marginLeft: wp('5.13%'), height: hp('21.33%'), width: wp('2.56%')}}>
+      <View style={{
+            shadowColor: '#000000', 
+            shadowOffset: { height: 4, width: -4 }, 
+            shadowOpacity: 0.25, 
+            shadowRadius: 4,
+      }}>
         <Image
           style={{
             position:'absolute',
-            width:160,
-            height:160,
+            width: wp('41.03%'),
+            height: wp('41.03%'),
             borderRadius:20,
             backgroundColor:'#E2E2E2',
-            shadowColor: '#000000', 
-            shadowOffset: { height: 4, width: 0 }, 
-            shadowOpacity: 0.25, 
-            shadowRadius: 4,
           }}
           source={{ uri: image_url}}
         />
+        </View>
       </View>
     )) :
     <TouchableOpacity onPress={() => navigation.navigate('PCL')}>
-        <View style={{marginLeft:30, height:180}}>
+        <View style={{ marginLeft: wp('10.26%'), height: hp('21.33%') }}>
         <View 
             style={{
-              width:160,
-              height:160,
+              width: wp('41.03%'),
+              height: wp('41.03%'),
               borderRadius:20,
               top:0,
-              right:8,
+              right: wp('5.64%'),
               backgroundColor:'#E2E2E2',
               shadowColor: '#000000', 
-              shadowOffset: { height: 4, width: 0 }, 
+              shadowOffset: { height: 4, width: -4 }, 
               shadowOpacity: 0.25, 
               shadowRadius: 4,
             }}
           />
           <View 
             style={{
-              width:160,
-              height:160,
+              width: wp('41.03%'),
+              height: wp('41.03%'),
               borderRadius:20,
               position:'absolute',
-              top:5,
-              right:15,
+              top: hp('0.59%'),
+              right: wp('3.85%'),
               backgroundColor:'#E2E2E2',
               shadowColor: '#000000', 
-              shadowOffset: { height: 4, width: 0 }, 
+              shadowOffset: { height: 4, width: -4 }, 
               shadowOpacity: 0.25, 
-              shadowRadius: 4,
+              shadowRadius: 4, 
             }}
           />
           <View  
             style={{
-              width:160,
-              height:160,
+              width: wp('41.03%'),
+              height: wp('41.03%'),
               borderRadius:20,
               position:'absolute',
-              top:10,
-              right:22,
+              top: hp('1.18%'),
+              right: wp('2.05%'),
               backgroundColor:'#E2E2E2',
               shadowColor: '#000000', 
-              shadowOffset: { height: 4, width: 0 }, 
+              shadowOffset: { height: 4, width: -4 }, 
               shadowOpacity: 0.25, 
-              shadowRadius: 4
+              shadowRadius: 4,
             }}
           />
         </View>
@@ -398,87 +404,91 @@ const UserProfileScreen = () => {
         </ScrollView>
 
         <Text style={{
-          width:360,
+         width: wp('92.31%'),
           fontFamily:'Inter-SemiBold',
-          fontSize:20,
-          color:'#4F200D',
-          marginBottom:20,
+          fontSize: wp('5.13%'),
+          color: '#4F200D',
+          marginBottom: hp('2.37%'),
         }}>
           Reviews
         </Text>
         
         <ScrollView 
         style={{
-          marginLeft:30,
-          width:400,
-          marginBottom:20,
+          flex:1,
+          marginLeft: wp('7.69%'),
+          width: wp('100%'),
+          marginBottom: hp('2.37%'),
         }}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         >
         <TouchableOpacity  style={{flexDirection:'row'}} onPress={() => navigation.navigate('My Reviews')}>
         {reviewPhotos? reviewPhotos.map((image_url, index) => (
-      <View key={index} style={{marginLeft:20, height:180}}>
+      <View key={index} style={{marginLeft: wp('5.13%'), height: hp('21.33%'), width: wp('2.56%')}}>
+      <View style={{
+            shadowColor: '#000000', 
+            shadowOffset: { height: 4, width: -4 }, 
+            shadowOpacity: 0.25, 
+            shadowRadius: 4,
+      }}>
         <Image
           style={{
             position:'absolute',
-            width:160,
-            height:160,
-            borderRadius:20,
-            backgroundColor:'#E2E2E2',
-            shadowColor: '#000000', 
-            shadowOffset: { height: 4, width: 0 }, 
-            shadowOpacity: 0.25, 
-            shadowRadius: 4,
+            width: wp('41.03%'),
+            height: wp('41.03%'),
+            borderRadius: 20,
+            backgroundColor: '#E2E2E2',
           }}
           source={{ uri: image_url}}
         />
+        </View>
       </View>
     )) :
     <TouchableOpacity onPress={() => navigation.navigate('My Reviews')}>
-        <View style={{marginLeft:30, height:180}}>
+      <View style={{ marginLeft: wp('10.26%'), height: hp('21.33%') }}>
         <View 
             style={{
-              width:160,
-              height:160,
-              borderRadius:20,
+              width: wp('41.03%'),
+              height: wp('41.03%'),
+              borderRadius: 20,
               top:0,
-              right:8,
-              backgroundColor:'#E2E2E2',
+              right: wp('5.64%'),
+              backgroundColor: '#E2E2E2',
               shadowColor: '#000000', 
-              shadowOffset: { height: 4, width: 0 }, 
+              shadowOffset: { height: 4, width: -4 }, 
               shadowOpacity: 0.25, 
               shadowRadius: 4,
             }}
           />
           <View 
             style={{
-              width:160,
-              height:160,
+              width: wp('41.03%'),
+              height: wp('41.03%'),
               borderRadius:20,
               position:'absolute',
-              top:5,
-              right:15,
+              top: hp('0.59%'),
+              right: wp('3.85%'),
               backgroundColor:'#E2E2E2',
               shadowColor: '#000000', 
-              shadowOffset: { height: 4, width: 0 }, 
+              shadowOffset: { height: 4, width: -4 }, 
               shadowOpacity: 0.25, 
-              shadowRadius: 4,
+              shadowRadius: 4, 
             }}
           />
           <View  
             style={{
-              width:160,
-              height:160,
+              width: wp('41.03%'),
+              height: wp('41.03%'),
               borderRadius:20,
               position:'absolute',
-              top:10,
-              right:22,
+              top: hp('1.18%'),
+              right: wp('2.05%'),
               backgroundColor:'#E2E2E2',
               shadowColor: '#000000', 
-              shadowOffset: { height: 4, width: 0 }, 
+              shadowOffset: { height: 4, width: -4 }, 
               shadowOpacity: 0.25, 
-              shadowRadius: 4
+              shadowRadius: 4,
             }}
           />
         </View>

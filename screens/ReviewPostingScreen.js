@@ -1,14 +1,14 @@
-import { StyleSheet, Text, View, Image, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, Alert, TextInput, TouchableOpacity, ScrollView, StatusBar  } from 'react-native';
 import React, { useCallback, useState, useEffect } from 'react';
-import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native-gesture-handler';
 import { firebase } from '../config';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import CheckSquare from '../CheckSquareComponent';
 import Entypo from 'react-native-vector-icons/Entypo';
 import * as ImagePicker from 'expo-image-picker';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const ReviewPostingScreen = ({ route }) => {
   const { business } = route.params;
@@ -84,7 +84,8 @@ const ReviewPostingScreen = ({ route }) => {
       rating: defaultRating,
       savefornextvisit: saveForNext,
       uid: userId,
-      username: user.userName
+      username: user.userName,
+      userImage: user.image,
     };
   
     // Add photos to reviewData only if they are available
@@ -133,19 +134,17 @@ const ReviewPostingScreen = ({ route }) => {
       <View style={{
         justifyContent: 'center',
         flexDirection: 'row',
-        marginTop: 5,
         backgroundColor: '#FFFFFF',
         borderRadius: 40,
-        height: 60,
-        width: 280,
+        height: hp('7.11%'),
+        width: wp('71.79%'),
         alignItems: 'center',
-        marginLeft: 30,
-        position: 'absolute',
-        top: 270,
+        marginLeft: wp('7.69%'),
         shadowColor: '#D8D8D8',
         shadowOffset: { height: 1, width: 0 },
         shadowOpacity: 1,
         shadowRadius: 6,
+        marginBottom: hp('1.78%'),
       }}>
         {
           maxRating.map((item, key) => {
@@ -155,13 +154,13 @@ const ReviewPostingScreen = ({ route }) => {
                 key={item}
                 onPress={() => setDefaultRating(item)}
                 style={{
-                  marginRight: 10,
+                  marginRight: wp('2.56%'),
                 }}
               >
                 <Image
                   style={{
-                    width: 40,
-                    height: 40,
+                    width: wp('10.26%'),
+                    height: wp('10.26%'),
                     resizeMode: 'cover'
                   }}
                   source={
@@ -215,38 +214,32 @@ const ReviewPostingScreen = ({ route }) => {
   }
 
   return (
-    <ScrollView>
-
-      <View
-        style={{
-          flex: 1
-        }}
-        onLayout={onLayoutRootView}
-      >
+    <ScrollView showsVerticalScrollIndicator={false}>
+    <StatusBar barStyle={'dark-content'} />
+    <SafeAreaView style={{flex: 1, bottom: hp('2.37%')}} onLayout={onLayoutRootView}>
         <Text style={{
           fontFamily: 'Inter-SemiBold',
-          fontSize: 20,
-          lineHeight: 30,
-          marginBottom: 15,
-          marginTop: 15,
-          width: 330,
+          fontSize: wp('5.13%'),
+          lineHeight: hp('3.55%'),
+          marginBottom: hp('1.78%'),
+          width: wp('84.62%'),
           alignSelf: 'center',
         }}>Share your experience of this place!</Text>
         <TextInput
           placeholder='Descriptions'
           style={{
             alignSelf: 'center',
-            height: 159,
-            width: 340,
+            height: hp('18.84%'),
+            width: wp('87.18%'),
             backgroundColor: '#FFFFFF',
             borderRadius: 10,
-            paddingHorizontal: 15,
-            paddingBottom: 120,
-            fontSize: 16,
+            paddingHorizontal: wp('3.85%'),
+            paddingBottom: hp('14.22%'),
+            fontSize: wp('4.1%'),
             fontFamily: 'Inter-Regular',
             letterSpacing: 0.5,
-            lineHeight: 30,
-            marginBottom: 15,
+            lineHeight: hp('3.55%'),
+            marginBottom: hp('1.78%'),
           }}
           onChangeText={(text) => setDescription(text)}
         >
@@ -254,28 +247,28 @@ const ReviewPostingScreen = ({ route }) => {
 
         <Text style={{
           fontFamily: 'Inter-SemiBold',
-          fontSize: 20,
+          fontSize: wp('5.13%'),
           letterSpacing: 0.5,
-          lineHeight: 30,
-          marginBottom: 95,
-          width: 330,
+          lineHeight: hp('3.55%'),
+          width: wp('84.62%'),
+          marginBottom: hp('1.78%'),
           alignSelf: 'center',
         }}>Overall</Text>
         <CustomRatingBar />
 
         <Text style={{
           fontFamily: 'Inter-SemiBold',
-          fontSize: 20,
+          fontSize: wp('5.13%'),
           letterSpacing: 0.5,
-          lineHeight: 30,
-          marginBottom: 15,
-          width: 330,
+          lineHeight: hp('3.55%'),
+          marginBottom: hp('1.78%'),
+          width: wp('84.62%'),
           alignSelf: 'center',
         }}>Would you like to save it for the next visit?</Text>
         <View style={{
           flexDirection: 'row',
-          left: 30,
-          marginBottom: 15,
+          left: wp('7.69%'),
+          marginBottom: hp('1.78%'),
         }}>
           <CheckSquare
             onPress={() => {handleYesPress()}}
@@ -283,9 +276,9 @@ const ReviewPostingScreen = ({ route }) => {
           />
           <Text style={{
             fontFamily: 'Inter-ExtraBold',
-            fontSize: 18,
+            fontSize: wp('4.62%'),
             letterSpacing: 1,
-            marginRight: 60,
+            marginRight: wp('15.38%'),
             alignSelf: 'center',
           }}>Yes</Text>
           <CheckSquare
@@ -294,7 +287,7 @@ const ReviewPostingScreen = ({ route }) => {
           />
           <Text style={{
             fontFamily: 'Inter-ExtraBold',
-            fontSize: 18,
+            fontSize: wp('4.62%'),
             letterSpacing: 1,
             alignSelf: 'center',
           }}>No</Text>
@@ -302,108 +295,108 @@ const ReviewPostingScreen = ({ route }) => {
 
         <Text style={{
           fontFamily: 'Inter-SemiBold',
-          fontSize: 20,
+          fontSize: wp('5.13%'),
           letterSpacing: 0.5,
-          lineHeight: 30,
-          marginBottom: 15,
-          width: 330,
+          lineHeight: hp('3.55%'),
+          marginBottom: hp('1.78%'),
+          width: wp('84.62%'),
           alignSelf: 'center',
-          marginTop: 10,
+          marginTop: hp('1.18%'),
         }}>Upload Photos (Optional)</Text>
 
 
         <ScrollView
           horizontal={true}
           style={{
-            width: 300,
+            width: wp('82.05%'),
             flexDirection: 'row',
             alignSelf: 'center',
-            marginBottom: 20,
+            marginBottom: hp('2.37%'),
           }}
           showsHorizontalScrollIndicator={false}
         >
 
           <TouchableOpacity style={{
-            width: 100,
-            height: 100,
+            width: wp('25.64%'),
+            height: wp('25.64%'),
             borderRadius: 10,
             backgroundColor: '#FCFCFC',
-            marginRight: 10,
+            marginRight: wp('2.56%'),
           }}
             onPress={() => { pickImage(1); setPhotoSlot(1); }}>
 
             {photo1 ? (
               <Image
-                style={{ width: 100, height: 100, borderRadius: 10 }}
+                style={{ width:  wp('25.64%'), height:  wp('25.64%'), borderRadius: 10 }}
                 source={{ uri: photo1 }}
               />
             ) : (
-              <Entypo name="plus" size={44} color="#C9C9C9" style={{ left: 28, top: 28 }} />
+              <Entypo name="plus" size={wp('11.28%')} color="#C9C9C9" style={{ left: wp('7.18%'), top: wp('7.18%') }} />
             )}
           </TouchableOpacity>
 
           <TouchableOpacity style={{
-            width: 100,
-            height: 100,
+            width: wp('25.64%'),
+            height: wp('25.64%'),
             borderRadius: 10,
             backgroundColor: '#FCFCFC',
-            marginRight: 10,
+            marginRight: wp('2.56%'),
           }}
             onPress={() => { pickImage(2); setPhotoSlot(2); }}>
 
             {photo2 ? (
               <Image
-                style={{ width: 100, height: 100, borderRadius: 10 }}
+                style={{ width:  wp('25.64%'), height:  wp('25.64%'), borderRadius: 10 }}
                 source={{ uri: photo2 }}
               />
             ) : (
-              <Entypo name="plus" size={44} color="#C9C9C9" style={{ left: 28, top: 28 }} />
+              <Entypo name="plus" size={wp('11.28%')} color="#C9C9C9" style={{ left: wp('7.18%'), top: wp('7.18%') }} />
             )}
           </TouchableOpacity>
 
           <TouchableOpacity style={{
-            width: 100,
-            height: 100,
+            width: wp('25.64%'),
+            height: wp('25.64%'),
             borderRadius: 10,
             backgroundColor: '#FCFCFC',
-            marginRight: 10,
+            marginRight: wp('2.56%'),
           }}
             onPress={() => { pickImage(3); setPhotoSlot(3); }}>
 
             {photo3 ? (
               <Image
-                style={{ width: 100, height: 100, borderRadius: 10 }}
+                style={{ width:  wp('25.64%'), height:  wp('25.64%'), borderRadius: 10 }}
                 source={{ uri: photo3 }}
               />
             ) : (
-              <Entypo name="plus" size={44} color="#C9C9C9" style={{ left: 28, top: 28 }} />
+              <Entypo name="plus" size={wp('11.28%')} color="#C9C9C9" style={{ left: wp('7.18%'), top: wp('7.18%') }} />
             )}
           </TouchableOpacity>
 
           <TouchableOpacity style={{
-            width: 100,
-            height: 100,
+             width: wp('25.64%'),
+            height: wp('25.64%'),
             borderRadius: 10,
             backgroundColor: '#FCFCFC',
-            marginRight: 10,
+            marginRight: wp('2.56%'),
           }}
             onPress={() => { pickImage(4); setPhotoSlot(4); }}>
 
             {photo4 ? (
               <Image
-                style={{ width: 100, height: 100, borderRadius: 10 }}
+                style={{ width:  wp('25.64%'), height:  wp('25.64%'), borderRadius: 10 }}
                 source={{ uri: photo4 }}
               />
             ) : (
-              <Entypo name="plus" size={44} color="#C9C9C9" style={{ left: 28, top: 28 }} />
+              <Entypo name="plus" size={wp('11.28%')} color="#C9C9C9" style={{ left: wp('7.18%'), top: wp('7.18%') }} />
             )}
           </TouchableOpacity>
         </ScrollView>
 
         <TouchableOpacity style={{
           backgroundColor: '#FFCE84',
-          width: 256,
-          height: 48,
+          width: wp('65.64%'),
+          height: hp('5.69%'),
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 10,
@@ -412,12 +405,11 @@ const ReviewPostingScreen = ({ route }) => {
           onPress={() => { handleReviewPress()}}>
           <Text style={{
             fontFamily: 'Inder-Regular',
-            fontSize: 20,
+            fontSize: wp('5.13%'),
             color: '#4F200D'
           }}>Submit My Review</Text>
         </TouchableOpacity>
-
-      </View>
+      </SafeAreaView>
     </ScrollView>
   )
 }

@@ -1,12 +1,11 @@
-import { StyleSheet, Text, View, Image, FlatList } from 'react-native';
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
 import React, { useCallback, useState, useEffect } from 'react';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { firebase } from '../config';
 import { useNavigation } from '@react-navigation/native';
-import { ScrollView } from 'react-native-gesture-handler';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import StarRating from 'react-native-star-rating-widget';
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const UserOwnReviewsScreen = () => {
   const navigation = useNavigation();
@@ -54,17 +53,17 @@ const UserOwnReviewsScreen = () => {
     <StarRating
     enableSwiping={false}
     style={{
-      position:'absolute',
-      top:42,
-      left:70,
+      position: 'absolute',
+      top: hp('4.98%'),
+      left: wp('17.95%'),
     }}
     starStyle={{
-      marginLeft:-5
+      marginLeft: wp('-1.28%')
     }}
-    starSize={20}
+    starSize={wp('5.13%')}
       rating={item.rating} />
     <Text style={styles.description}>{item.description}</Text>
-    <ScrollView  horizontal={true} style={{width:300, flexDirection:'row', marginLeft:50}}>
+    <ScrollView  horizontal={true} style={{ width: wp('76.92%'), flexDirection: 'row', marginLeft: wp('12.82%')}}>
     {Object.keys(item).map(key => {
         if (key.startsWith('photo')) {
           return <Image key={key} style={styles.businessImage} source={{ uri: item[key] }} />;
@@ -96,14 +95,15 @@ const UserOwnReviewsScreen = () => {
   return (
     <View
       style={{ flex: 1 }}
-      contentContainerStyle={{ alignContent: 'flex-start', paddingBottom: 60 }}
+      contentContainerStyle={{ alignContent: 'flex-start', paddingBottom: hp('7.11%') }}
       showsVerticalScrollIndicator={false}
       onLayout={onLayoutRootView}
     >
+    <StatusBar barStyle={'dark-content'} />
       {reviewed.length > 0 ? (
         <FlatList
         style={{ alignSelf: 'stretch' }}
-        contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 10 }}
+        contentContainerStyle={{ paddingHorizontal: wp('2.56%'), paddingBottom: hp('1.18%') }}
         data={reviewed}
         renderItem={renderReviewed}
       />
@@ -135,14 +135,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Inter-Regular',
     color: '#949494',
-    marginTop: 20,
-    fontSize: 14,
+    marginTop: hp('2.37%'),
+    fontSize: wp('3.59%'),
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: hp('1.18%'),
     borderRadius: 20,
-    width: 100,
-    height: 40,
+    width: wp('25.64%'),
+    height: hp('4.74%'),
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -152,39 +152,39 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
   },
   collectionCard: {
-    marginBottom: 10,
-    marginHorizontal: 5,
+    marginBottom: hp('1.18%'),
+    marginHorizontal: wp('1.28%'),
     backgroundColor: '#F8F6F4',
     borderRadius: 15,
     elevation: 2,
-    paddingHorizontal: 10,
-    paddingVertical: 15,
+    paddingHorizontal: wp('2.56%'),
+    paddingVertical: hp('1.78%'),
   },
   collectionName: {
-    left:8,
-    top:5,
+    left: wp('2.05%'),
+    top: hp('0.29%'),
     fontFamily: 'Inter-Medium',
-    fontSize: 17,
+    fontSize: wp('4.36%'),
   },
   description: {
     fontFamily: 'Inter-Regular',
-    fontSize: 14,
-    left:58,
+    fontSize: wp('3.59%'),
+    left: wp('14.87%'),
     color: 'black',
-    marginBottom: 10,
-    marginTop:5,
-    lineHeight: 20,
+    marginBottom: hp('1.18%'),
+    marginTop: hp('0.59%'),
+    lineHeight: hp('2.37%'),
   },
   businessImage: {
-    width: 90,
-    height: 90,
+    width: wp('23.08%'),
+    height: wp('23.08%'),
     borderRadius: 15,
-    marginLeft:10,
-    marginBottom: 5,
+    marginLeft: wp('2.56%'),
+    marginBottom: hp('0.59%'),
   },
   userImage: {
-    width:50,
-    height:50,
-    borderRadius:25,
+    width: wp('12.82%'),
+    height: wp('12.82%'),
+    borderRadius: 25,
   }
 });

@@ -1,11 +1,11 @@
-import { StyleSheet, Text, View, Alert, Image} from 'react-native'
+import { StyleSheet, Text, View, Alert, Image, TouchableOpacity, ScrollView, StatusBar } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 const PlaceListDetail = ({route}) => {
   const { business } = route.params;
@@ -165,106 +165,109 @@ const PlaceListDetail = ({route}) => {
   }
 
   return (
+    <ScrollView onLayout={onLayoutRootView} style={{flex:1}} showsVerticalScrollIndicator={false}>
+    <StatusBar barStyle={'dark-content'} />
     <SafeAreaView onLayout={onLayoutRootView}>
     <View style={{
-      marginBottom:90,
-      flexDirection:'row',
-      left:20,
+      marginBottom: hp('10.66%'),
+      flexDirection: 'row',
+      left: wp('5.13%'),
       }}>
       <Text style={{
-        alignSelf:'center',
-        fontFamily:'Inter-SemiBold',
-        fontSize:20,
-        width:150,
-        top:10,
-        marginLeft:10,
+        alignSelf: 'center',
+        fontFamily: 'Inter-SemiBold',
+        fontSize: wp('5.13%'),
+        width: wp('38.46%'),
+        top: hp('1.18%'),
+        marginLeft: wp('2.56%'),
       }}>{business.name}</Text>
 
       <Image style={{
-        position:'absolute',
-        width:163,
-        height:111,
-        borderRadius:10,
-        left:190,
-        bottom:-50  
+        position: 'absolute',
+        width: wp('41.79%'),
+        height: hp('13.15%'),
+        borderRadius: 10,
+        left: wp('48.72%'),
+        bottom: hp('-6.92%')  
       }} source={{uri: business ? business.image_url || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'
        : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'}}/>
       </View>
 
       <View style={{
-        left:20,
-        flexDirection:'row',
-        marginBottom:60,
+        left: wp('5.13%'),
+        flexDirection: 'row',
+        marginBottom: hp('7.11%'),
       }}>
         <Image style={{
-          marginRight:10,
-          height:30,
-          width:30,
+          marginRight: wp('2.56%'),
+          height: wp('7.69%'),
+          width: wp('7.69%'),
         }}
         source={require('../assets/images/misc/LocationGreen.png')} />
         <Text style={{fontFamily:'Inter-Regular',
-          fontSize:15,
-          alignSelf:'center',
-          width:300}}>
+          fontSize: wp('3.85%'),
+          alignSelf: 'center',
+          width: wp('76.92%')
+        }}>
           {address}
         </Text>
       </View>
       <View style={{
-        left:20,
+        left: wp('5.13%'),
         flexDirection:'row',
-        marginBottom:60,
+        marginBottom: hp('7.11%'),
       }}>
         <Image style={{
-          marginRight:10,
-          height:30,
-          width:30,
+          marginRight: wp('2.56%'),
+          height: wp('7.69%'),
+          width: wp('7.69%'),
         }}
         source={require('../assets/images/misc/PhoneGreen.png')} />
         <Text style={{fontFamily:'Inter-Regular',
-          fontSize:15,
+          fontSize: wp('3.85%'),
           alignSelf:'center'}}>
           {business.phone}
         </Text>
       </View>
       <View style={{
-        left:20,
+        left: wp('5.13%'),
         flexDirection:'row',
-        marginBottom:60,
+        marginBottom: hp('7.11%'),
       }}>
         <Image style={{
-          marginRight:10,
-          height:30,
-          width:30,
+          marginRight: wp('2.56%'),
+          height: wp('7.69%'),
+          width: wp('7.69%'),
         }}
         source={require('../assets/images/misc/PriceGreen.png')} />
         <Text style={{
-          fontFamily:'Inter-Regular',
-          fontSize:15,
-          alignSelf:'center',
+          fontFamily: 'Inter-Regular',
+          fontSize: wp('3.85%'),
+          alignSelf: 'center',
         }}>
           {filterPrice}
         </Text>
       </View>
       <View style={{
-        marginBottom:50,
+        marginBottom: hp('5.92%'),
       }}>
       <TouchableOpacity 
       onPress={() => {navigation.navigate('Review', {business: business})}}
       style={{
-        left:20,
-        flexDirection:'row',
-        marginBottom:10,
+        left: wp('5.13%'),
+        flexDirection: 'row',
+        marginBottom: hp('1.18%'),
       }}>
         <Image style={{
-          marginRight:10,
-          height:30,
-          width:30,
+          marginRight: wp('2.56%'),
+          height: wp('7.69%'),
+          width: wp('7.69%'),
         }}
         source={require('../assets/images/misc/RatingGreen.png')} />
         <Text style={{
           textDecorationLine:'underline',
           fontFamily:'Inter-Regular',
-          fontSize:15,
+          fontSize: wp('3.85%'),
           alignSelf:'center',
         }}>
           See Reviews
@@ -274,45 +277,46 @@ const PlaceListDetail = ({route}) => {
 
       <TouchableOpacity 
       style={{
-        top:30,
-        width:365,
-        height:60,
-        backgroundColor:'#264223',
-        alignSelf:'center',
-        borderRadius:14,
-        justifyContent:'center',
-        marginBottom:20,
+        top: hp('3.55%'),
+        width: wp('93.59%'),
+        height: hp('7.11%'),
+        backgroundColor: '#264223',
+        alignSelf: 'center',
+        borderRadius: 14,
+        justifyContent: 'center',
+        marginBottom: hp('2.37%'),
       }}
       onPress={() => {saveToCollection(); }}>
       <Text style={{
-        alignSelf:'center',
-        fontFamily:'Inter-SemiBold',
-        fontSize:17,
-        lineHeight:22,
-        color:'#FFFFFF'
+        alignSelf: 'center',
+        fontFamily: 'Inter-SemiBold',
+        fontSize: wp('4.36%'),
+        lineHeight: 22,
+        color: '#FFFFFF'
       }}>Save to Collection List</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
       style={{
-        top:30,
-        width:365,
-        height:60,
-        backgroundColor:'#264223',
-        alignSelf:'center',
-        borderRadius:14,
-        justifyContent:'center',
+        top: hp('3.55%'),
+        width: wp('93.59%'),
+        height: hp('7.11%'),
+        backgroundColor: '#264223',
+        alignSelf: 'center',
+        borderRadius: 14,
+        justifyContent: 'center',
       }}
       onPress={() => {checkReviewed()}}>
       <Text style={{
         alignSelf:'center',
         fontFamily:'Inter-SemiBold',
         color:'#FFFFFF',
-        fontSize:17,
+        fontSize: wp('4.36%'),
         lineHeight:22,
       }}>Write a review</Text>
       </TouchableOpacity>
     </SafeAreaView>
+    </ScrollView>
   )
 }
 

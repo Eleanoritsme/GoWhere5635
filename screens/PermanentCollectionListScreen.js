@@ -1,12 +1,11 @@
-import { StyleSheet, Text, View, Image, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions, StatusBar } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
-import { ScrollView } from 'react-native-gesture-handler'
 import { firebase } from '../config'
 import MasonryList from "@react-native-seoul/masonry-list"
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const PermanentCollectionListScreen = () => {
   const navigation = useNavigation()
@@ -146,11 +145,12 @@ const PermanentCollectionListScreen = () => {
   }
 
   return (
-    <View style={{flex:1, paddingHorizontal: 10, paddingTop: 10}} onLayout={onLayoutRootView}>
+    <View style={{flex:1, paddingHorizontal: wp('2.56%'), paddingTop: hp('1.18%')}} onLayout={onLayoutRootView}>
+    <StatusBar barStyle={'dark-content'} />
     {collections ? (
       <MasonryList
         style={{alignSelf:"stretch"}}
-        contentContainerStyle={{paddingHorizontal:1, alignSelf:"stretch"}}
+        contentContainerStyle={{paddingHorizontal: wp('0.26%'), alignSelf: "stretch"}}
         data={collections}
         renderItem={renderCollections}
         showsVerticalScrollIndicator={false}
@@ -158,39 +158,33 @@ const PermanentCollectionListScreen = () => {
       </MasonryList>
       ) : (
       <View style={{
-      height:'100%',
-      alignItems:'center',
-      justifyContent:'center'
+      height: hp('80%'),
+      alignItems: 'center',
+      justifyContent: 'center'
     }}> 
       <Text style={{
-        textAlign:'center',
-        fontFamily:'Inter-Regular',
-        color:'#949494',
-        marginTop:20,
-        fontSize:14,
+        textAlign: 'center',
+        fontFamily: 'Inter-Regular',
+        color: '#949494',
+        marginTop: hp('2.37%'),
+        fontSize: wp('3.59%'),
       }}>You have not collected any places yet.</Text>
-      <View style={{
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
-        marginTop:10,
-      }}>
       <Text style={{
         color:'#949494',
         fontFamily:'Inter-Regular',
-        fontSize:14,
+        fontSize: wp('3.59%'),
+        marginTop: hp('1.18%'),
       }}>Go to save some good place!</Text>
-      </View>
       <TouchableOpacity onPress={() => {navigation.navigate('Activity')}}
         style={{
-          marginTop:10,
-          borderRadius:20,
-          width:100,
-          height:40,
-          alignItems:'center',
-          justifyContent:'center',
-          borderWidth:1,
-          borderColor:'#949494',
+          marginTop: hp('1.18%'),
+          borderRadius: 20,
+          width: wp('25.64%'),
+          height: hp('4.74%'),
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderWidth: 1,
+          borderColor: '#949494',
         }}>
         <Text>
         Have a try
@@ -201,96 +195,48 @@ const PermanentCollectionListScreen = () => {
   )
 }
 
-export default PermanentCollectionListScreen
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   flatListContainer: {
     justifyContent: 'space-between',
   },
   collectionCard: {
-    marginBottom:10,
-    marginHorizontal:5,
-    flex:0.5,
+    marginBottom: hp('0.5%'),
+    marginHorizontal: wp('0.5%'),
+    flex: 0.5,
     backgroundColor: '#FFF5E9',
-    borderTopLeftRadius:55,
-    borderTopRightRadius:55,
     elevation: 2,
-    paddingHorizontal: 10,
-    paddingVertical: 15,
+    paddingHorizontal: wp('2.56%'),
+    paddingVertical: hp('1.78%'),
   },
   collectionName: {
     fontFamily: 'Inter-Bold',
-    fontSize: 15,
-    marginBottom:5,
+    fontSize: wp('3.85%'),
+    marginBottom: hp('0.59%'),
   },
   collectionAddress: {
     fontFamily: 'Inter-Regular',
-    fontSize: 11,
+    fontSize: wp('2.82%'),
     color: 'black',
-    lineHeight:20,
+    lineHeight: hp('2.37%'),
   },
   heartImage: {
-    //position:'absolute',
-    marginBottom:2,
-    marginRight:3,
-    width: 25, 
-    height:25
+    marginBottom: hp('0.24%'),
+    marginRight: wp('0.77%'),
+    width: wp('6.41%'), 
+    height: wp('6.41%'), 
   },
   businessImage: {
-    width:165,
-    height:110,
+    width: wp('43.31%'),
+    height: hp('13.03%'),
     borderRadius:15,
-    // borderRadius:50,
-    marginTop:-14,
-    marginLeft:-5,
-    alignContent:'center',
-    marginBottom:5
+    marginTop: hp('-1%'),
+    marginLeft: wp('-1%'),
+    marginRight: wp('-1%'),
+    marginBottom: hp('1%')
   }
 });
 
-  /*const styles = StyleSheet.create({
-    // ...
-  
-    collectionCard: {
-      marginBottom: 10,
-      marginHorizontal: 5,
-      backgroundColor: '#ffffff',
-      borderRadius: 10,
-      elevation: 2,
-      paddingHorizontal: 10,
-      paddingVertical: 15,
-    },
-    imageContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: 10,
-    },
-    heartContainer: {
-      backgroundColor: 'transparent',
-      padding: 10,
-    },
-    heartImage: {
-      width: 25,
-      height: 25,
-    },
-    businessImage: {
-      width: 100,
-      height: 100,
-      borderRadius: 50,
-    },
-    collectionDetailsContainer: {
-      flex: 1,
-    },
-    collectionName: {
-      fontFamily: 'Inter-Bold',
-      fontSize: 15,
-      marginBottom: 5,
-    },
-    collectionAddress: {
-      fontFamily: 'Inter-Regular',
-      fontSize: 10,
-      color: '#808080',
-    },
-  });
-  */
+export default PermanentCollectionListScreen

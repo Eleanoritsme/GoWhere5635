@@ -1,12 +1,11 @@
-import { StyleSheet, Text, View, Image, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ScrollView, StatusBar } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
-import { ScrollView } from 'react-native-gesture-handler'
 import { firebase } from '../config'
 import MasonryList from "@react-native-seoul/masonry-list"
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 
 const VisitedPlaceListScreen = () => {
@@ -90,11 +89,12 @@ const VisitedPlaceListScreen = () => {
   }
 
   return (
-    <View style={{flex:1, paddingHorizontal: 10, paddingTop: 10}} onLayout={onLayoutRootView}>
+    <View style={{flex:1, paddingHorizontal: wp('2.56%'), paddingTop: hp('1.18%')}} onLayout={onLayoutRootView}>
+    <StatusBar barStyle={'dark-content'} />
     { visited ? (
       <MasonryList
         style={{alignSelf:"stretch"}}
-        contentContainerStyle={{paddingHorizontal:1, alignSelf:"stretch"}}
+        contentContainerStyle={{paddingHorizontal: wp('0.36%'), alignSelf: "stretch"}}
         data={visited}
         renderItem={renderVisited}
         showsVerticalScrollIndicator={false}
@@ -102,33 +102,33 @@ const VisitedPlaceListScreen = () => {
       </MasonryList>
       ) : (
     <View style={{
-      height:'100%',
+      height: hp('80%'),
       alignItems:'center',
       justifyContent:'center'
     }}>
       <Text style={{
-        textAlign:'center',
-        fontFamily:'Inter-Regular',
-        color:'#949494',
-        marginTop:20,
-        fontSize:14,
+        textAlign: 'center',
+        fontFamily: 'Inter-Regular',
+        color: '#949494',
+        marginTop: hp('2.37%'),
+        fontSize: wp('3.59%'),
       }}>You have not been to any places yet.</Text>
       <Text style={{
         color:'#949494',
         fontFamily:'Inter-Regular',
-        fontSize:14,
-        marginTop:10,
+        fontSize: wp('3.59%'),
+        marginTop: hp('1.18%'),
       }}>Go to find some good recommendations and have a try!</Text>
       <TouchableOpacity onPress={() => {navigation.navigate('Activity')}}
         style={{
-          marginTop:10,
-          borderRadius:15,
-          width:80,
-          height:30,
-          alignItems:'center',
-          justifyContent:'center',
-          borderWidth:1,
-          borderColor:'#949494',
+          marginTop: hp('1.18%'),
+          borderRadius: 20,
+          width: wp('25.64%'),
+          height: hp('4.74%'),
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderWidth: 1,
+          borderColor: '#949494',
         }}>
         <Text>
         Have a try
@@ -145,43 +145,34 @@ export default VisitedPlaceListScreen
       justifyContent: 'space-between',
     },
     collectionCard: {
-      marginBottom:10,
-      marginHorizontal:5,
-      flex:0.5,
-      backgroundColor: '#FFFCE1',
+      marginBottom: hp('0.5%'),
+      marginHorizontal: wp('0.5%'),
+      flex: 0.5,
+      backgroundColor: '#FFFDE9',
       borderRadius:15,
-      // borderTopLeftRadius:55,
-      // borderTopRightRadius:55,
       elevation: 2,
-      paddingHorizontal: 10,
-      paddingVertical: 15,
+      paddingHorizontal: wp('2.56%'),
+      paddingVertical: hp('1.78%'),
     },
     collectionName: {
       fontFamily: 'Inter-Bold',
-      fontSize: 15,
-      marginBottom:5,
+      fontSize: wp('3.85%'),
+      marginBottom: hp('0.59%'),
     },
     collectionAddress: {
       fontFamily: 'Inter-Regular',
-      fontSize: 11,
+      fontSize: wp('2.82%'),
       color: 'black',
-      marginBottom:10,
-      lineHeight:20,
-    },
-    reviewImage: {
-      marginTop:10,
-      marginRight:3,
-      width: 25,
-      height:25
+      marginBottom: hp('1.18%'),
+      lineHeight: hp('2.37%'),
     },
     businessImage: {
-        width:165,
-        height:110,
-        borderRadius:15,
-        // borderRadius:50,
-        marginTop:-14,
-        marginLeft:-5,
-        alignContent:'center',
-        marginBottom:5
+      width: wp('43.31%'),
+      height: hp('13.03%'),
+      borderRadius:15,
+      marginTop: hp('-1%'),
+      marginLeft: wp('-1%'),
+      marginRight: wp('-1%'),
+      marginBottom: hp('1%')
     }
   });

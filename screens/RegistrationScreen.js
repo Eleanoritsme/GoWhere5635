@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Image, StatusBar } from 'react-native'
 import React, { useState, useCallback } from 'react'
 import { TextInput } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
@@ -6,11 +6,10 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
-
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Fontisto from 'react-native-vector-icons/Fontisto';
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 SplashScreen.preventAutoHideAsync();
@@ -26,8 +25,8 @@ const RegistrationScreen = () => {
   const [state, setState] = useState(null)
   const [city, setCity] = useState(null)
   const [bio, setBio] = useState(null)
-  const [background, setBackground] = useState(null)
-  const [image, setImage] = useState(null)
+  const [background, setBackground] = useState('https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/WholeBackground.png')
+  const [image, setImage] = useState('https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg')
 
   const [date, setDate] = useState(new Date());
   const [dateSelected, setDateSelected] = useState(false);
@@ -96,21 +95,23 @@ const RegistrationScreen = () => {
       setError(showError && error)
       console.log(error)
     } else {
-      await firebase.auth().createUserWithEmailAndPassword(email, password)
+      firebase.auth().createUserWithEmailAndPassword(email, password)
       .catch((error => {
-      if (error.code == 'auth/email-already-in-use') {
-        alert('The email address is already in use by another account.')
-      } 
-      console.log(error.message)
-    }))
+        if (error.code == 'auth/email-already-in-use') {
+          alert('The email address is already in use by another account.')
+        } 
+        console.log(error.message);
+      }))
     .then(() => {
       firebase.auth().currentUser.sendEmailVerification({
         handleCodeInApp: true,
         url:'https://gowhere5635.firebaseapp.com',
       })
       .then(() => {
-        alert('Verification email sent!')
-      }).catch((error) => {
+        alert('Verification email sent!');
+        navigation.navigate('Login')
+      })
+      .catch((error) => {
         alert(error.message)
       })
       .then(() => {
@@ -127,6 +128,7 @@ const RegistrationScreen = () => {
           background,
           image
         })
+        console.log(firebase.auth().currentUser.emailVerified)
       })
       .catch((error) => {
         console.log(error.message)
@@ -161,7 +163,8 @@ const RegistrationScreen = () => {
     extraScrollHeight={50}
     keyboardVerticalOffset={70}
     >
-    <SafeAreaView style={{flex:1, top:15,}}>
+    <StatusBar barStyle={'dark-content'} />
+    <SafeAreaView style={{flex:1, top:hp('2%')}}>
     {/* LoginPage Logo */}
       <View style={styles.logo}>
         <Image
@@ -315,7 +318,7 @@ const RegistrationScreen = () => {
         {/* Conduct Register */}
         <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, state, city, bio, background, image)}
+          onPress={() => {registerUser(userName, dateOfBirth, email, password, confirmPassword, occupation, country, state, city, bio, background, image)}}
           style={styles.button}
         >
           <Text style={styles.buttonInput}>Register</Text>
@@ -346,88 +349,80 @@ const styles = StyleSheet.create({
     alignItems:'center',
   },
   logo:{
-    marginLeft:12,
-    marginBottom:20
+    marginLeft: wp('3.08%'),
+    marginBottom: hp('2.37%')
   },
   logoImage:{
-    resizeMode:'contain',
-    width:305,
-    height:60,
+    resizeMode: 'contain',
+    width: wp('78.21%'),
+    height: hp('7.11%'),
   },
   registerText:{
-    marginLeft:20,
-    marginBottom:30,
+    marginLeft: wp('5.13%'),
+    marginBottom: hp('3.55%'),
   },
   text:{
     fontFamily:'Inter-SemiBold',
-    fontSize: 33,
+    fontSize: wp('8.46%'),
     fontWeight: '500',
     color: '#000000',
   },
   inputContainer:{
-    flexDirection:'row',
-    borderBottomColor:'#ccc',
-    borderBottomWidth:1,
-    paddingBottom:8,
-    marginLeft:20,
-    marginRight:20,
-    marginTop:30,
+    flexDirection: 'row',
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    paddingBottom: hp('0.95%'),
+    marginLeft: wp('5.13%'),
+    marginRight: wp('5.13%'),
+    marginTop: hp('3.55%'),
   },
   icon:{
-    marginRight:5
+    marginRight: wp('1.28%')
   },
   input:{
-    flex:1,
+    flex: 1,
   },
   inputDate:{
-    flex:1,
-    paddingVertical:0,
-    color:'#B7B7B7'
+    flex: 1,
+    color: '#B7B7B7'
   },
   errorContainer:{
-    marginTop:8,
-    marginLeft:20,
+    marginTop: hp('0.95%'),
+    marginLeft: wp('5.13%'),
   },
   error:{
-    fontSize: 14,
+    fontSize: wp('3.59%'),
     color:'red',
   },
   buttonContainer:{
-    marginLeft:20,
-    marginRight:20,
-    marginTop:20,
+    marginLeft: wp('5.13%'),
+    marginRight: wp('5.13%'),
+    marginTop: hp('2.37%')
   },
   button:{
-    backgroundColor:'#FFBC11',
-    width:350,
-    padding:18,
-    borderRadius:10,
-    alignItems:'center',
+    backgroundColor: '#FFBC11',
+    width: wp('89.74%'),
+    padding: wp('4.62%'),
+    borderRadius: 10,
+    alignItems: 'center',
   },
   buttonInput:{
-    fontFamily:'Inter-ExtraBold',
-    color:'white',
-    fontWeight:'700',
-    fontSize:18,
+    fontFamily: 'Inter-ExtraBold',
+    color: 'white',
+    fontWeight: '700',
+    fontSize: wp('4.62%'),
   },
   login:{
-    fontFamily:'Inter-SemiBold',
-    fontSize:15,
-    flexDirection:'row', 
-    justifyContent:'center', 
-    marginTop:20,
+    fontFamily: 'Inter-SemiBold',
+    fontSize: wp('3.85%'),
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    marginTop: hp('2.37%'),
   },
   loginText:{
-    fontFamily:'Inter-ExtraBold',
-    fontSize:15,
-    color:'#FFBC11',
-    fontWeight:'600'
-  },
-  dateTimeContainer: {
-    flex:1,
-    marginTop:'110%',
-    justifyContent:'center',
-    alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    fontFamily: 'Inter-ExtraBold',
+    fontSize: wp('3.85%'),
+    color: '#FFBC11',
+    fontWeight: '600'
   },
 })

@@ -1,14 +1,10 @@
-import { StyleSheet, Text, View, Image, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Image, FlatList, TouchableOpacity, ScrollView, StatusBar } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useNavigation } from '@react-navigation/native'
-import { ScrollView } from 'react-native-gesture-handler'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { firebase } from '../config'
-import MasonryList from "@react-native-seoul/masonry-list"
 import { useFonts } from 'expo-font'
 import * as SplashScreen from 'expo-splash-screen'
-import { render } from 'react-dom'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const TemporaryCollectionListScreen = () => {
   const navigation = useNavigation()
@@ -92,12 +88,6 @@ const TemporaryCollectionListScreen = () => {
     })
     .then(() => {
       console.log('Restaurant saved to Firebase!');
-      //setStarItem((prevItems) => [...prevItems, starredBusiness]);
-      //setStarItem((prevItems) =>
-        //prevItems.map((item) =>
-          //item.phone === starredBusiness.phone ? { ...item, checkFilled: true } : item
-        //)
-      //;
     }) 
     .catch((error) => {
       console.error('Error saving restaurant to Firebase:', error);
@@ -119,19 +109,29 @@ const TemporaryCollectionListScreen = () => {
 
   return (
       <ScrollView onLayout={onLayoutRootView}>      
+      <StatusBar barStyle={'dark-content'} />
         <View>
         {starItem && starItem.map((starredBusiness, index) => {
         return(
         <View key={index} style={styles.businessContainer}>
-        <TouchableOpacity 
-          styles={styles.businessCard}  
+        <TouchableOpacity
           onPress={() => navigation.navigate("Details", {business: starredBusiness})}>
+          <Image style={{
+            position:'absolute',
+            width: wp('33.33%'),
+            height: hp('10.66%'),
+            borderRadius: 10,
+            top: hp('6%'),
+            left: wp('60%'),
+          }} source = {{uri: starredBusiness.image_url}}></Image>
+        <View style={{flexDirection:'row'}}>
+        <Text style={styles.businessName}>{starredBusiness.name}</Text>
           <TouchableOpacity 
           onPress={() => {
             handleUnstarredBusiness(starredBusiness)}}>
           {starredBusiness.checkFilled ? (
           <Image 
-          style={{marginLeft: 340, marginTop: 20}} source={require('../assets/images/misc/StarFilled.png')}>
+          style={{ marginLeft: wp('9%'), marginTop: hp('0.65%') }} source={require('../assets/images/misc/StarFilled.png')}>
           </Image> ) : (
           <TouchableOpacity onPress={() => 
           {setStarItem((prevItems) =>
@@ -142,36 +142,25 @@ const TemporaryCollectionListScreen = () => {
             addBackStar(starredBusiness)}}>
           {starredBusiness.checkFilled ? (
           <Image 
-          style={{marginLeft: 340, marginTop: 20}} source={require('../assets/images/misc/StarFilled.png')}>
+          style={{marginLeft: wp('9%'), marginTop: hp('0.65%') }} source={require('../assets/images/misc/StarFilled.png')}>
           </Image> ) : (
           <Image 
-          style={{marginLeft: 340, marginTop: 20}} source={require('../assets/images/misc/StarCorner.png')}>
+          style={{ marginLeft: wp('9%'), marginTop: hp('0.65%') }} source={require('../assets/images/misc/StarCorner.png')}>
           </Image>
           )}
           </TouchableOpacity>
           )}
           </TouchableOpacity>
-          <Text style={styles.businessName}>{starredBusiness.name}</Text>
+          </View>
           <Text style={styles.businessAddress}>{starredBusiness.address}</Text>
-
-          <Image style={{
-            position:'absolute',
-            width:130,
-            height:90,
-            borderRadius:10,
-            left:250,
-            marginTop:65}} source = {{uri: starredBusiness.image_url}}></Image>
-          <TouchableOpacity style={{top:10}} onPress={() => navigation.navigate("Review")}>
+          {/* <TouchableOpacity style={{marginLeft: wp('3%')}} onPress={() => navigation.navigate("Review", {business: starredBusiness})}>
           <Text style = {{
             textDecorationLine:'underline',
             fontFamily:'Inter-Regular',
-            fontSize:13,
+            fontSize: wp('3.33%'),
             color: "#001F8E",
-            textAlign:'left',
-            marginLeft:12,
-            paddingVertical:0
-          }}> Reviews </Text>
-          </TouchableOpacity>
+          }}>Reviews</Text>
+          </TouchableOpacity> */}
           </TouchableOpacity>
           </View>
         )})}
@@ -183,44 +172,29 @@ const TemporaryCollectionListScreen = () => {
 export default TemporaryCollectionListScreen
 
 const styles = StyleSheet.create({
-  title:{
-    marginLeft:20,
-    marginTop:5,
-  },
-  titleText:{
-    fontFamily:'Inter-ExtraBold',
-    fontSize: 35,
-  },
-  resetPswButton: {
-    fontFamily: 'Inter-Regular',
-    fontSize: 14,
-    textDecorationLine: 'underline',
-  },
   businessContainer: {
     backgroundColor: '#CEEDCE',
-    marginBottom: 5,
-    height:180,
-  },
-  businessCard: {
-    backgroundColor: "#F5F5F5",
-    borderRadius: 5,
-    elevation: 2,
-    padding: 10,
+    marginBottom: hp('0.59%'),
+    height: hp('21.33%'),
+    borderRadius: 10,
+    width: wp('97%'),
+    alignSelf:'center',
+    padding: wp('2.56%'),
   },
   businessName: {
-    marginLeft: 15,
+    marginLeft: wp('3%'),
     fontFamily: 'Inter-Bold',
-    width:280,
-    fontSize:20,
-    marginBottom:20,
-    marginTop:-30
+    width: wp('71.79%'),
+    fontSize: wp('5.13%'),
+    marginBottom: hp('2.37%'),
+    marginTop: hp('0.65%')
   },
   businessAddress: {
-    marginLeft: 15,
-    width:170,
+    marginLeft: wp('3%'),
+    width: wp('43.59%'),
     fontFamily: 'Inter-Regular',
-    fontSize: 14,
+    fontSize: wp('3.59%'),
     color: 'black',
-    marginBottom:30
+    marginBottom: hp('1.3%')
   },
 });
