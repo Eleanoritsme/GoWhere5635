@@ -28,7 +28,7 @@ See our previewing vedio:
 
 * For Android:
     * Scan the QR Code inside Expo Go App:
-    * ![Screenshot 2023-06-09 at 4 36 40 PM](https://github.com/Eleanoritsme/GoWhere5635/assets/122248712/8c0b59bc-feb7-4320-bf78-4cea298b3ddc)
+    * ![Screenshot 2023-06-09 at 4 36 40 PM](https://qr.expo.dev/eas-update?updateId=b010a702-cfcf-40a0-84dd-572e9636574a&appScheme=exp&host=u.expo.dev)
     * Or open this [link](exp://u.expo.dev/update/b010a702-cfcf-40a0-84dd-572e9636574a) on your phone:
     * exp://u.expo.dev/update/c791a50a-8a98-4710-b8de-f973248052b7
 
