@@ -21,7 +21,7 @@ See our previewing vedio:
 
 * For IOS:
     * Scan the QR Code by the system camera:
-    * ![Screenshot 2023-06-09 at 4 35 56 PM](https://github.com/Eleanoritsme/GoWhere5635/assets/122248712/44cb6f3b-6a10-4291-9969-6f6d18c41c44)
+    * https://qr.expo.dev/eas-update?updateId=da497bf2-15b7-47f5-8c2f-ef7e0aca7d41&appScheme=exp&host=u.expo.dev
     * Or open this [link](exp://u.expo.dev/update/da497bf2-15b7-47f5-8c2f-ef7e0aca7d41) on your phone:
     * exp://u.expo.dev/update/45aea5ad-c510-4aaa-81ef-3acd54e1cfaf
 
