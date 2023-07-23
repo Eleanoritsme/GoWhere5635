@@ -35,6 +35,7 @@ const DetailScreen = ({route}) => {
     }
   }
 
+  console.log('here', business.location)
   /*const [image, setImage] = useState(null)
   if (business.image_url) {
     setImage(business.image_url)
@@ -124,6 +125,9 @@ const DetailScreen = ({route}) => {
   if (business.phone === ''){
     business.phone = 'contact not available'
   }
+  if (business.image_url === '') {
+    business.image_url = 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png'
+  }
 
   const chooseThis = () => {
     const userId= firebase.auth().currentUser.uid;
@@ -134,7 +138,7 @@ const DetailScreen = ({route}) => {
       address: address,
       phone: business.phone,
       price: business.price,
-      image_url: business.image_url ? business.image_url : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png',
+      image_url: business.image_url,
       uid: userId
     })
     .then(() => {
@@ -230,9 +234,9 @@ const DetailScreen = ({route}) => {
   }
 
   return (
-    <ScrollView onLayout={onLayoutRootView} style={{flex: 1, paddingBottom: hp('11.85%')}} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={{flex: 1}} onLayout={onLayoutRootView}>
     <StatusBar barStyle={'dark-content'} />
-    <SafeAreaView>
+
     <View style={{
       marginBottom: hp('10.66%'),
       }}>
@@ -380,7 +384,6 @@ const DetailScreen = ({route}) => {
         alignSelf: 'center',
         fontFamily: 'Inter-SemiBold',
         fontSize: wp('4.36%'),
-        lineHeight: 22,
       }}>Save to Collection List</Text>
       </TouchableOpacity>
 
@@ -399,11 +402,9 @@ const DetailScreen = ({route}) => {
         alignSelf: 'center',
         fontFamily: 'Inter-SemiBold',
         fontSize: wp('4.36%'),
-        lineHeight: 22,
       }}>Choose this!</Text>
       </TouchableOpacity>
       </SafeAreaView>
-      </ScrollView>
   )
 }
 

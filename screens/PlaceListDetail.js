@@ -165,9 +165,8 @@ const PlaceListDetail = ({route}) => {
   }
 
   return (
-    <ScrollView onLayout={onLayoutRootView} style={{flex:1}} showsVerticalScrollIndicator={false}>
-    <StatusBar barStyle={'dark-content'} />
     <SafeAreaView onLayout={onLayoutRootView}>
+      <StatusBar style={{flex:1}} barStyle={'dark-content'} />
     <View style={{
       marginBottom: hp('10.66%'),
       flexDirection: 'row',
@@ -316,7 +315,6 @@ const PlaceListDetail = ({route}) => {
       }}>Write a review</Text>
       </TouchableOpacity>
     </SafeAreaView>
-    </ScrollView>
   )
 }
 

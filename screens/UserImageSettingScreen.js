@@ -88,7 +88,7 @@ const UserImageSettingScreen = () => {
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [8, 3],
+      aspect: [4, 3],
       quality: 1,
     });
 
@@ -118,13 +118,34 @@ const UserImageSettingScreen = () => {
     }
   };
 
-  const handleUpdate = async(imageURI) => {
-    firebase.firestore().collection('users').doc(uid).update({
-      image: imageURI
-    })
-    .then(() => {
-      console.log('User data updated!');
-    })
+  // const handleUpdate = async(imageURI) => {
+  //   firebase.firestore().collection('users').doc(uid).update({
+  //     image: imageURI
+  //   })
+  //   .then(() => {
+  //     console.log('User data updated!');
+  //   })
+  // }
+
+  const handleUpdate = async (imageURI) => {
+    try {
+      const response = await fetch(imageURI);
+      const blob = await response.blob();
+      const storageRef = firebase.storage().ref();
+      const imageRef = storageRef.child(`user_avatars/${uid}`);
+      await imageRef.put(blob);
+
+      const imageUrl = await imageRef.getDownloadURL();
+
+      await firebase.firestore().collection('users').doc(uid)
+      .update({
+        image: imageUrl,
+      });
+
+      console.log('User Avatar updated')
+    } catch (error) {
+      console.error('Error updating user avatar', error)
+    }
   }
 
   const [fontsLoaded] = useFonts({

@@ -322,10 +322,11 @@ const UserProfileScreen = () => {
         <ScrollView 
         style={{
           flex:1,
-          marginLeft: wp('7.69%'),
-          width: wp('100%'),
+          alignSelf: "flex-start",
+          marginLeft: wp('4.69%'),
           marginBottom: hp('2.37%'),
         }}
+        contentContainerStyle={{justifyContent: 'center',  paddingRight:160}}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         >
@@ -334,7 +335,7 @@ const UserProfileScreen = () => {
       <View key={index} style={{marginLeft: wp('5.13%'), height: hp('21.33%'), width: wp('2.56%')}}>
       <View style={{
             shadowColor: '#000000', 
-            shadowOffset: { height: 4, width: -4 }, 
+            shadowOffset: { height: 4, width: 0 }, 
             shadowOpacity: 0.25, 
             shadowRadius: 4,
       }}>
@@ -416,10 +417,11 @@ const UserProfileScreen = () => {
         <ScrollView 
         style={{
           flex:1,
-          marginLeft: wp('7.69%'),
-          width: wp('100%'),
+          alignSelf: "flex-start",
+          marginLeft: wp('4.69%'),
           marginBottom: hp('2.37%'),
         }}
+        contentContainerStyle={{justifyContent: 'center',  paddingRight:200,}}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         >
