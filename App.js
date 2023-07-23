@@ -28,15 +28,15 @@ import { firebase } from './config';
 import 'expo-dev-client';
 import VisitedPlaceListScreen from './screens/VisitedPlaceListScreen';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Modal from "react-native-modal";
-import ActionSheet from './ActionSheet';
-import ActionSheetUpRightCorner from './ActionSheetUpRightCorner';
 import AfterChoosingScreen from './screens/AfterChoosingScreen';
 import * as ImagePicker from 'expo-image-picker';
 import * as SplashScreen from 'expo-splash-screen';
 import { Alert } from 'react-native';
 import { useFonts } from 'expo-font'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+
 
 WebBrowser.maybeCompleteAuthSession();
 SplashScreen.preventAutoHideAsync();
@@ -62,35 +62,15 @@ function App() {
 
   }, [fontsLoaded])
 
-  const actionItems = [
-    {
-      id: 1,
-      label: 'Edit Profile',
-      onPress: () => {navigation.navigate('Edit Profile'); setActionSheet(false)
-      }
-    },
-    {
-      id: 2,
-      label: 'Log Out',
-      onPress: () => {Alert.alert(
-        'Warning',
-        'Are you sure to log out?',
-        [
-          {text: 'Confirm', style: 'cancel', onPress: () => {handleSignOut()}},
-          {text: 'Cancel', style: 'destructive', onPress: () => console.log('Cancel Pressed')}
-        ]); setActionSheet(false)}
-    },
-  ];
-  const [actionSheet, setActionSheet] = useState(false);
-  const closeActionSheet = () => setActionSheet(false);
-
   function onAuthStateChanged(user) {
     setUser(user);
+    
     if (initializing) setInitializing(false);
   }
 
   useEffect(() => {
     const subscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
+
     return subscriber;
   }, []);
 
@@ -98,43 +78,15 @@ function App() {
     return null;
   }
 
-  if (!user) {
-    return (
-      <Stack.Navigator
-        screenOptions={{
-          headerShadowVisible:false
-        }}>
-
-        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown:false, contentStyle:{backgroundColor:"#F8F6F4"} }} />
-        <Stack.Screen name="Register" component={RegistrationScreen} options={{ headerShown:false, contentStyle:{backgroundColor:"#F8F6F4"} }} />
-        <Stack.Screen 
-        name="Reset Password" 
-        component={PasswordResettingScreen}
-        options={{ 
-          headerTitle: () => <Header name='Reset Password' />,
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="chevron-back" size={24} />
-            </TouchableOpacity>
-          ),
-          headerStyle:{
-            backgroundColor:'#F8F6F4'
-          },
-          contentStyle:{
-            backgroundColor:"#F8F6F4"
-          }
-        }}/>
-      </Stack.Navigator>
-    );
-  }
-
   return (
     <Stack.Navigator
       screenOptions={{
-        headerShadowVisible:false
+        headerShadowVisible:false,
+        headerBackVisible: false,
       }}>
+      <Stack.Screen name="Intro" component={IntroScreen} options={{ headerShown:false, contentStyle:{backgroundColor:"#F8F6F4"} }} />
+      <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown:false, contentStyle:{backgroundColor:"#F8F6F4"} }} />
+        <Stack.Screen name="Register" component={RegistrationScreen} options={{ headerShown:false, contentStyle:{backgroundColor:"#F8F6F4"} }} />
       <Stack.Screen 
         name="Activity" 
         component={ActivityScreen} 
@@ -154,7 +106,7 @@ function App() {
         name="Main" 
         component={RecommendationScreen} 
         options={{
-          headerTitle: '',
+          headerTitle: 'Recommendations',
           headerTransparent:true,
           headerLeft: () => (
             <TouchableOpacity
@@ -163,6 +115,10 @@ function App() {
               <Ionicons name="chevron-back" size={24} />
             </TouchableOpacity>
           ),
+          headerTitleAlign:'left',
+          headerTitleStyle:{
+            fontSize: wp('6.15%')
+          },
           contentStyle:{
             backgroundColor:"#E2F7FF"
           }
@@ -286,23 +242,16 @@ function App() {
           ),
           headerRight: () => (
             <View>
-              <TouchableOpacity activeOpacity={0.7} onPress={() => setActionSheet(true)}>
-                <Entypo name='dots-three-horizontal' size={24} color='#000' />
+              <TouchableOpacity activeOpacity={0.7} 
+              onPress={() => {Alert.alert(
+                'Warning',
+                'Are you sure to log out?',
+                [
+                  {text: 'Confirm', style: 'cancel', onPress: () => {handleSignOut(), navigation.navigate('Login')}},
+                  {text: 'Cancel', style: 'destructive', onPress: () => console.log('Cancel Pressed')}
+                ])}}>
+                <Feather name='log-out' size={24} color='#000' />
               </TouchableOpacity>
-              <Modal
-                isVisible={actionSheet}
-                backdropOpacity={0}
-                
-                style={{
-                  margin: 0,
-                  justifyContent: 'flex-end'
-                }}
-              >
-              <ActionSheet
-                actionItems={actionItems}
-                onCancel={closeActionSheet}
-              />
-              </Modal>
             </View>
           ),
           contentStyle:{

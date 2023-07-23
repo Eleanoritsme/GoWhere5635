@@ -1,7 +1,8 @@
 // firebase config key setup
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
-import 'firebase/compat/firestore'
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage'
 
 // Web app's Firebase Configuration
 const firebaseConfig = {
@@ -14,14 +15,8 @@ const firebaseConfig = {
   measurementId: "G-Q3L3J3TRJ9"
 };
 
-let app
-if (firebase.apps.length === 0) {
-  app = firebase.initializeApp(firebaseConfig);
-} else {
-  app = firebase.app()
+if (!firebase.apps.length){
+  firebase.initializeApp(firebaseConfig)
 }
-
-const auth = firebase.auth()
-const db = firebase.firestore()
 
 export { firebase };
