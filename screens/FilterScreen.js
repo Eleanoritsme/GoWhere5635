@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Modal, Image, TouchableOpacity, StatusBar } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, Modal, Image, TouchableOpacity, StatusBar, Alert } from 'react-native'
 import React, { useCallback, useState, useEffect } from 'react'
 import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -223,6 +223,34 @@ const FilterScreen = ({route}) => {
     getUser();
   }, []);
 
+  console.log('here', userChosenLocation)
+  console.log('here', timeText)
+  const validTimeFormat = /^([0-1]?[0-9]|2[0-3])(\s?:\s?)([0-5][0-9])\s*$/
+
+  const checkFilled = () => {
+    if (timeText === '') {
+      Alert.alert(
+        'Warning',
+        'Please select your preferred time.'
+      )
+    } else if (!validTimeFormat.test(timeText)) {
+      Alert.alert('Warning', 
+      'Please enter a valid time in the format HH:MM.'
+      )
+    } else if (userChosenLocation === '' || userChosenLocation === 'No address found' ) {
+      Alert.alert(
+        'Warning',
+        'Please select your preferred location.'
+      )
+    } else if (!priceSelected.length) {
+      Alert.alert(
+        'Warning',
+        'Please select your preferred prices.'
+      )
+    } else {
+      navigation.navigate('Main', { selectedCategory:selectedCategory, price: priceSelected, time: timeText, location: userChosenLocation});
+    }
+  }
   const navigation = useNavigation()
   
   const [fontsLoaded] = useFonts({
@@ -410,10 +438,7 @@ const FilterScreen = ({route}) => {
           style={styles.buttonContainerApply} onLayout={onLayoutRootView}>
           <TouchableOpacity
             onPress={() => 
-              {//getCoordinates(userChosenLocation);
-              //getData();
-              navigation.navigate('Main', { selectedCategory:selectedCategory, price: priceSelected, time: timeText, location: userChosenLocation});
-                 }}
+              {checkFilled()}}
             style={
               {backgroundColor:'#FFCE84',
               width: wp('65.64%'),

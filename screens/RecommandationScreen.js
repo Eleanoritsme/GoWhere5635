@@ -137,36 +137,11 @@ const RecommandationScreen = ({route}) => {
   }
 
   return (
-    <ScrollView>
+    <SafeAreaView style={{flex:1}}>
     <StatusBar barStyle={'dark-content'} />
-    <SafeAreaView>
-    <TouchableOpacity 
-      onPress={() => {navigation.navigate('User Profile')}}
-      style={{
-        top: wp('6.41%'),
-        left: wp('60.26%'),
-      }}>
-          <Image
-            source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
-            style={{
-              marginLeft: wp('10.26%'),
-              width: wp('23.8%'),
-              height: wp('23.8%'),
-              borderRadius: 200,
-              top: wp('5%')
-            }}
-            />
-      </TouchableOpacity>
-    <View style={{
-      position: 'absolute',
-      top: hp('5.33%'),
-    }}>
-      {/* <Text style={styles.titleText}>
-        Recommendations
-      </Text> */}
-    </View>
-      <View style={styles.title} >
-      <View onLayout={onLayoutRootView}>
+    <View style={{position:'absolute', top: wp('5%')}}>
+    <View style={{flexDirection:'row', top: wp('20%')}}>
+      <View style={styles.title} onLayout={onLayoutRootView}>
         <View style={styles.FilterOptionButton}>
           <Text style={styles.FilterOptionButtonText}>
             {time}
@@ -183,7 +158,20 @@ const RecommandationScreen = ({route}) => {
           </Text>
         </View>
       </View>
-      </View>
+      <TouchableOpacity 
+      onPress={() => {navigation.navigate('User Profile')}}>
+          <Image
+            source={{uri: user ? user.image || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg' : 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/Default_pfp.jpg'}}
+            style={{
+              marginLeft: wp('22%'),
+              width: wp('23.8%'),
+              height: wp('23.8%'),
+              borderRadius: 200,
+            }}
+            />
+      </TouchableOpacity>
+    </View>
+
 
       <View>
         <MapView 
@@ -257,10 +245,9 @@ const RecommandationScreen = ({route}) => {
           </ScrollView>
         </View>
       </View>
-     
+      </View>
       </View>
     </SafeAreaView>
-    </ScrollView>
   )
 }
 
@@ -268,11 +255,9 @@ export default RecommandationScreen
 
 const styles = StyleSheet.create({
   title:{
-    position: 'absolute',
-    top: hp('9.48%'),
-    flexDirection: 'row',
-    marginTop: hp('2.37%'),
+    flexDirection: 'column',
     marginLeft: wp('6.41%'),
+    marginBottom: hp('2.37%'),
   },
   titleText:{
     fontFamily: 'Inter-ExtraBold',

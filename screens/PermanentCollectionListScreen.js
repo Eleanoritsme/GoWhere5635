@@ -47,7 +47,6 @@ const PermanentCollectionListScreen = () => {
   const handleUncollectedBusiness= (item) => {
     const db = firebase.firestore();
     const userId= firebase.auth().currentUser.uid;
-    // Query the saved restaurants collection and find the specific restaurant to remove
     db.collection('users').doc(userId)
       .collection('Collection List')
       .where('name', '==', item.name)
@@ -56,7 +55,6 @@ const PermanentCollectionListScreen = () => {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          // Delete the document from the collection
           doc.ref.delete()
             .then(() => {
               console.log('Restaurant removed from Firebase!');
@@ -203,6 +201,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   collectionCard: {
+    borderRadius:15,
     marginBottom: hp('0.5%'),
     marginHorizontal: wp('0.5%'),
     flex: 0.5,
@@ -214,7 +213,7 @@ const styles = StyleSheet.create({
   collectionName: {
     fontFamily: 'Inter-Bold',
     fontSize: wp('3.85%'),
-    marginBottom: hp('0.59%'),
+    marginBottom: hp('1%'),
   },
   collectionAddress: {
     fontFamily: 'Inter-Regular',
@@ -229,12 +228,11 @@ const styles = StyleSheet.create({
     height: wp('6.41%'), 
   },
   businessImage: {
-    width: wp('43.31%'),
-    height: hp('13.03%'),
+    alignSelf:'center',
+    width: wp('45%'),
+    height: hp('14%'),
     borderRadius:15,
-    marginTop: hp('-1%'),
-    marginLeft: wp('-1%'),
-    marginRight: wp('-1%'),
+    marginTop: hp('-1.5%'),
     marginBottom: hp('1%')
   }
 });

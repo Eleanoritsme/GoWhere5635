@@ -12,7 +12,23 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 
 const ReviewPostingScreen = ({ route }) => {
   const { business } = route.params;
+  let address = '';
+  if (business.address) {
+    address += business.address;
+  } else {
+    if (business.location.address1) {
+      address += business.location.address1;
+    }
+    if (business.location.address2) {
+      address += ` ${business.location.address2}`;
+    }
+    if (business.location.address3) {
+      address += ` ${business.location.address3}`;
+    }
+  }
   const [user, setUser] = useState();
+
+  
   const { uid } = firebase.auth().currentUser;
   const getUser = async () => {
     try {
@@ -101,6 +117,40 @@ const ReviewPostingScreen = ({ route }) => {
     // Add reviewData to Whole Review List collection
     await db.collection('Review List').add(reviewData);
     console.log('Review of the place saved to Whole Review List!');
+
+    const saveToCollection = () => {
+    
+      db.collection('users').doc(userId).collection('Collection List')
+      .where('name', '==', business.name)
+      .where('phone', '==', business.phone)
+      .get()
+      .then((querySnapshot) => {
+        if (querySnapshot.empty) {
+          db.collection('users').doc(userId).collection('Collection List')
+            .add({
+              name: business.name,
+              address: address,
+              phone: business.phone,
+              price: business.price,
+              image_url: business.image_url,
+              uid: userId,
+            })
+            .then(() => {
+              console.log('Place has been saved to the collection list!');
+            })
+            .catch((error) => {
+              console.error('Error saving place to the collection list:', error);
+            });
+            console.log('Place saved successfully'); 
+        } else {
+          console.log('Place is already saved in the collection list.');
+        }
+      })
+    }
+
+    if (saveForNext === true) {
+      saveToCollection();
+    }
   
     navigation.navigate('Feedback');
   };
@@ -177,23 +227,34 @@ const ReviewPostingScreen = ({ route }) => {
 
   const handleUpdatePhoto = async (slot, uri) => {
     setPhotoSlot(slot); // Set the selected photo slot
+    const response = await fetch(uri);
+    const blob = await response.blob();
+  
+    const filename = `Review Photos/${firebase.auth().currentUser.uid}_${Date.now()}.jpg`;
+  
+    const ref = firebase.storage().ref().child(filename);
+    await ref.put(blob);
+
+    const downloadURL = await ref.getDownloadURL();
+  
     switch (slot) {
       case 1:
-        setPhoto1(uri);
+        setPhoto1(downloadURL);
         break;
       case 2:
-        setPhoto2(uri);
+        setPhoto2(downloadURL);
         break;
       case 3:
-        setPhoto3(uri);
+        setPhoto3(downloadURL);
         break;
       case 4:
-        setPhoto4(uri);
+        setPhoto4(downloadURL);
         break;
       default:
         break;
     }
   };
+  
 
   const [fontsLoaded] = useFonts({
     "Inter-SemiBold": require('../assets/fonts/Inter-SemiBold.ttf'),
@@ -216,7 +277,7 @@ const ReviewPostingScreen = ({ route }) => {
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
     <StatusBar barStyle={'dark-content'} />
-    <SafeAreaView style={{flex: 1, bottom: hp('2.37%')}} onLayout={onLayoutRootView}>
+    <SafeAreaView style={{flex: 1, }} onLayout={onLayoutRootView}>
         <Text style={{
           fontFamily: 'Inter-SemiBold',
           fontSize: wp('5.13%'),
@@ -227,6 +288,7 @@ const ReviewPostingScreen = ({ route }) => {
         }}>Share your experience of this place!</Text>
         <TextInput
           placeholder='Descriptions'
+          placeholderTextColor={'#999999'}
           style={{
             alignSelf: 'center',
             height: hp('18.84%'),
