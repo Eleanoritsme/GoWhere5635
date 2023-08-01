@@ -20,44 +20,15 @@ const FilterScreen = ({route}) => {
 
   const {selectedCategory} = route.params;
   console.log(selectedCategory);
-
-  //For time picker
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState('time');
-  const [show, setShow] = useState(false);
-  //const [dateText, setDateText] = useState('Date')
+ 
   const [timeText, setTimeText] = useState('')
-
-  //https://www.youtube.com/watch?v=Imkw-xFFLeE&t=298s
-  const OnChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === 'ios');
-    //setDate(currentDate);
-
-    let tempDate = new Date(currentDate);
-    let fTime = tempDate.getHours() + ' : ' + tempDate.getMinutes().toString().padStart(2, '0');
-    setTimeText(fTime);
-  }
-  
+ 
   const OnChangeNow = () => {
     const currentDate = new Date
-    //setDate(currentDate);
-
-    //let nDate = currentDate.getDate() + '/' + (currentDate.getMonth() + 1) + '/' 
-    //+ currentDate.getFullYear().toString().slice(-2);
     let nTime = currentDate.getHours() + ' : ' + currentDate.getMinutes().toString().padStart(2, '0');
-    //setDateText(nDate);
     setTimeText(nTime);
-
-    //console.log(nDate + '(' + nTime + ')')
     console.log(nTime)
   }
-
-  const showMode = (currentMode) => {
-    setShow(true);
-    //setMode(currentMode);
-  }
-
 
   //Display current location
   const [location, setLocation] = useState(null);
