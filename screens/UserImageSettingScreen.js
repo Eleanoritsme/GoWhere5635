@@ -118,14 +118,6 @@ const UserImageSettingScreen = () => {
     }
   };
 
-  // const handleUpdate = async(imageURI) => {
-  //   firebase.firestore().collection('users').doc(uid).update({
-  //     image: imageURI
-  //   })
-  //   .then(() => {
-  //     console.log('User data updated!');
-  //   })
-  // }
 
   const handleUpdate = async (imageURI) => {
     try {
