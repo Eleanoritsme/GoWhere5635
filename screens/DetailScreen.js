@@ -36,13 +36,6 @@ const DetailScreen = ({route}) => {
   }
 
   console.log('here', business.location)
-  /*const [image, setImage] = useState(null)
-  if (business.image_url) {
-    setImage(business.image_url)
-  } else {business.image} {
-    setImage(business.image)
-  }
-  */
   
   const priceMapping = {
     "$": '$0-10',
@@ -74,10 +67,10 @@ const DetailScreen = ({route}) => {
     });
   };
 
+  //Find the restaurant saved to firestore and remove
   const handleUnstarredRestaurant = () => {
     const db = firebase.firestore();
     const userId= firebase.auth().currentUser.uid;
-    // Query the saved restaurants collection and find the specific restaurant to remove
     db.collection('users').doc(userId)
       .collection('Star List')
       .where('name', '==', business.name)
@@ -85,7 +78,6 @@ const DetailScreen = ({route}) => {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          // Delete the document from the collection
           doc.ref.delete()
             .then(() => {
               console.log('Restaurant removed from Firebase!');
