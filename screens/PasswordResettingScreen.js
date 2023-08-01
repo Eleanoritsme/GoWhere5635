@@ -96,22 +96,6 @@ const PasswordResettingScreen = () => {
             color: '#4F200D'
           }}>Send An Email</Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity style={{
-          backgroundColor:'#FFCE84',
-          width:256,
-          height:48,
-          alignSelf:'center',
-          justifyContent:'center',
-          alignItems:'center',
-          borderRadius:10,
-        }}
-          onPress={() => {navigation.navigate('Login')}}>
-          <Text style={{
-            fontFamily:'Inder-Regular',
-            fontSize:20,
-            color:'#4F200D'
-          }}>Back To Login</Text>
-        </TouchableOpacity> */}
     </SafeAreaView>
   )
 }
