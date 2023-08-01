@@ -26,7 +26,6 @@ const TemporaryCollectionListScreen = () => {
         const data = querySnapshot.docs.map((doc) => {
           const business = doc.data();
           return { ...business, checkFilled: true };
-        // Access the document data
         //console.log('Document:', data);  
       //console.log('starItem:' + JSON.stringify(starItem))
     })
@@ -41,7 +40,6 @@ const TemporaryCollectionListScreen = () => {
   const handleUnstarredBusiness = (starredBusiness) => {
     const db = firebase.firestore();
     const userId= firebase.auth().currentUser.uid;
-    // Query the saved restaurants collection and find the specific restaurant to remove
     db.collection('users').doc(userId)
       .collection('Star List')
       .where('name', '==', starredBusiness.name)
@@ -50,7 +48,6 @@ const TemporaryCollectionListScreen = () => {
       .get()
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          // Delete the document from the collection
           doc.ref.delete()
             .then(() => {
               console.log('Restaurant removed from Firebase!');
@@ -59,7 +56,7 @@ const TemporaryCollectionListScreen = () => {
                 if (business.phone === starredBusiness.phone) {
                   return {...business, checkFilled: !business.checkFilled}
                 }
-                return business;//setUnstar(true)
+                return business;
               })
               )
             })
@@ -153,14 +150,6 @@ const TemporaryCollectionListScreen = () => {
           </TouchableOpacity>
           </View>
           <Text style={styles.businessAddress}>{starredBusiness.address}</Text>
-          {/* <TouchableOpacity style={{marginLeft: wp('3%')}} onPress={() => navigation.navigate("Review", {business: starredBusiness})}>
-          <Text style = {{
-            textDecorationLine:'underline',
-            fontFamily:'Inter-Regular',
-            fontSize: wp('3.33%'),
-            color: "#001F8E",
-          }}>Reviews</Text>
-          </TouchableOpacity> */}
           </TouchableOpacity>
           </View>
         )})}
