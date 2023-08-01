@@ -56,32 +56,6 @@ const ProfileEditScreen = () => {
     });
   }, [])
 
-  // const handleState = (countryCode) => {
-  //   var config = {
-  //     method: 'get',
-  //     url: `https://api.countrystatecity.in/v1/countries/${countryCode}/states`,
-  //     headers: {
-  //       'X-CSCAPI-KEY': 'SHRPbWNoOTByRUI0ZjhZUGxkdDVHY1FaMk1SVnd3eGU5ZWtnZUY1VQ== '
-  //     }
-  //   };
-    
-  //   axios(config)
-  //   .then(function (response) {
-  //     console.log(JSON.stringify(response.data));
-  //     var count = Object.keys(response.data).length;
-  //     let stateArray = [];
-  //     for (var i = 0; i < count; i++ ){
-  //       stateArray.push({
-  //         value: response.data[i].iso2,
-  //         label: response.data[i].name,
-  //       });
-  //     }
-  //     setStateData(stateArray)
-  //   })
-  //   .catch(function (error) {
-  //     console.log(error);
-  //   });    
-  // };
 
   const handleCity = (countryCode, stateCode) =>{
     var config = {
