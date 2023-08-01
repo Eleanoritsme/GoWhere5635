@@ -104,18 +104,18 @@ const ReviewPostingScreen = ({ route }) => {
       userImage: user.image,
     };
   
-    // Add photos to reviewData only if they are available
+
     if (photo1) reviewData.photo1 = photo1;
     if (photo2) reviewData.photo2 = photo2;
     if (photo3) reviewData.photo3 = photo3;
     if (photo4) reviewData.photo4 = photo4;
   
-    // Add reviewData to Review List subcollection
-    await db.collection('users').doc(userId).collection('Review List').add(reviewData);
+    
+    await db.collection('users').doc(userId).collection('Review List').add(reviewData); //add to each user review list
     console.log('Review of the place saved to Review List!');
   
-    // Add reviewData to Whole Review List collection
-    await db.collection('Review List').add(reviewData);
+    
+    await db.collection('Review List').add(reviewData); // add to main review list in firestore
     console.log('Review of the place saved to Whole Review List!');
 
     const saveToCollection = () => {
@@ -226,7 +226,7 @@ const ReviewPostingScreen = ({ route }) => {
   }
 
   const handleUpdatePhoto = async (slot, uri) => {
-    setPhotoSlot(slot); // Set the selected photo slot
+    setPhotoSlot(slot); 
     const response = await fetch(uri);
     const blob = await response.blob();
   
