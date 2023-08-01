@@ -38,29 +38,6 @@ const VisitedPlaceListScreen = () => {
   }, []);
   console.log('Visited' + JSON.stringify(visited))
 
-
-  // const [userName, setUserName] = useState(null)
-
-  // const getUserName = () => {
-  //   const userId = firebase.auth().currentUser.uid;
-  //   const db = firebase.firestore();
-  //   db.collection('users').doc(userId).get().then((doc) => {
-  //     if (doc.exists) {
-  //       const userData = doc.data();
-  //       const userName =  JSON.stringify(userData.userName)
-  //       setUserName(userName)
-  //     }
-  //   }).then(() => {
-  //       console.log('Get UserName', userName);
-  //   })
-  //   .catch((error) => {
-  //     console.error('Username not found', error);
-  //   });
-  // }
-
-  // useEffect(() => {
-  //   getUserName();
-  // }, []);
   
   const renderVisited = ({ item }) => (
     <TouchableOpacity style={styles.collectionCard} onPress={() => navigation.navigate("Place List Details", { business: item })}>
@@ -68,12 +45,6 @@ const VisitedPlaceListScreen = () => {
         source={{ uri: item.image_url || 'https://raw.githubusercontent.com/Eleanoritsme/Orbital-Assets/main/no-image.png' }}></Image>
       <Text style={styles.collectionName}>{item.name}</Text>
       <Text style={styles.collectionAddress}>{item.address}</Text>
-      {/* <TouchableOpacity style={{alignSelf:'flex-end'}} onPress={() => {handleReviewPress(item); navigation.navigate("Review Posting")}}>
-          <Image
-            style={styles.reviewImage}
-            source={require('../assets/images/misc/Review.png')}>
-          </Image>
-      </TouchableOpacity> */}
     </TouchableOpacity>
   );
 
